@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:katarasa/tabs/favorite_screen.dart';
 import 'package:katarasa/tabs/home_screen.dart';
-import 'package:katarasa/tabs/location_screen.dart';
 import 'package:katarasa/tabs/profile_screen.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/bottom_nav.dart';
@@ -14,7 +13,7 @@ class BottomNavScreen extends StatefulWidget {
 }
 
 class _BottomNavScreenState extends State<BottomNavScreen> {
-  int _currentIndex = 1;
+  int _currentIndex = 0;
   late PageController _pageController;
 
   @override
@@ -30,13 +29,13 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
   }
 
   List<Widget> _screens() {
-    return [LocationScreen(), HomeScreen(), FavoriteScreen(), ProfileScreen()];
+    return [HomeScreen(), FavoriteScreen(), ProfileScreen()];
   }
 
   void _setPage() {
-    int initialPage = 1;
+    int initialPage = 0;
     _pageController = PageController(initialPage: initialPage);
-    if (initialPage > 1) {
+    if (initialPage > 0) {
       setState(() {
         _currentIndex = initialPage;
       });
@@ -77,24 +76,19 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Container(
-                  child: bottomButton("Locations", "Pin", () {
+                  child: bottomButton("Home", "Home", () {
                     _onPageChanged(page: 0);
                   }, _currentIndex == 0),
                 ),
                 Container(
-                  child: bottomButton("Home", "Home", () {
+                  child: bottomButton("Favorite", "Favorite", () {
                     _onPageChanged(page: 1);
                   }, _currentIndex == 1),
                 ),
                 Container(
-                  child: bottomButton("Favorite", "Favorite", () {
+                  child: bottomButton("Account", "User", () {
                     _onPageChanged(page: 2);
                   }, _currentIndex == 2),
-                ),
-                Container(
-                  child: bottomButton("Account", "User", () {
-                    _onPageChanged(page: 3);
-                  }, _currentIndex == 3),
                 ),
               ],
             )),
