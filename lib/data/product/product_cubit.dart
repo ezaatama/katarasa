@@ -32,4 +32,8 @@ class ProductCubit extends Cubit<ProductState> {
     return products
         .firstWhere((element) => element.isFavorite = !element.isFavorite);
   }
+
+  List<ProductModels> hasiDiscountProduct() {
+    return products.where((element) => element.discount != null).toList();
+  }
 }
