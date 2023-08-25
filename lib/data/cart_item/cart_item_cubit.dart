@@ -43,8 +43,18 @@ class CartItemCubit extends Cubit<CartItemState> {
     int index = cartItems
         .indexWhere((element) => element.product.id == product.product.id);
     debugPrint('decrement index == $index');
-    if (index == index) {
+    if (index != -1) {
       cartItems[index].decrementQuantity();
+      emit(CartItemUpdated(cartItems));
+    }
+  }
+
+  void clearItem(CartItem product) {
+    int index = cartItems
+        .indexWhere((element) => element.product.id == product.product.id);
+    debugPrint('decrement index == $index');
+    if (index != -1) {
+      cartItems.remove(product);
       emit(CartItemUpdated(cartItems));
     }
   }
