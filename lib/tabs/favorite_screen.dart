@@ -14,7 +14,7 @@ class FavoriteScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         centerTitle: true,
         elevation: 0,
-        title: Text("Your Favorite Product",
+        title: Text("Produk Favorite Kamu",
             style: BROWN_TEXT_STYLE.copyWith(
                 fontSize: 22, fontWeight: FontUI.WEIGHT_SEMI_BOLD)),
       ),
