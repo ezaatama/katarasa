@@ -14,7 +14,7 @@ class FavoriteProductItem extends StatelessWidget {
 
   Widget _priceTag() {
     Widget price = Text(
-      "Rp ${products.price.toString()}",
+      "Rp ${products.price.toRupiah()}",
       textAlign: TextAlign.left,
       maxLines: 1,
       style: const TextStyle(
@@ -144,16 +144,6 @@ class FavoriteProductItem extends StatelessWidget {
             ),
           ),
           _priceTag(),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              PrimaryButton(
-                  text: 'Beli Sekarang',
-                  onPressed: () {
-                    debugPrint("beli sekarang");
-                  })
-            ],
-          )
         ],
       ),
     );
