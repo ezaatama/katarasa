@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:katarasa/data/cart/cart_cubit.dart';
 import 'package:katarasa/data/cart_item/cart_item_cubit.dart';
 import 'package:katarasa/data/product/product_cubit.dart';
 import 'package:katarasa/utils/router.dart';
@@ -26,7 +25,6 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => ProductCubit()),
-          BlocProvider(create: (context) => CartCubit()),
           BlocProvider(create: (context) => CartItemCubit()),
         ],
         child: Builder(builder: (_) {
