@@ -13,12 +13,11 @@ class Product extends StatelessWidget {
 
   Widget _priceTag() {
     Widget price = Text(
-      "Rp ${products.price.toString()}",
+      "Rp ${products.price.toRupiah()}",
       textAlign: TextAlign.left,
       maxLines: 1,
-      style: const TextStyle(
-        color: ColorUI.BLACK,
-      ),
+      style:
+          const TextStyle(color: ColorUI.BLACK, fontWeight: FontUI.WEIGHT_BOLD),
     );
 
     Widget discount = Container();
@@ -29,7 +28,7 @@ class Product extends StatelessWidget {
         textAlign: TextAlign.left,
         maxLines: 1,
         style: const TextStyle(
-          color: ColorUI.GREY,
+          color: ColorUI.BLACK,
           decoration: TextDecoration.lineThrough,
         ),
       );
@@ -38,7 +37,7 @@ class Product extends StatelessWidget {
         textAlign: TextAlign.center,
         maxLines: 1,
         style: const TextStyle(
-          fontWeight: FontUI.WEIGHT_SEMI_BOLD,
+          fontWeight: FontUI.WEIGHT_BOLD,
           color: Colors.red,
         ),
       );
@@ -46,14 +45,23 @@ class Product extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.all(4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          price,
-          const SizedBox(height: 10),
-          discount,
-        ],
-      ),
+      child: products.discount == null
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                price,
+                const SizedBox(height: 10),
+                discount,
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                discount,
+                const SizedBox(height: 10),
+                price,
+              ],
+            ),
     );
   }
 
@@ -94,57 +102,74 @@ class Product extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget content = Container(
-      padding: const EdgeInsets.fromLTRB(10, 8, 10, 0),
-      decoration: BoxDecoration(
-        color: ColorUI.WHITE,
-        boxShadow: containerShadow(
-          spreadRadius: 0.1,
-          blurRadius: 5,
-          offset: const Offset(0, 1),
-        ),
-        borderRadius: const BorderRadius.all(
-          Radius.circular(
-            BorderUI.RADIUS_CIRCULAR,
-          ),
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(
-                BorderUI.RADIUS_CIRCULAR,
-              ),
-            ),
-            child: Stack(
-              children: [
-                // StdImage(
-                //   imageUrl: products.image,
-                // ),
-                Image.asset(
-                  products.image,
-                  fit: BoxFit.cover,
-                  width: MediaQuery.of(context).size.width,
+    Widget content = Stack(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+          // decoration: BoxDecoration(
+          //   color: ColorUI.WHITE,
+          //   boxShadow: containerShadow(
+          //     spreadRadius: 0.1,
+          //     blurRadius: 5,
+          //     offset: const Offset(0, 1),
+          //   ),
+          //   borderRadius: const BorderRadius.all(
+          //     Radius.circular(
+          //       BorderUI.RADIUS_CIRCULAR,
+          //     ),
+          //   ),
+          // ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(BorderUI.RADIUS_CIRCULAR),
+                child: Stack(
+                  children: [
+                    // StdImage(
+                    //   imageUrl: products.image,
+                    // ),
+                    Image.asset(
+                      products.image,
+                      fit: BoxFit.cover,
+                      width: MediaQuery.of(context).size.width * .200,
+                    ),
+                  ],
                 ),
-                _promo(),
-              ],
-            ),
+              ),
+              Flexible(
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        products.title,
+                        textAlign: TextAlign.left,
+                        style: BLACK_TEXT_STYLE.copyWith(
+                            fontWeight: FontUI.WEIGHT_BOLD),
+                        maxLines: 2,
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        products.ingredient,
+                        textAlign: TextAlign.left,
+                        style: BLACK_TEXT_STYLE.copyWith(
+                            color: ColorUI.BLACK.withOpacity(.60),
+                            fontWeight: FontUI.WEIGHT_LIGHT),
+                        maxLines: 2,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              _priceTag(),
+            ],
           ),
-          Container(
-            margin: const EdgeInsets.fromLTRB(4, 10, 4, 0),
-            child: Text(
-              products.title,
-              textAlign: TextAlign.left,
-              style: BLACK_TEXT_STYLE.copyWith(fontWeight: FontUI.WEIGHT_BOLD),
-              maxLines: 2,
-            ),
-          ),
-          _priceTag(),
-        ],
-      ),
+        ),
+        _promo(),
+      ],
     );
 
     return InkWell(
