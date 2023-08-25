@@ -1,7 +1,7 @@
-import 'package:katarasa/models/been_models.dart';
-import 'package:katarasa/models/milk_models.dart';
-import 'package:katarasa/models/temp_models.dart';
-import 'package:katarasa/models/topping_models.dart';
+import 'package:katarasa/models/variant_models.dart';
+import 'package:katarasa/models/ice_models.dart';
+import 'package:katarasa/models/sizes_models.dart';
+import 'package:katarasa/models/sugar_models.dart';
 
 class ProductModels {
   final String id;
@@ -12,10 +12,10 @@ class ProductModels {
   final String ingredient;
   final String category;
   bool isFavorite;
-  final Been? been;
+  final Variant? variant;
   final TempSize? tempSize;
-  final Milk? milk;
-  final Topping? topping;
+  final Ices? ice;
+  final Sugar? sugar;
 
   ProductModels(
       {required this.id,
@@ -26,10 +26,10 @@ class ProductModels {
       required this.ingredient,
       required this.category,
       this.isFavorite = false,
-      this.been,
+      this.variant,
       this.tempSize,
-      this.milk,
-      this.topping});
+      this.ice,
+      this.sugar});
 
   void toggleStatus() {
     isFavorite = !isFavorite;
@@ -66,7 +66,7 @@ final List<ProductModels> products = [
       image: 'assets/images/KopiSusu.jpeg',
       title: 'Kopi Susu',
       price: 15000,
-      discount: null,
+      discount: 13000,
       ingredient: 'Espresso + Brown Sugar + Fresh Milk + Creamer',
       category: "Coffee"),
   ProductModels(
@@ -90,7 +90,7 @@ final List<ProductModels> products = [
       image: 'assets/images/Macchiato.jpeg',
       title: 'Moccachino',
       price: 32000,
-      discount: null,
+      discount: 30000,
       ingredient: 'Single Ristretto with fresh milk',
       category: "Coffee"),
   ProductModels(
