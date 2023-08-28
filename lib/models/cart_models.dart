@@ -27,3 +27,5 @@ class CartItem {
     }
   }
 }
+
+String methodBank = '';
