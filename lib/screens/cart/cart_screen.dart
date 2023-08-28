@@ -5,7 +5,9 @@ import 'package:katarasa/models/cart_models.dart';
 import 'package:katarasa/models/product_models.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/extension.dart';
+import 'package:katarasa/widgets/accordion_payment.dart';
 import 'package:katarasa/widgets/cart_product.dart';
+import 'package:katarasa/widgets/customize_time_order.dart';
 import 'package:katarasa/widgets/disable_button.dart';
 import 'package:katarasa/widgets/primary_button.dart';
 
@@ -17,6 +19,21 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  String _timeC = '';
+  String _valueOrder = '';
+
+  ///Time
+  TimeOfDay timeOfDay = TimeOfDay.now();
+  Future displayTimePicker(BuildContext context) async {
+    var time = await showTimePicker(context: context, initialTime: timeOfDay);
+
+    if (time != null) {
+      setState(() {
+        _timeC = "${time.hour}:${time.minute}";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,7 +156,80 @@ class _CartScreenState extends State<CartScreen> {
                               "*Kami buka mulai dari pukul 11.00 - 19.00 WIB",
                               style: BLACK_TEXT_STYLE.copyWith(
                                   fontWeight: FontUI.WEIGHT_MEDIUM),
-                            )
+                            ),
+                            const SizedBox(height: 10),
+                            state.cartItems.isEmpty
+                                ? const SizedBox()
+                                : Column(
+                                    children: [
+                                      CustomTimeOrder(
+                                          value: "O1",
+                                          groupValue: _valueOrder,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _valueOrder = value!;
+                                              debugPrint(value);
+                                            });
+                                          },
+                                          text: "Now - 10 Menit",
+                                          title: "Pesan Sekarang"),
+                                      CustomTimeOrder(
+                                          value: "O2",
+                                          groupValue: _valueOrder,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _valueOrder = value!;
+                                              displayTimePicker(context);
+                                              debugPrint(value);
+                                            });
+                                          },
+                                          text: "Waktu ambil pukul ($_timeC)",
+                                          title: "Pesan Nanti"),
+                                      const SizedBox(height: 10),
+                                      InkWell(
+                                        onTap: () {
+                                          debugPrint('go to metode pembayaran');
+                                          Navigator.pushNamed(
+                                              context, '/payment-method');
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "Metode Pembayaran",
+                                                  style:
+                                                      BLACK_TEXT_STYLE.copyWith(
+                                                          fontSize: 16,
+                                                          fontWeight: FontUI
+                                                              .WEIGHT_SEMI_BOLD),
+                                                ),
+                                                const SizedBox(height: 5),
+                                                methodBank.isEmpty
+                                                    ? const SizedBox()
+                                                    : Text(
+                                                        methodBank,
+                                                        style: BLACK_TEXT_STYLE
+                                                            .copyWith(
+                                                                fontSize: 16,
+                                                                fontWeight: FontUI
+                                                                    .WEIGHT_MEDIUM),
+                                                      )
+                                              ],
+                                            ),
+                                            const Icon(
+                                                Icons.arrow_forward_ios_rounded,
+                                                color: ColorUI.BLACK,
+                                                size: 18)
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                           ],
                         ),
                       );
@@ -220,12 +310,12 @@ class _CartScreenState extends State<CartScreen> {
                           if (state is CartItemUpdated) {
                             return state.cartItems.isEmpty
                                 ? DisableButton(
-                                    text: "Pilih Pembayaran",
+                                    text: "Bayar Sekarang",
                                     onPressed: () {
                                       debugPrint("disable");
                                     })
                                 : PrimaryButton(
-                                    text: "Pilih Pembayaran",
+                                    text: "Bayar Sekarang",
                                     onPressed: () {
                                       debugPrint("go to pembayaran");
                                     });
