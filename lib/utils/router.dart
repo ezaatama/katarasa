@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:katarasa/screens/bottom_navigation/bottom_nav_screen.dart';
 import 'package:katarasa/screens/cart/cart_screen.dart';
+import 'package:katarasa/screens/cart/payment_method_screen.dart';
 import 'package:katarasa/screens/product/detail_product_screen.dart';
 import 'package:katarasa/screens/splash/splashscreen.dart';
 
@@ -17,6 +18,8 @@ class AppRouter {
                 DetailProductScreen(id: settings.arguments as String));
       case '/cart':
         return MaterialPageRoute(builder: (_) => const CartScreen());
+      case '/payment-method':
+        return MaterialPageRoute(builder: (_) => const PaymentMethodScreen());
       default:
         return _routeError();
     }
