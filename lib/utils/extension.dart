@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 extension ExtendedNum on num {
@@ -10,4 +11,10 @@ extension ExtendedNum on num {
         locale: 'id_ID', decimalDigits: decimalDigit, symbol: '');
     return f.format(this);
   }
+}
+
+void callShowSnackbar(BuildContext context, String msg) {
+  final snackBar = SnackBar(content: Text(msg));
+
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
