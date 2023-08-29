@@ -9,7 +9,7 @@ import 'package:katarasa/widgets/accordion_payment.dart';
 import 'package:katarasa/widgets/cart_product.dart';
 import 'package:katarasa/widgets/customize_time_order.dart';
 import 'package:katarasa/widgets/disable_button.dart';
-import 'package:katarasa/widgets/primary_button.dart';
+import 'package:katarasa/widgets/button/primary_button.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
