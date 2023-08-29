@@ -3,12 +3,27 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:katarasa/data/auth/cubit/login_cubit.dart';
 import 'package:katarasa/data/cart_item/cart_item_cubit.dart';
 import 'package:katarasa/data/product/product_cubit.dart';
+import 'package:katarasa/utils/cache_storage.dart';
+import 'package:katarasa/utils/network.dart';
 import 'package:katarasa/utils/router.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+
+  //init cachestorage
+  await CacheStorage.initPref();
+  debugPrint('init cache storage');
+  TOKEN = CacheStorage.getTokenApi();
+
+  //init network
+  await initNetwork();
+  debugPrint('init network');
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
@@ -24,6 +39,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
         providers: [
+          BlocProvider(create: (context) => LoginCubit()),
           BlocProvider(create: (context) => ProductCubit()),
           BlocProvider(create: (context) => CartItemCubit()),
         ],
