@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:katarasa/utils/cache_storage.dart';
 import 'package:katarasa/utils/constant.dart';
+import 'package:katarasa/utils/network.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -9,12 +11,31 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  Future<void> _loadData() async {
+    final NavigatorState navigator = Navigator.of(context);
+
+    String token = CacheStorage.getTokenApi();
+    debugPrint('tokened: $token');
+    if (token != '') {
+      initTokenHeader(token);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(seconds: 1, milliseconds: 30), () {
+          navigator.pushReplacementNamed('/home');
+        });
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(seconds: 1, milliseconds: 30), () {
+          navigator.pushReplacementNamed('/login');
+        });
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/home');
-    });
+    _loadData();
   }
 
   @override
