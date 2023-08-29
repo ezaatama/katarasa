@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:katarasa/models/product_models.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/extension.dart';
-import 'package:katarasa/widgets/primary_button.dart';
+import 'package:katarasa/widgets/button/primary_button.dart';
 
 class FavoriteProductItem extends StatelessWidget {
   final ProductModels products;
