@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:katarasa/data/cart_item/cart_item_cubit.dart';
-import 'package:katarasa/data/product/product_cubit.dart';
-import 'package:katarasa/models/variant_models.dart';
-import 'package:katarasa/models/cart_models.dart';
-import 'package:katarasa/models/ice_models.dart';
-import 'package:katarasa/models/product_models.dart';
-import 'package:katarasa/models/sizes_models.dart';
-import 'package:katarasa/models/sugar_models.dart';
+import 'package:katarasa/data/dummy/cart_item/cart_item_cubit.dart';
+import 'package:katarasa/data/dummy/product/product_cubit.dart';
+import 'package:katarasa/models/dummy/ice_models.dart';
+import 'package:katarasa/models/dummy/variant_models.dart';
+import 'package:katarasa/models/dummy/sizes_models.dart';
+import 'package:katarasa/models/dummy/sugar_models.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/extension.dart';
 import 'package:katarasa/widgets/chip_product.dart';
-import 'package:katarasa/widgets/customize_optional.dart';
-import 'package:katarasa/widgets/toast_comp.dart';
+import 'package:katarasa/widgets/general/toast_comp.dart';
 
 class DetailProductScreen extends StatefulWidget {
   const DetailProductScreen({super.key, required this.id});
