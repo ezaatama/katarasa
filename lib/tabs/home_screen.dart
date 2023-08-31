@@ -1,12 +1,18 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:katarasa/data/cart_item/cart_item_cubit.dart';
-import 'package:katarasa/data/product/product_cubit.dart';
-import 'package:katarasa/models/promo_models.dart';
+import 'package:katarasa/data/dummy/cart_item/cart_item_cubit.dart';
+import 'package:katarasa/data/dummy/product/product_cubit.dart';
+import 'package:katarasa/data/products/all_product/products_cubit.dart';
+import 'package:katarasa/data/products/category_product/category_product_cubit.dart';
+import 'package:katarasa/models/dummy/promo_models.dart';
+import 'package:katarasa/models/products/products_request.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/extension.dart';
+import 'package:katarasa/widgets/choice_chip.dart';
+import 'package:katarasa/widgets/general/loader_indicator.dart';
 import 'package:katarasa/widgets/product.dart';
 import 'package:katarasa/widgets/product_discount.dart';
 
@@ -20,12 +26,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController(initialPage: 0);
   int _currentPage = 0;
+  int _topItem = 0;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     context.read<ProductCubit>().fetchProduct();
+    context.read<ProductsCubit>().getAllProduct(context);
+    context.read<CategoryProductCubit>().selectedCategory(context);
     _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       _currentPage++;
       if (_currentPage >= 3) {
@@ -98,6 +107,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+                _tabsCategory(),
+
+                const SizedBox(height: 16),
+                _listProduct(size),
+                const SizedBox(height: 16),
                 Text(
                   "Promo Spesial",
                   style: BLACK_TEXT_STYLE.copyWith(
@@ -130,24 +144,41 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 3),
                 Text(
                   "Rekomendasi Untuk Kamu",
                   style: BLACK_TEXT_STYLE.copyWith(
                       fontSize: 18, fontWeight: FontUI.WEIGHT_SEMI_BOLD),
                 ),
                 const SizedBox(height: 10),
-                BlocBuilder<ProductCubit, ProductState>(
+                // BlocBuilder<ProductCubit, ProductState>(
+                //   builder: (context, state) {
+                //     if (state is ProductLoading) {
+                //       return const Center(child: CircularProgressIndicator());
+                //     } else if (state is ProductSuccess) {
+                //       return ListView.builder(
+                //           shrinkWrap: true,
+                //           physics: const NeverScrollableScrollPhysics(),
+                //           itemCount: state.product.length,
+                //           itemBuilder: (context, index) {
+                //             return Product(products: state.product[index]);
+                //           });
+                //     }
+
+                //     return const SizedBox();
+                //   },
+                // ),
+                BlocBuilder<ProductsCubit, ProductsState>(
                   builder: (context, state) {
-                    if (state is ProductLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state is ProductSuccess) {
+                    if (state is ProductsLoading) {
+                      return const LoaderIndicator();
+                    } else if (state is ProductsSuccess) {
                       return ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: state.product.length,
+                          itemCount: state.allProduct.length,
                           itemBuilder: (context, index) {
-                            return Product(products: state.product[index]);
+                            return Product(products: state.allProduct[index]);
                           });
                     }
 
@@ -232,6 +263,70 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ],
     )));
+  }
+
+  Widget _tabsCategory() {
+    return BlocBuilder<CategoryProductCubit, CategoryProductState>(
+        builder: (builder, state) {
+      if (state is CategoryProductSelected) {
+        return Container(
+          padding: const EdgeInsets.only(left: 16),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: state.categories.asMap().entries.map((e) {
+                  int index = e.key;
+                  String product = e.value;
+
+                  return CategoryType(
+                      title: product, selected: _topItem == index, cb: () {});
+                }).toList()),
+          ),
+        );
+      }
+      return const SizedBox();
+    });
+  }
+
+  Widget _listProduct(Size devices) {
+    return Container(
+      child: _buildList(devices),
+    );
+  }
+
+  Widget _buildList(Size devices) {
+    return BlocBuilder<ProductsCubit, ProductsState>(
+      builder: (context, state) {
+        if (state is ProductsLoading) {
+          return const LoaderIndicator();
+        } else if (state is ProductsSuccess) {
+          Map<String, List<ProductRequest>> mappedProduk = groupBy(
+              state.allProduct, (ProductRequest produk) => produk.category);
+          List<MapEntry<String, List<ProductRequest>>> prod =
+              mappedProduk.entries.toList();
+          return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: prod.length,
+              itemBuilder: (context, index) {
+                return _produkList(prod[index].value);
+              });
+        }
+
+        return const SizedBox();
+      },
+    );
+  }
+
+  Widget _produkList(List<ProductRequest> prods) {
+    return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: prods.length,
+        itemBuilder: (context, index) {
+          return Product(products: prods[index]);
+        });
   }
 
   AnimatedContainer _buildDot({int? index}) {
