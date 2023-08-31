@@ -4,6 +4,7 @@ import 'package:katarasa/screens/bottom_navigation/bottom_nav_screen.dart';
 import 'package:katarasa/screens/cart/cart_screen.dart';
 import 'package:katarasa/screens/cart/payment_method_screen.dart';
 import 'package:katarasa/screens/product/detail_product_screen.dart';
+import 'package:katarasa/screens/product/product_detail_screen.dart';
 import 'package:katarasa/screens/splash/splashscreen.dart';
 
 class AppRouter {
@@ -19,6 +20,10 @@ class AppRouter {
         return MaterialPageRoute(
             builder: (_) =>
                 DetailProductScreen(id: settings.arguments as String));
+      case '/product-detail':
+        return MaterialPageRoute(
+            builder: (_) =>
+                ProductDetailScreen(slug: settings.arguments as String));
       case '/cart':
         return MaterialPageRoute(builder: (_) => const CartScreen());
       case '/payment-method':
