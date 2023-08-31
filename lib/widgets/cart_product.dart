@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:katarasa/models/cart_models.dart';
+import 'package:katarasa/models/dummy/cart_models.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/extension.dart';
 
