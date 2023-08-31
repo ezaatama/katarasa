@@ -65,8 +65,8 @@ LinearGradient gradientColor() {
     end: Alignment.bottomRight,
     colors: [
       Color(0xFFEF7E6E),
-      Color(0xFFEE523B),
-      Color(0xFFEE523B),
+      Color.fromARGB(255, 230, 63, 37),
+      Color.fromARGB(255, 250, 59, 30),
     ],
   );
 }
