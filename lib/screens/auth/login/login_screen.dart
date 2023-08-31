@@ -8,10 +8,10 @@ import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/network.dart';
 import 'package:katarasa/widgets/button/loading_button.dart';
 import 'package:katarasa/widgets/customize_text_field.dart';
-import 'package:katarasa/widgets/icon_suffix.dart';
+import 'package:katarasa/widgets/general/icon_suffix.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
-import 'package:katarasa/widgets/loader_indicator.dart';
-import 'package:katarasa/widgets/toast_comp.dart';
+import 'package:katarasa/widgets/general/loader_indicator.dart';
+import 'package:katarasa/widgets/general/toast_comp.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
