@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Future.delayed(const Duration(seconds: 1, milliseconds: 30), () {
-          navigator.pushReplacementNamed('/login');
+          navigator.pushReplacementNamed('/home');
         });
       });
     }
