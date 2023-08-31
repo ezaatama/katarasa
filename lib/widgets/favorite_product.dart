@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:katarasa/data/product/product_cubit.dart';
+import 'package:katarasa/data/dummy/product/product_cubit.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/favorite_product_item.dart';
 
