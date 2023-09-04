@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:katarasa/screens/auth/login/login_screen.dart';
+import 'package:katarasa/screens/auth/register/register_screen.dart';
 import 'package:katarasa/screens/bottom_navigation/bottom_nav_screen.dart';
 import 'package:katarasa/screens/cart/cart_screen.dart';
 import 'package:katarasa/screens/cart/payment_method_screen.dart';
@@ -14,6 +15,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SplashScreen());
       case '/login':
         return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case '/register':
+        return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case '/home':
         return MaterialPageRoute(builder: (_) => const BottomNavScreen());
       case '/detail-product':
