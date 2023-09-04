@@ -199,6 +199,23 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                           });
                 },
+              ),
+              const SizedBox(height: 5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Belum memiliki akun?",
+                      style: BLACK_TEXT_STYLE.copyWith(
+                          fontWeight: FontUI.WEIGHT_LIGHT)),
+                  TextButton(
+                      onPressed: () {
+                        debugPrint('Go to register');
+                        Navigator.pushNamed(context, '/register');
+                      },
+                      child: Text("Daftar Sekarang",
+                          style: BLACK_TEXT_STYLE.copyWith(
+                              fontWeight: FontUI.WEIGHT_BOLD)))
+                ],
               )
             ],
           ),
