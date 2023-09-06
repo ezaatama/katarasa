@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text("You're Offline",
+                                Text("Periksa Kembali Jaringan Anda",
                                     style: WHITE_TEXT_STYLE.copyWith(
                                         fontSize: 14,
                                         fontWeight: FontUI.WEIGHT_SEMI_BOLD)),
