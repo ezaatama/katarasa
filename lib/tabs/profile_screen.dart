@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:katarasa/utils/constant.dart';
+import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/card/card_promo_profile.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -13,7 +14,7 @@ class ProfileScreen extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -26,7 +27,9 @@ class ProfileScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pushNamed(context, '/edit-profile');
+                        },
                         child: Row(children: [
                           Text("Edit ",
                               style: BROWN_TEXT_STYLE.copyWith(
@@ -49,6 +52,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 20),
               _listProfile(() {
                 debugPrint("Go to all pesanan");
+                Navigator.pushNamed(context, '/all-order');
               }, Icons.list, "Semua Pesanan"),
               const SizedBox(height: 10),
               const Divider(height: 2, thickness: 1),
@@ -56,6 +60,13 @@ class ProfileScreen extends StatelessWidget {
               _listProfile(() {
                 debugPrint("Go to alamat pengiriman");
               }, Icons.location_history, "Alamat Pengiriman"),
+              const SizedBox(height: 10),
+              const Divider(height: 2, thickness: 1),
+              const SizedBox(height: 10),
+              _listProfile(() {
+                debugPrint("Go to ubah password");
+                Navigator.pushNamed(context, '/edit-password');
+              }, Icons.key_rounded, "Ubah Password"),
               const SizedBox(height: 10),
               const Divider(height: 2, thickness: 1),
               const SizedBox(height: 10),
@@ -75,7 +86,14 @@ class ProfileScreen extends StatelessWidget {
                 debugPrint("Go to kebijakan privasi");
               }, Icons.library_books_outlined, "Kebijakan Privasi"),
               const SizedBox(height: 10),
-              const Divider(height: 2, thickness: 1)
+              const Divider(height: 2, thickness: 1),
+              const SizedBox(height: 10),
+              _listProfile(() {
+                debugPrint("Go to tentang kami");
+                Navigator.pushNamed(context, '/about-us');
+              }, Icons.people_outline, "Tentang Kami"),
+              const SizedBox(height: 30),
+              PrimaryButton(text: "Keluar", onPressed: () async {})
             ],
           ),
         ),
