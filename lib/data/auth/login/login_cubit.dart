@@ -23,11 +23,12 @@ class LoginCubit extends Cubit<LoginState> {
         callNetwork(LOGIN, mode: POST_METHOD, body: payload.toMap());
     await res.then((value) {
       if (value.success == true) {
-        debugPrint('ini print token + ${value.response['token']}');
-        emit(LoginSuccess(value.response['token']));
+        debugPrint('ini print token + ${value.response['data']['token']}');
+
+        emit(LoginSuccess(value.response['data']['token']));
       } else {
-        debugPrint(value.errresponse.message);
-        emit(LoginError(value.errresponse.message));
+        debugPrint(value.errresponse.errors);
+        emit(LoginError(value.errresponse.errors));
       }
     }).catchError((e) {
       if (e is ConnectionProblemException || e is TimeoutException) {
