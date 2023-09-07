@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:katarasa/utils/cache_storage.dart';
 import 'package:katarasa/utils/constant.dart';
+import 'package:katarasa/utils/network.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/card/card_promo_profile.dart';
+import 'package:katarasa/widgets/general/toast_comp.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -93,7 +96,17 @@ class ProfileScreen extends StatelessWidget {
                 Navigator.pushNamed(context, '/about-us');
               }, Icons.people_outline, "Tentang Kami"),
               const SizedBox(height: 30),
-              PrimaryButton(text: "Keluar", onPressed: () async {})
+              PrimaryButton(
+                  text: "Keluar",
+                  onPressed: () async {
+                    CacheStorage.setTokenApi('');
+                    initTokenHeader('');
+                    debugPrint('token remove');
+                    showToast(
+                        text: "Anda berhasil logout!",
+                        state: ToastStates.SUCCESS);
+                    Navigator.pushReplacementNamed(context, '/');
+                  })
             ],
           ),
         ),
