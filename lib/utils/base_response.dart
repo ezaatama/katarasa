@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 
 class ObjResponse {
@@ -20,19 +22,21 @@ class ObjResponse {
 class BaseResponse {
   Status status;
   Map<String, dynamic> data;
-  String message;
+  // String message;
+  String errors;
   dynamic response;
 
   BaseResponse({
     required this.status,
     required this.data,
-    required this.message,
+    // required this.message,
+    required this.errors,
     this.response,
   });
 
   @override
   String toString() {
-    return "Not Success, Code : ${status.code} and Msg : ${status.message} \n Message : $message";
+    return "Not Success, Code : ${status.code} and Msg : ${status.message} \n Message : $errors";
   }
 }
 
@@ -44,4 +48,22 @@ class Status {
     required this.code,
     required this.message,
   });
+}
+
+class Error {
+  String message;
+  String? field;
+  String? value;
+
+  Error({
+    required this.message,
+    this.field,
+    this.value,
+  });
+
+  factory Error.fromJson(Map<String, dynamic> json) => Error(
+        message: json["message"],
+        field: json["field"],
+        value: json["value"],
+      );
 }
