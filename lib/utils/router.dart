@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:katarasa/screens/auth/forgot_pass/forgot_password_screen.dart';
 import 'package:katarasa/screens/auth/login/login_screen.dart';
 import 'package:katarasa/screens/auth/register/register_screen.dart';
 import 'package:katarasa/screens/bottom_navigation/bottom_nav_screen.dart';
@@ -32,6 +33,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const AllOrderScreen());
       case '/order-detail':
         return MaterialPageRoute(builder: (_) => const DetailOrderScreen());
+      case '/forgot-password':
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
       case '/edit-password':
         return MaterialPageRoute(builder: (_) => const UpdatePasswordScreen());
       case '/detail-product':
