@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
-import 'package:katarasa/data/auth/cubit/login_cubit.dart';
+import 'package:katarasa/data/auth/login/login_cubit.dart';
 import 'package:katarasa/models/auth/login/login_request.dart';
 import 'package:katarasa/utils/cache_storage.dart';
 import 'package:katarasa/utils/constant.dart';
+import 'package:katarasa/utils/extension.dart';
 import 'package:katarasa/utils/network.dart';
 import 'package:katarasa/widgets/button/loading_button.dart';
 import 'package:katarasa/widgets/customize_text_field.dart';
@@ -23,7 +24,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _isObscure = false;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -115,22 +116,24 @@ class _LoginScreenState extends State<LoginScreen> {
               )),
               const SizedBox(height: 10),
               Text(
-                "Name",
+                "Email",
                 style: BLACK_TEXT_STYLE.copyWith(
                     fontWeight: FontUI.WEIGHT_SEMI_BOLD),
               ),
               const SizedBox(height: 10),
               CustomTextField(
-                controller: _usernameController,
-                keyboardType: TextInputType.name,
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Masukkan username yang benar!';
+                    return 'Email wajib diisi!';
+                  } else if (!isValidEmail(value)) {
+                    return 'Masukkan email yang benar!';
                   }
                   return null;
                 },
-                hintText: "Username",
+                hintText: "Email",
               ),
               const SizedBox(height: 10),
               Text(
@@ -162,7 +165,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   onFieldSubmitted: (value) {}),
-              const SizedBox(height: 40),
+              const SizedBox(height: 5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        debugPrint("Go to forgot password screen");
+                        Navigator.pushNamed(context, '/forgot-password');
+                      },
+                      child: Text("Lupa Password?",
+                          style: BLACK_TEXT_STYLE.copyWith(
+                              fontWeight: FontUI.WEIGHT_SEMI_BOLD)))
+                ],
+              ),
+              const SizedBox(height: 5),
               BlocConsumer<LoginCubit, LoginState>(
                 listener: (context, state) {
                   if (state is LoginLoading) {
@@ -191,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               LoginRequest payload = LoginRequest(
-                                  username: _usernameController.text,
+                                  email: _emailController.text,
                                   password: _passwordController.text);
                               await context
                                   .read<LoginCubit>()
