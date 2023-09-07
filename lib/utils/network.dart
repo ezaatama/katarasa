@@ -61,12 +61,11 @@ Future<ObjResponse> callNetwork(String url,
   dio.Response response;
   Map<String, dynamic> emptyObject = {};
   dio.Headers? headers;
-  ObjResponse res = ObjResponse(
-      false,
-      emptyObject,
-      headers,
-      BaseResponse(
-          status: Status(code: 0, message: ''), data: {}, message: ''));
+  ObjResponse res = ObjResponse(false, emptyObject, headers,
+      BaseResponse(status: Status(code: 0, message: ''), data: {}, errors: ''));
+
+  // String messageErrRes =
+  //     res.errresponse.errors.map((e) => e.message).toString();
 
   try {
     if (mode == GET_METHOD) {
@@ -139,18 +138,18 @@ Future<ObjResponse> callNetwork(String url,
     }
 
     if (response.data != null && response.data is String) {
-      res.errresponse.message = 'No data';
+      res.errresponse.errors = 'No data';
     } else if (response.data != null &&
         response.data.containsKey('status') &&
         response.data['status'] == false) {
       String msg = 'Error: ${response.statusCode}';
-      if (response.data.containsKey('message')) {
-        msg = response.data['message'];
+      if (response.data.containsKey('errors')) {
+        msg = response.data['errors']![0]['message'];
       }
       if (response.data.containsKey('data')) {
         msg += ': ' + response.data['data'];
       }
-      res.errresponse.message = msg;
+      res.errresponse.errors = msg;
     } else {
       // success response goes here
       res.success = true;
@@ -184,7 +183,7 @@ Future<ObjResponse> callNetwork(String url,
 
     // special case for validation err
     if (e.response != null && e.response!.statusCode == RESPONSE_VALIDATION) {
-      throw InvalidInputException(e.response!.data['message']);
+      throw InvalidInputException(e.response!.data['errors']![0]['message']);
     }
 
     if (e.response != null && e.response!.statusCode == RESPONSE_SERVER_ERROR) {
@@ -197,7 +196,7 @@ Future<ObjResponse> callNetwork(String url,
     }
 
     // throw BadRequestException(messageErr, e.response);
-    res.errresponse.message = e.response!.data['message'];
+    res.errresponse.errors = e.response!.data['errors']![0]['message'];
 
     // has response from server, not used
     // res.errresponse = new obj.BaseResponse(
@@ -209,9 +208,9 @@ Future<ObjResponse> callNetwork(String url,
     // unhandled exception
     res.errresponse.status.code = RESPONSE_BAD_REQUEST;
     if (e is SocketException) {
-      res.errresponse.message = "Server unreachable";
+      res.errresponse.errors = "Server unreachable";
     } else {
-      res.errresponse.message = e.toString();
+      res.errresponse.errors = e.toString();
     }
   }
   return res;
