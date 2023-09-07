@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:katarasa/data/auth/cubit/login_cubit.dart';
+import 'package:katarasa/data/auth/forgot_pass/forgot_pass_cubit.dart';
+import 'package:katarasa/data/auth/login/login_cubit.dart';
+import 'package:katarasa/data/auth/register/register_cubit.dart';
 import 'package:katarasa/data/dummy/cart_item/cart_item_cubit.dart';
 import 'package:katarasa/data/dummy/product/product_cubit.dart';
 import 'package:katarasa/data/products/all_product/products_cubit.dart';
@@ -43,6 +45,8 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => LoginCubit()),
+          BlocProvider(create: (context) => RegisterCubit()),
+          BlocProvider(create: (context) => ForgotPassCubit()),
           BlocProvider(create: (context) => ProductCubit()),
           BlocProvider(create: (context) => CategoryProductCubit()),
           BlocProvider(create: (context) => ProductsCubit()),
