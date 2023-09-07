@@ -1,12 +1,17 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
+import 'package:katarasa/data/auth/register/register_cubit.dart';
 import 'package:katarasa/models/auth/register/register_request.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/extension.dart';
+import 'package:katarasa/widgets/button/loading_button.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/customize_text_field.dart';
 import 'package:katarasa/widgets/general/icon_suffix.dart';
+import 'package:katarasa/widgets/general/loader_indicator.dart';
+import 'package:katarasa/widgets/general/toast_comp.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -128,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   }
                   return null;
                 },
-                hintText: "Username",
+                hintText: "Name",
               ),
               const SizedBox(height: 10),
               Text(
@@ -265,7 +270,46 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   onFieldSubmitted: (value) {}),
               const SizedBox(height: 40),
-              PrimaryButton(text: "Daftar", onPressed: () async {})
+              BlocConsumer<RegisterCubit, RegisterState>(
+                listener: (context, state) {
+                  if (state is RegisterLoading) {
+                    const LoaderIndicator();
+                  } else if (state is RegisterSuccess) {
+                    showToast(
+                        text: "Akun Anda berhasil dibuat! Silahkan Login!",
+                        state: ToastStates.SUCCESS);
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/login', (route) => false);
+                  } else if (state is RegisterError) {
+                    showToast(
+                        text: state.registError, state: ToastStates.ERROR);
+                  }
+                },
+                builder: (context, state) {
+                  final logCubit = context.read<RegisterCubit>();
+                  return logCubit.isRegist
+                      ? LoadingButton(onPressed: () {
+                          debugPrint('response loading');
+                        })
+                      : PrimaryButton(
+                          text: "Masuk",
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              RegisterRequest payload = RegisterRequest(
+                                  name: _usernameController.text,
+                                  phoneNumber: _phoneController.text,
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                  genderId:
+                                      _genderOption == 'Laki-laki' ? '1' : '2');
+                              debugPrint(payload.genderId);
+                              await context
+                                  .read<RegisterCubit>()
+                                  .credsRegist(payload, context);
+                            }
+                          });
+                },
+              ),
             ],
           ),
         ));
