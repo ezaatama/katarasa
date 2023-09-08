@@ -10,7 +10,9 @@ import 'package:katarasa/screens/product/product_detail_screen.dart';
 import 'package:katarasa/screens/profile/about_us_screen.dart';
 import 'package:katarasa/screens/profile/all_order_screen.dart';
 import 'package:katarasa/screens/profile/detail_oder_screen.dart';
+import 'package:katarasa/screens/profile/detail_profile_screen.dart';
 import 'package:katarasa/screens/profile/edit_profile_screen.dart';
+import 'package:katarasa/screens/profile/service_screen.dart';
 import 'package:katarasa/screens/profile/update_password_screen.dart';
 import 'package:katarasa/screens/splash/splashscreen.dart';
 
@@ -27,6 +29,10 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const BottomNavScreen());
       case '/about-us':
         return MaterialPageRoute(builder: (_) => const AboutUsScreen());
+      case '/service':
+        return MaterialPageRoute(builder: (_) => const ServiceScreen());
+      case '/detail-profile':
+        return MaterialPageRoute(builder: (_) => const DetailProfileScreen());
       case '/edit-profile':
         return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       case '/all-order':
