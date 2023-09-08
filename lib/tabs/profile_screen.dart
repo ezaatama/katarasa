@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:katarasa/data/profile/data_profile/profile_cubit.dart';
 import 'package:katarasa/utils/cache_storage.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/network.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/card/card_promo_profile.dart';
+import 'package:katarasa/widgets/general/loader.dart';
 import 'package:katarasa/widgets/general/toast_comp.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    context.read<ProfileCubit>().getDataProfile(context);
     return Scaffold(
       body: SafeArea(
           child: SingleChildScrollView(
@@ -31,21 +36,39 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       InkWell(
                         onTap: () {
-                          Navigator.pushNamed(context, '/edit-profile');
+                          Navigator.pushNamed(context, '/detail-profile');
                         },
-                        child: Row(children: [
-                          Text("Edit ",
-                              style: BROWN_TEXT_STYLE.copyWith(
-                                  fontSize: 12,
-                                  fontWeight: FontUI.WEIGHT_MEDIUM)),
-                          const Icon(Icons.mode_edit_outlined,
-                              size: 14, color: ColorUI.BROWN)
-                        ]),
+                        child: Text("Lihat Profil",
+                            style: BROWN_TEXT_STYLE.copyWith(
+                                fontSize: 12,
+                                fontWeight: FontUI.WEIGHT_MEDIUM)),
                       ),
-                      Text("Reza Putra Pratama",
-                          style: BLACK_TEXT_STYLE.copyWith(
-                              fontSize: 16,
-                              fontWeight: FontUI.WEIGHT_SEMI_BOLD)),
+                      BlocBuilder<ProfileCubit, ProfileState>(
+                        builder: (context, state) {
+                          if (state is ProfileLoading) {
+                            return SizedBox(
+                              width: MediaQuery.of(context).size.width * .400,
+                              height:
+                                  MediaQuery.of(context).size.height * 0.030,
+                              child: Shimmer.fromColors(
+                                  baseColor: ColorUI.SHIMMER_BASE,
+                                  highlightColor: ColorUI.SHIMMER_HIGHLIGHT,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: ColorUI.SHIMMER_BASE,
+                                    ),
+                                  )),
+                            );
+                          } else if (state is ProfileLoaded) {
+                            return Text(state.dataProfile.name,
+                                style: BLACK_TEXT_STYLE.copyWith(
+                                    fontSize: 16,
+                                    fontWeight: FontUI.WEIGHT_SEMI_BOLD));
+                          }
+                          return const SizedBox();
+                        },
+                      ),
                     ],
                   )
                 ],
@@ -81,6 +104,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 10),
               _listProfile(() {
                 debugPrint("Go to ketentuan layanan");
+                Navigator.pushNamed(context, '/service');
               }, Icons.info_outline, "Ketentuan Layanan"),
               const SizedBox(height: 10),
               const Divider(height: 2, thickness: 1),
