@@ -12,6 +12,8 @@ import 'package:katarasa/data/dummy/product/product_cubit.dart';
 import 'package:katarasa/data/products/all_product/products_cubit.dart';
 import 'package:katarasa/data/products/category_product/category_product_cubit.dart';
 import 'package:katarasa/data/products/detail_product/products_detail_cubit.dart';
+import 'package:katarasa/data/profile/data_profile/profile_cubit.dart';
+import 'package:katarasa/data/profile/ubah_password/ubah_password_cubit.dart';
 import 'package:katarasa/utils/cache_storage.dart';
 import 'package:katarasa/utils/network.dart';
 import 'package:katarasa/utils/router.dart';
@@ -47,6 +49,8 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => LoginCubit()),
           BlocProvider(create: (context) => RegisterCubit()),
           BlocProvider(create: (context) => ForgotPassCubit()),
+          BlocProvider(create: (context) => UbahPasswordCubit()),
+          BlocProvider(create: (context) => ProfileCubit()),
           BlocProvider(create: (context) => ProductCubit()),
           BlocProvider(create: (context) => CategoryProductCubit()),
           BlocProvider(create: (context) => ProductsCubit()),
