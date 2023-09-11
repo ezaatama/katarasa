@@ -18,6 +18,7 @@ class CustomTextField extends StatefulWidget {
       this.hintStyle,
       this.textCapitalization = TextCapitalization.none,
       this.keyboardType,
+      this.maxLines = 1,
       this.textInputAction,
       this.suffixIcon,
       this.prefix,
@@ -36,6 +37,7 @@ class CustomTextField extends StatefulWidget {
   final TextCapitalization textCapitalization;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
+  final int? maxLines;
   final Widget? suffixIcon;
   final Widget? prefix;
   final bool obscureText;
@@ -80,6 +82,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       cursorColor: ColorUI.BROWN,
       cursorWidth: 2,
       cursorHeight: 25,
+      maxLines: widget.maxLines,
       style: const TextStyle(fontSize: 14),
       decoration: InputDecoration(
         errorStyle: const TextStyle(fontSize: 13),
