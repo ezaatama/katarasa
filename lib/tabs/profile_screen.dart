@@ -85,6 +85,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 10),
               _listProfile(() {
                 debugPrint("Go to alamat pengiriman");
+                Navigator.pushNamed(context, '/detail-address');
               }, Icons.location_history, "Alamat Pengiriman"),
               const SizedBox(height: 10),
               const Divider(height: 2, thickness: 1),
