@@ -292,7 +292,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           debugPrint('response loading');
                         })
                       : PrimaryButton(
-                          text: "Masuk",
+                          text: "Daftar",
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               RegisterRequest payload = RegisterRequest(
