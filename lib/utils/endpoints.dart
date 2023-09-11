@@ -9,3 +9,5 @@ const EDIT_DATA_PROFILE = 'profile/edit-profile';
 const CATEGORIES = 'product/get-kategori';
 const ALL_PRODUCTS = 'product/get-product';
 const PRODUCT_DETAIL = 'product/get-product-detail';
+const DETAIL_ADDRESS = 'profile/data-alamat';
+const LIST_ADDRESS = 'profile/select-data-wilayah?';
