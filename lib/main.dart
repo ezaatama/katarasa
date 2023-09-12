@@ -7,6 +7,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:katarasa/data/auth/forgot_pass/forgot_pass_cubit.dart';
 import 'package:katarasa/data/auth/login/login_cubit.dart';
 import 'package:katarasa/data/auth/register/register_cubit.dart';
+import 'package:katarasa/data/cart/all_cart/all_cart_cubit.dart';
+import 'package:katarasa/data/cart/item_cart/item_cart_cubit.dart';
 import 'package:katarasa/data/dummy/cart_item/cart_item_cubit.dart';
 import 'package:katarasa/data/dummy/product/product_cubit.dart';
 import 'package:katarasa/data/products/all_product/products_cubit.dart';
@@ -14,6 +16,8 @@ import 'package:katarasa/data/products/category_product/category_product_cubit.d
 import 'package:katarasa/data/products/detail_product/products_detail_cubit.dart';
 import 'package:katarasa/data/profile/data_profile/profile_cubit.dart';
 import 'package:katarasa/data/profile/detail_address/detail_address_cubit.dart';
+import 'package:katarasa/data/profile/select_address/kabupaten/kabupaten_cubit.dart';
+import 'package:katarasa/data/profile/select_address/kecamatan/kecamatan_cubit.dart';
 import 'package:katarasa/data/profile/select_address/kota/kota_cubit.dart';
 import 'package:katarasa/data/profile/select_address/provinsi/provinsi_cubit.dart';
 import 'package:katarasa/data/profile/ubah_password/ubah_password_cubit.dart';
@@ -57,7 +61,11 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => DetailAddressCubit()),
           BlocProvider(create: (context) => ProvinsiCubit()),
           BlocProvider(create: (context) => KotaCubit()),
+          BlocProvider(create: (context) => KabupatenCubit()),
+          BlocProvider(create: (context) => KecamatanCubit()),
           BlocProvider(create: (context) => ProductCubit()),
+          BlocProvider(create: (context) => AllCartCubit()),
+          BlocProvider(create: (context) => ItemCartCubit()),
           BlocProvider(create: (context) => CategoryProductCubit()),
           BlocProvider(create: (context) => ProductsCubit()),
           BlocProvider(create: (context) => ProductsDetailCubit()),
