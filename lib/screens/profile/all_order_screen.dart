@@ -11,12 +11,12 @@ class AllOrderScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded,
-                size: 24, color: ColorUI.BLACK),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
+        // leading: IconButton(
+        //     icon: const Icon(Icons.arrow_back_rounded,
+        //         size: 24, color: ColorUI.BLACK),
+        //     onPressed: () {
+        //       Navigator.pop(context);
+        //     }),
         title: Text(
           "Semua Pesanan",
           style: BLACK_TEXT_STYLE.copyWith(
@@ -29,7 +29,9 @@ class AllOrderScreen extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Column(
-            children: [CardAllOrder()],
+            children: [
+              // CardAllOrder()
+            ],
           ),
         ),
       )),
