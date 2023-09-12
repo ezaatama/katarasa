@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:katarasa/tabs/all_cart_screen.dart';
 import 'package:katarasa/tabs/favorite_screen.dart';
 import 'package:katarasa/tabs/home_screen.dart';
 import 'package:katarasa/tabs/profile_screen.dart';
@@ -29,7 +30,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
   }
 
   List<Widget> _screens() {
-    return [HomeScreen(), FavoriteScreen(), ProfileScreen()];
+    return [HomeScreen(), FavoriteScreen(), AllCartScreen(), ProfileScreen()];
   }
 
   void _setPage() {
@@ -86,9 +87,14 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
                   }, _currentIndex == 1),
                 ),
                 Container(
-                  child: bottomButton("Account", "User", () {
+                  child: bottomButton("Cart", "Favorite", () {
                     _onPageChanged(page: 2);
                   }, _currentIndex == 2),
+                ),
+                Container(
+                  child: bottomButton("Account", "User", () {
+                    _onPageChanged(page: 3);
+                  }, _currentIndex == 3),
                 ),
               ],
             )),
