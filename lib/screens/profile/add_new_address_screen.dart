@@ -5,6 +5,8 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
+import 'package:katarasa/data/profile/select_address/kabupaten/kabupaten_cubit.dart';
+import 'package:katarasa/data/profile/select_address/kecamatan/kecamatan_cubit.dart';
 import 'package:katarasa/data/profile/select_address/kota/kota_cubit.dart';
 import 'package:katarasa/data/profile/select_address/provinsi/provinsi_cubit.dart';
 import 'package:katarasa/models/profile/detail_alamat/detail_alamat_request.dart';
@@ -31,6 +33,8 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
 
   SelectProvinsi? _selectProvinsi;
   SelectKota? _selectKota;
+  SelectKabupaten? _selectKabupaten;
+  SelectKecamatan? _selectKecamatan;
 
   @override
   void initState() {
@@ -51,8 +55,11 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
     // }
   }
 
-  Future<void> preSelectData(SelectProvinsi prov, SelectKota kota) async {
+  Future<void> preSelectData(
+      SelectProvinsi prov, SelectKota kota, SelectKabupaten kabupaten) async {
     KotaCubit kotaCubit = context.read<KotaCubit>();
+    KabupatenCubit kabupatenCubit = context.read<KabupatenCubit>();
+    KecamatanCubit kecamatanCubit = context.read<KecamatanCubit>();
     //set on time value
     _selectProvinsi = context
         .read<ProvinsiCubit>()
@@ -65,6 +72,22 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
           .read<KotaCubit>()
           .getDropdownKota()
           .firstWhereOrNull((e) => e.cityId == kota.cityId);
+      if (_selectKota != null) {
+        await kabupatenCubit.getListKabupaten(
+            context, kota.cityId, kabupaten.districtId);
+        _selectKabupaten = context
+            .read<KabupatenCubit>()
+            .getDropdownKabupaten()
+            .firstWhereOrNull((e) => e.districtId == kabupaten.districtId);
+        if (_selectKabupaten != null) {
+          await kecamatanCubit.getListKecamatan(
+              context, kota.cityId, kabupaten.districtId, kabupaten.districtKd);
+          _selectKabupaten = context
+              .read<KabupatenCubit>()
+              .getDropdownKabupaten()
+              .firstWhereOrNull((e) => e.districtKd == kabupaten.districtKd);
+        }
+      }
     }
 
     setState(() {});
@@ -359,7 +382,9 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                         (e) => e.cityId == _selectKota!.cityId);
 
                     if (checkKota == null) {
+                      context.read<KabupatenCubit>().resetKabupaten();
                       _selectKota = null;
+                      _selectKabupaten = null;
                     }
                   }
                   return DropdownButtonFormField2<SelectKota>(
@@ -413,9 +438,8 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                       value: _selectKota,
                       onChanged: (newValue) {
                         _selectKota = newValue;
-                        // context
-                        //     .read<KotaCubit>()
-                        //     .getListCities(newValue!.id);
+                        context.read<KabupatenCubit>().getListKabupaten(context,
+                            _selectProvinsi!.provinceId, newValue!.cityId);
                       },
                       items: state.listKota.map((e) {
                         return DropdownMenuItem<SelectKota>(
@@ -478,9 +502,151 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                     value: _selectKota,
                     onChanged: (newValue) {
                       _selectKota = newValue;
-                      // context
-                      //     .read<KotaCubit>()
-                      //     .getListCities(newValue!.id);
+                    },
+                    items: []);
+              },
+            ),
+            const SizedBox(height: 10),
+
+            //kabupaten
+            Text("Pilih Kabupaten",
+                style: BLACK_TEXT_STYLE.copyWith(
+                    fontWeight: FontUI.WEIGHT_SEMI_BOLD)),
+            const SizedBox(height: 10),
+            BlocBuilder<KabupatenCubit, KabupatenState>(
+              builder: (context, state) {
+                if (state is KabupatenLoading) {
+                  return const LoaderIndicator();
+                }
+                if (state is KabupatenLoaded) {
+                  if (_selectKabupaten != null) {
+                    SelectKabupaten? checkKabupaten = state.listKabupaten
+                        .firstWhereOrNull((e) =>
+                            e.districtId == _selectKabupaten!.districtId);
+
+                    if (checkKabupaten == null) {
+                      context.read<KecamatanCubit>().resetKecamatan();
+                      _selectKabupaten = null;
+                    }
+                  }
+                  return DropdownButtonFormField2<SelectKabupaten>(
+                      hint: Text("Kabupaten",
+                          style: LIGHT_BROWN_TEXT_STYLE.copyWith(fontSize: 14)),
+                      isExpanded: true,
+                      buttonStyleData: const ButtonStyleData(
+                        padding: EdgeInsets.only(right: 8),
+                      ),
+                      iconStyleData: const IconStyleData(
+                        icon: Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.black45,
+                        ),
+                        iconSize: 24,
+                      ),
+                      dropdownStyleData: DropdownStyleData(
+                          decoration: BoxDecoration(
+                              border: Border.fromBorderSide(
+                        BorderSide(color: ColorUI.BROWN.withOpacity(.50)),
+                      ))),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 16),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: ColorUI.BROWN.withOpacity(.30)),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: ColorUI.BROWN.withOpacity(.30)),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        filled: true,
+                        fillColor: ColorUI.WHITE,
+                      ),
+                      validator: (value) {
+                        // if (alamatProv == null) {
+                        if (value == null) {
+                          return 'Pilih kabupaten Anda.';
+                        }
+                        return null;
+                        // }
+                        // return null;
+                      },
+                      onSaved: (value) {
+                        _selectKabupaten = value;
+                      },
+                      value: _selectKabupaten,
+                      onChanged: (newValue) {
+                        _selectKabupaten = newValue;
+                        context.read<KecamatanCubit>().getListKecamatan(
+                            context,
+                            _selectProvinsi!.provinceId,
+                            _selectKota!.cityId,
+                            newValue!.districtKd);
+                      },
+                      items: state.listKabupaten.map((e) {
+                        return DropdownMenuItem<SelectKabupaten>(
+                            value: e,
+                            child: Text(e.name,
+                                style: const TextStyle(fontSize: 14)));
+                      }).toList());
+                } else if (state is KabupatenError) {
+                  return const Center(
+                    child: Text("Terjadi kesalahan silahkan coba lagi nanti!"),
+                  );
+                }
+                return DropdownButtonFormField2<SelectKabupaten>(
+                    hint: Text("Kabupaten",
+                        style: LIGHT_BROWN_TEXT_STYLE.copyWith(fontSize: 14)),
+                    isExpanded: true,
+                    buttonStyleData: const ButtonStyleData(
+                      padding: EdgeInsets.only(right: 8),
+                    ),
+                    iconStyleData: const IconStyleData(
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black45,
+                      ),
+                      iconSize: 24,
+                    ),
+                    dropdownStyleData: DropdownStyleData(
+                        decoration: BoxDecoration(
+                            border: Border.fromBorderSide(
+                      BorderSide(color: ColorUI.BROWN.withOpacity(.50)),
+                    ))),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: ColorUI.BROWN.withOpacity(.30)),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: ColorUI.BROWN.withOpacity(.30)),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      filled: true,
+                      fillColor: ColorUI.WHITE,
+                    ),
+                    validator: (value) {
+                      // if (alamatProv == null) {
+                      if (value == null) {
+                        return 'Pilih kabupaten Anda.';
+                      }
+                      return null;
+                      // }
+                      // return null;
+                    },
+                    onSaved: (value) {
+                      _selectKabupaten = value;
+                    },
+                    value: _selectKabupaten,
+                    onChanged: (newValue) {
+                      _selectKabupaten = newValue;
                     },
                     items: []);
               },
