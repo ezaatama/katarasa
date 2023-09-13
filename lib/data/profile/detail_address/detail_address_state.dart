@@ -8,7 +8,7 @@ final class DetailAddressInitial extends DetailAddressState {}
 final class DetailAddressLoading extends DetailAddressState {}
 
 final class DetailAddressLoaded extends DetailAddressState {
-  List<dynamic> detailAlamat;
+  List<DetailAlamat> detailAlamat;
 
   DetailAddressLoaded(this.detailAlamat);
 }
