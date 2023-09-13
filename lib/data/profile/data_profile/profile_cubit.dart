@@ -36,6 +36,8 @@ class ProfileCubit extends Cubit<ProfileState> {
     }).catchError((e) {
       if (e is ConnectionProblemException || e is TimeoutException) {
         callShowSnackbar(context, e.toString());
+      } else if (e is InternalServerException) {
+        callShowSnackbar(context, e.toString());
       } else if (e is InvalidInputException) {
         showToast(text: e.toString(), state: ToastStates.ERROR);
         emit(ProfileError(e.toString()));
