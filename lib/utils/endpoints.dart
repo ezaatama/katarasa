@@ -12,4 +12,7 @@ const CATEGORIES = 'product/get-kategori';
 const ALL_PRODUCTS = 'product/get-product';
 const PRODUCT_DETAIL = 'product/get-product-detail';
 const DETAIL_ADDRESS = 'profile/data-alamat';
+const ADD_ADDRESS = 'profile/tambah-alamat';
+const DELETE_ADDRESS = 'profile/delete-alamat?';
+const EDIT_ADDRESS = 'profile/edit-alamat?';
 const LIST_ADDRESS = 'profile/select-data-wilayah?';
