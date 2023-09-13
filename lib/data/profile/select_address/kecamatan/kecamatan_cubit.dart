@@ -45,7 +45,7 @@ class KecamatanCubit extends Cubit<KecamatanState> {
     return null;
   }
 
-  List<SelectKecamatan> getDropdownKabupaten() {
+  List<SelectKecamatan> getDropdownKecamatan() {
     if (state is KecamatanLoaded) {
       return (state as KecamatanLoaded).listKecamatan;
     }
