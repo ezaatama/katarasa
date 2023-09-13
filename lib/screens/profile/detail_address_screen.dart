@@ -6,6 +6,7 @@ import 'package:katarasa/data/profile/detail_address/detail_address_cubit.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/general/loader_indicator.dart';
+import 'package:katarasa/widgets/profile/card_single_alamat.dart';
 
 class DetailAddressScreen extends StatefulWidget {
   const DetailAddressScreen({super.key});
@@ -120,9 +121,35 @@ class _DetailAddressScreenState extends State<DetailAddressScreen> {
                     ),
                   );
                 } else if (state is DetailAddressLoaded) {
-                  return Text("Success get list alamat",
-                      style: BLACK_TEXT_STYLE.copyWith(
-                          fontWeight: FontUI.WEIGHT_SEMI_BOLD));
+                  final detailAlamat = state.detailAlamat;
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text("Alamat Utama",
+                            style: BLACK_TEXT_STYLE.copyWith(
+                                fontWeight: FontUI.WEIGHT_BOLD, fontSize: 20)),
+                        const SizedBox(height: 10),
+                        const SizedBox(height: 10),
+                        ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: detailAlamat.length,
+                            itemBuilder: (context, index) {
+                              return CardSingleAlamat(
+                                detail: detailAlamat[index],
+                              );
+                            }),
+                        const SizedBox(height: 20),
+                        PrimaryButton(
+                            text: "Tambah Alamat",
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/add-new-address');
+                            })
+                      ],
+                    ),
+                  );
                 }
                 return const SizedBox();
               },
