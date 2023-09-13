@@ -14,8 +14,10 @@ import 'package:katarasa/data/dummy/product/product_cubit.dart';
 import 'package:katarasa/data/products/all_product/products_cubit.dart';
 import 'package:katarasa/data/products/category_product/category_product_cubit.dart';
 import 'package:katarasa/data/products/detail_product/products_detail_cubit.dart';
+import 'package:katarasa/data/profile/add_address/add_address_cubit.dart';
 import 'package:katarasa/data/profile/data_profile/profile_cubit.dart';
 import 'package:katarasa/data/profile/detail_address/detail_address_cubit.dart';
+import 'package:katarasa/data/profile/edit_address/edit_address_cubit.dart';
 import 'package:katarasa/data/profile/select_address/kabupaten/kabupaten_cubit.dart';
 import 'package:katarasa/data/profile/select_address/kecamatan/kecamatan_cubit.dart';
 import 'package:katarasa/data/profile/select_address/kota/kota_cubit.dart';
@@ -59,6 +61,8 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => UbahPasswordCubit()),
           BlocProvider(create: (context) => ProfileCubit()),
           BlocProvider(create: (context) => DetailAddressCubit()),
+          BlocProvider(create: (context) => AddAddressCubit()),
+          BlocProvider(create: (context) => EditAddressCubit()),
           BlocProvider(create: (context) => ProvinsiCubit()),
           BlocProvider(create: (context) => KotaCubit()),
           BlocProvider(create: (context) => KabupatenCubit()),
