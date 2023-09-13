@@ -13,6 +13,7 @@ import 'package:katarasa/screens/profile/all_order_screen.dart';
 import 'package:katarasa/screens/profile/detail_address_screen.dart';
 import 'package:katarasa/screens/profile/detail_oder_screen.dart';
 import 'package:katarasa/screens/profile/detail_profile_screen.dart';
+import 'package:katarasa/screens/profile/edit_address_screen.dart';
 import 'package:katarasa/screens/profile/edit_profile_screen.dart';
 import 'package:katarasa/screens/profile/service_screen.dart';
 import 'package:katarasa/screens/profile/update_password_screen.dart';
@@ -47,6 +48,9 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const UpdatePasswordScreen());
       case '/detail-address':
         return MaterialPageRoute(builder: (_) => const DetailAddressScreen());
+      case '/edit-address':
+        return MaterialPageRoute(
+            builder: (_) => EditAddressScreen(id: settings.arguments as int));
       case '/add-new-address':
         return MaterialPageRoute(builder: (_) => const AddNewAddressScreen());
       case '/detail-product':
