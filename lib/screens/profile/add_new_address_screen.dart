@@ -5,17 +5,21 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
+import 'package:katarasa/data/profile/add_address/add_address_cubit.dart';
 import 'package:katarasa/data/profile/select_address/kabupaten/kabupaten_cubit.dart';
 import 'package:katarasa/data/profile/select_address/kecamatan/kecamatan_cubit.dart';
 import 'package:katarasa/data/profile/select_address/kota/kota_cubit.dart';
 import 'package:katarasa/data/profile/select_address/provinsi/provinsi_cubit.dart';
+import 'package:katarasa/models/profile/detail_alamat/added_alamat_request.dart';
 import 'package:katarasa/models/profile/detail_alamat/detail_alamat_request.dart';
 import 'package:katarasa/models/profile/select_address/alamat_request.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/extension.dart';
+import 'package:katarasa/widgets/button/loading_button.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/customize_text_field.dart';
 import 'package:katarasa/widgets/general/loader_indicator.dart';
+import 'package:katarasa/widgets/general/toast_comp.dart';
 
 class AddNewAddressScreen extends StatefulWidget {
   const AddNewAddressScreen({super.key});
@@ -30,6 +34,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
   final TextEditingController _fullAddressController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _postCodeController = TextEditingController();
 
   SelectProvinsi? _selectProvinsi;
   SelectKota? _selectKota;
@@ -55,8 +60,8 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
     // }
   }
 
-  Future<void> preSelectData(
-      SelectProvinsi prov, SelectKota kota, SelectKabupaten kabupaten) async {
+  Future<void> preSelectData(SelectProvinsi prov, SelectKota kota,
+      SelectKabupaten kabupaten, SelectKecamatan kecamatan) async {
     KotaCubit kotaCubit = context.read<KotaCubit>();
     KabupatenCubit kabupatenCubit = context.read<KabupatenCubit>();
     KecamatanCubit kecamatanCubit = context.read<KecamatanCubit>();
@@ -86,6 +91,15 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
               .read<KabupatenCubit>()
               .getDropdownKabupaten()
               .firstWhereOrNull((e) => e.districtKd == kabupaten.districtKd);
+          if (_selectKecamatan != null) {
+            await kecamatanCubit.getListKecamatan(context, kota.cityId,
+                kabupaten.districtId, kecamatan.subDistrictKd);
+            _selectKecamatan = context
+                .read<KecamatanCubit>()
+                .getDropdownKecamatan()
+                .firstWhereOrNull(
+                    (e) => e.subDistrictId == kecamatan.subDistrictId);
+          }
         }
       }
     }
@@ -285,6 +299,47 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                     }).toList())
                 : const SizedBox(),
             const SizedBox(height: 10),
+            Text(
+              "Nama Penerima",
+              style: BLACK_TEXT_STYLE.copyWith(
+                  fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+            ),
+            const SizedBox(height: 10),
+            CustomTextField(
+              controller: _nameController,
+              keyboardType: TextInputType.name,
+              textInputAction: TextInputAction.next,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Nama penerima tidak boleh kosong';
+                }
+                return null;
+              },
+              hintText: "Nama Penerima",
+            ),
+            const SizedBox(height: 10),
+            Text(
+              "No. HP",
+              style: BLACK_TEXT_STYLE.copyWith(
+                  fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+            ),
+            const SizedBox(height: 10),
+            CustomTextField(
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              textInputAction: TextInputAction.next,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'No. Hp wajib diisi!';
+                } else if (!isValidPhoneNumber(value)) {
+                  return 'Masukkan nomor hp yang benar!';
+                }
+                return null;
+              },
+              hintText: "Phone Number",
+            ),
+            const SizedBox(height: 10),
+
             Text("Pilih Provinsi",
                 style: BLACK_TEXT_STYLE.copyWith(
                     fontWeight: FontUI.WEIGHT_SEMI_BOLD)),
@@ -652,51 +707,209 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
               },
             ),
             const SizedBox(height: 10),
+
+            //kabupaten
+            Text("Pilih Kecamatan",
+                style: BLACK_TEXT_STYLE.copyWith(
+                    fontWeight: FontUI.WEIGHT_SEMI_BOLD)),
+            const SizedBox(height: 10),
+            BlocBuilder<KecamatanCubit, KecamatanState>(
+              builder: (context, state) {
+                if (state is KecamatanLoading) {
+                  return const LoaderIndicator();
+                }
+                if (state is KecamatanLoaded) {
+                  if (_selectKecamatan != null) {
+                    SelectKecamatan? checkKecamatan = state.listKecamatan
+                        .firstWhereOrNull((e) =>
+                            e.subDistrictId == _selectKecamatan!.subDistrictId);
+
+                    if (checkKecamatan == null) {
+                      _selectKecamatan = null;
+                    }
+                  }
+                  return DropdownButtonFormField2<SelectKecamatan>(
+                      hint: Text("Kecamatan",
+                          style: LIGHT_BROWN_TEXT_STYLE.copyWith(fontSize: 14)),
+                      isExpanded: true,
+                      buttonStyleData: const ButtonStyleData(
+                        padding: EdgeInsets.only(right: 8),
+                      ),
+                      iconStyleData: const IconStyleData(
+                        icon: Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.black45,
+                        ),
+                        iconSize: 24,
+                      ),
+                      dropdownStyleData: DropdownStyleData(
+                          decoration: BoxDecoration(
+                              border: Border.fromBorderSide(
+                        BorderSide(color: ColorUI.BROWN.withOpacity(.50)),
+                      ))),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 16),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: ColorUI.BROWN.withOpacity(.30)),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: ColorUI.BROWN.withOpacity(.30)),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        filled: true,
+                        fillColor: ColorUI.WHITE,
+                      ),
+                      validator: (value) {
+                        // if (alamatProv == null) {
+                        if (value == null) {
+                          return 'Pilih kecamatan Anda.';
+                        }
+                        return null;
+                        // }
+                        // return null;
+                      },
+                      onSaved: (value) {
+                        _selectKecamatan = value;
+                      },
+                      value: _selectKecamatan,
+                      onChanged: (newValue) {
+                        setState(() {
+                          _selectKecamatan = newValue;
+                        });
+                      },
+                      items: state.listKecamatan.map((e) {
+                        return DropdownMenuItem<SelectKecamatan>(
+                            value: e,
+                            child: Text(e.name,
+                                style: const TextStyle(fontSize: 14)));
+                      }).toList());
+                } else if (state is KabupatenError) {
+                  return const Center(
+                    child: Text("Terjadi kesalahan silahkan coba lagi nanti!"),
+                  );
+                }
+                return DropdownButtonFormField2<SelectKecamatan>(
+                    hint: Text("Kecamatan",
+                        style: LIGHT_BROWN_TEXT_STYLE.copyWith(fontSize: 14)),
+                    isExpanded: true,
+                    buttonStyleData: const ButtonStyleData(
+                      padding: EdgeInsets.only(right: 8),
+                    ),
+                    iconStyleData: const IconStyleData(
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black45,
+                      ),
+                      iconSize: 24,
+                    ),
+                    dropdownStyleData: DropdownStyleData(
+                        decoration: BoxDecoration(
+                            border: Border.fromBorderSide(
+                      BorderSide(color: ColorUI.BROWN.withOpacity(.50)),
+                    ))),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: ColorUI.BROWN.withOpacity(.30)),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: ColorUI.BROWN.withOpacity(.30)),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      filled: true,
+                      fillColor: ColorUI.WHITE,
+                    ),
+                    validator: (value) {
+                      // if (alamatProv == null) {
+                      if (value == null) {
+                        return 'Pilih kecamatan Anda.';
+                      }
+                      return null;
+                      // }
+                      // return null;
+                    },
+                    onSaved: (value) {
+                      _selectKecamatan = value;
+                    },
+                    value: _selectKecamatan,
+                    onChanged: (newValue) {
+                      _selectKecamatan = newValue;
+                    },
+                    items: []);
+              },
+            ),
+            const SizedBox(height: 10),
             Text(
-              "Nama Penerima",
+              "Kode Pos",
               style: BLACK_TEXT_STYLE.copyWith(
                   fontWeight: FontUI.WEIGHT_SEMI_BOLD),
             ),
             const SizedBox(height: 10),
             CustomTextField(
-              controller: _nameController,
-              keyboardType: TextInputType.name,
+              controller: _postCodeController,
+              keyboardType: TextInputType.number,
               textInputAction: TextInputAction.next,
               validator: (value) {
                 if (value!.isEmpty) {
-                  return 'Nama penerima tidak boleh kosong';
+                  return 'Kode pos wajib diisi!';
                 }
                 return null;
               },
-              hintText: "Nama Penerima",
+              hintText: "Kode Pos",
             ),
-            const SizedBox(height: 10),
-            Text(
-              "No. HP",
-              style: BLACK_TEXT_STYLE.copyWith(
-                  fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-            ),
-            const SizedBox(height: 10),
-            CustomTextField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              textInputAction: TextInputAction.next,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'No. Hp wajib diisi!';
-                } else if (!isValidPhoneNumber(value)) {
-                  return 'Masukkan nomor hp yang benar!';
-                }
-                return null;
-              },
-              hintText: "Phone Number",
-            ),
+
             const SizedBox(height: 40),
-            PrimaryButton(
-                text: "Simpan Alamat",
-                onPressed: () {
-                  debugPrint("alamat disimpan");
-                })
+            BlocConsumer<AddAddressCubit, AddAddressState>(
+              listener: (context, state) {
+                if (state is AddAddressSuccess) {
+                  showToast(
+                      text: state.addAdrsSucc, state: ToastStates.SUCCESS);
+                  Navigator.pop(context);
+                } else if (state is AddAddressError) {
+                  showToast(text: state.addAdrsErr, state: ToastStates.ERROR);
+                }
+              },
+              builder: (context, state) {
+                final cubit = context.read<AddAddressCubit>();
+                return cubit.addIsLoading
+                    ? LoadingButton(onPressed: () {
+                        debugPrint('loading post response new alamat');
+                      })
+                    : PrimaryButton(
+                        text: "Simpan Alamat",
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            AddAlamatRequest payload = AddAlamatRequest(
+                                receiverName: _nameController.text,
+                                phoneNumber: _phoneController.text,
+                                addressAs: _jenisAlamat.toString(),
+                                provinceId:
+                                    _selectProvinsi!.provinceId.toString(),
+                                cityId: _selectKota!.cityId.toString(),
+                                districtId:
+                                    _selectKabupaten!.districtId.toString(),
+                                subDistrictId:
+                                    _selectKecamatan!.subDistrictId.toString(),
+                                postalCode: _postCodeController.text,
+                                alamatLengkap: _fullAddressController.text);
+
+                            context
+                                .read<AddAddressCubit>()
+                                .addNewAddress(context, payload);
+                          }
+                          debugPrint("alamat disimpan");
+                        });
+              },
+            )
           ],
         ),
       ),
