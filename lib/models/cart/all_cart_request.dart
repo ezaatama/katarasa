@@ -119,7 +119,7 @@ class ProductCart {
     required this.cartId,
     required this.variantId,
     required this.isGift,
-    required this.isSelected,
+    this.isSelected = false,
     required this.name,
     required this.greetingCardGift,
     required this.slug,
@@ -137,6 +137,54 @@ class ProductCart {
     required this.subTotal,
     required this.subTotalCurrencyFormat,
   });
+
+  ProductCart copyWith(
+      {String? productId,
+      String? cartId,
+      String? variantId,
+      bool? isGift,
+      bool? isSelected,
+      String? name,
+      dynamic greetingCardGift,
+      String? slug,
+      String? image,
+      List<dynamic>? badges,
+      String? stockRemaining,
+      dynamic variant,
+      String? qty,
+      bool? isDiscount,
+      String? discount,
+      String? price,
+      String? priceCurrencyFormat,
+      dynamic priceDiscount,
+      dynamic priceDiscountCurrencyFormat,
+      int? subTotal,
+      String? subTotalCurrencyFormat}) {
+    return ProductCart(
+        productId: productId ?? this.productId,
+        cartId: cartId ?? this.cartId,
+        variantId: variantId ?? this.variantId,
+        isGift: isGift ?? this.isGift,
+        isSelected: isSelected ?? this.isSelected,
+        name: name ?? this.name,
+        greetingCardGift: greetingCardGift ?? this.greetingCardGift,
+        slug: slug ?? this.slug,
+        image: image ?? this.image,
+        badges: badges ?? this.badges,
+        stockRemaining: stockRemaining ?? this.stockRemaining,
+        variant: variant ?? this.variant,
+        qty: qty ?? this.qty,
+        discount: discount ?? this.discount,
+        isDiscount: isDiscount ?? this.isDiscount,
+        price: price ?? this.price,
+        priceCurrencyFormat: priceCurrencyFormat ?? this.priceCurrencyFormat,
+        priceDiscount: priceDiscount ?? this.priceDiscount,
+        priceDiscountCurrencyFormat:
+            priceDiscountCurrencyFormat ?? this.priceDiscountCurrencyFormat,
+        subTotal: subTotal ?? this.subTotal,
+        subTotalCurrencyFormat:
+            subTotalCurrencyFormat ?? this.subTotalCurrencyFormat);
+  }
 
   factory ProductCart.fromJson(Map<String, dynamic> json) => ProductCart(
         productId: json["productId"],
