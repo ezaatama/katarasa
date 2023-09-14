@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:katarasa/models/cart/all_cart_request.dart';
+import 'package:katarasa/models/cart/cart_item_request.dart';
 import 'package:katarasa/utils/base_response.dart';
 import 'package:katarasa/utils/endpoints.dart';
 import 'package:katarasa/utils/exception.dart';
@@ -12,6 +13,8 @@ part 'all_cart_state.dart';
 
 class AllCartCubit extends Cubit<AllCartState> {
   AllCartCubit() : super(AllCartInitial());
+
+  List<CartItemRequest> cartItems = [];
 
   Future<void> getAllCart(BuildContext context) async {
     emit(AllCartLoading());
@@ -24,7 +27,11 @@ class AllCartCubit extends Cubit<AllCartState> {
 
         AllCart dataProfile = AllCart.fromJson(value.response['data']);
 
-        emit(AllCartLoaded(dataProfile));
+        if (dataProfile.items.isEmpty) {
+          emit(AllCartEmpty());
+        } else {
+          emit(AllCartLoaded(dataProfile));
+        }
       } else {
         debugPrint(value.errresponse.errors);
         emit(AllCartError(value.errresponse.errors));
