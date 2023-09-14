@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:katarasa/data/cart/all_cart/all_cart_cubit.dart';
 import 'package:katarasa/data/dummy/cart_item/cart_item_cubit.dart';
 import 'package:katarasa/data/dummy/product/product_cubit.dart';
 import 'package:katarasa/data/products/all_product/products_cubit.dart';
@@ -35,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<ProductCubit>().fetchProduct();
     context.read<ProductsCubit>().getAllProduct(context);
     context.read<CategoryProductCubit>().selectedCategory(context);
+    context.read<AllCartCubit>().getAllCart(context);
     _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       _currentPage++;
       if (_currentPage >= 3) {
@@ -189,78 +191,145 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        BlocBuilder<CartItemCubit, CartItemState>(
-          builder: (context, state) {
-            if (state is CartItemUpdated) {
-              int totalPrice = state.cartItems.fold(
-                  0,
-                  (total, item) =>
-                      total +
-                      (item.product.discount == null
-                          ? item.product.price * item.quantity
-                          : item.product.discount! * item.quantity));
-              String productAdded =
-                  state.cartItems.map((e) => e.product.title).toString();
-              return state.cartItems.isEmpty
-                  ? const SizedBox()
-                  : Positioned(
-                      top: MediaQuery.of(context).size.height * .750,
-                      left: 0,
-                      right: 0,
-                      child: InkWell(
-                        onTap: () {
-                          debugPrint("go to cart");
-                          Navigator.pushNamed(context, '/cart');
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 18, vertical: 8),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                              color: ColorUI.MEDIUM_BROWN,
-                              borderRadius: BorderRadius.circular(16)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Flexible(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "${state.cartItems.length.toString()} item",
-                                      style: WHITE_TEXT_STYLE.copyWith(
-                                          fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(productAdded,
-                                        style: WHITE_TEXT_STYLE.copyWith(
-                                            fontWeight: FontUI.WEIGHT_LIGHT),
-                                        maxLines: 1),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Row(
-                                children: [
-                                  Text("Rp ${totalPrice.toRupiah()}",
-                                      style: WHITE_TEXT_STYLE.copyWith(
-                                          fontSize: 18,
-                                          fontWeight: FontUI.WEIGHT_BOLD)),
-                                  const SizedBox(width: 6),
-                                  const Icon(Icons.shopping_bag_outlined,
-                                      color: ColorUI.WHITE, size: 20)
-                                ],
-                              ),
-                            ],
-                          ),
+        // BlocBuilder<CartItemCubit, CartItemState>(
+        //   builder: (context, state) {
+        //     if (state is CartItemUpdated) {
+        //       int totalPrice = state.cartItems.fold(
+        //           0,
+        //           (total, item) =>
+        //               total +
+        //               (item.product.discount == null
+        //                   ? item.product.price * item.quantity
+        //                   : item.product.discount! * item.quantity));
+        //       String productAdded =
+        //           state.cartItems.map((e) => e.product.title).toString();
+        //       return state.cartItems.isEmpty
+        //           ? const SizedBox()
+        //           : Positioned(
+        //               top: MediaQuery.of(context).size.height * .750,
+        //               left: 0,
+        //               right: 0,
+        //               child: InkWell(
+        //                 onTap: () {
+        //                   debugPrint("go to cart");
+        //                   Navigator.pushNamed(context, '/cart');
+        //                 },
+        //                 child: Container(
+        //                   margin: const EdgeInsets.symmetric(horizontal: 16),
+        //                   padding: const EdgeInsets.symmetric(
+        //                       horizontal: 18, vertical: 8),
+        //                   width: MediaQuery.of(context).size.width,
+        //                   decoration: BoxDecoration(
+        //                       color: ColorUI.MEDIUM_BROWN,
+        //                       borderRadius: BorderRadius.circular(16)),
+        //                   child: Row(
+        //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //                     children: [
+        //                       Flexible(
+        //                         child: Column(
+        //                           crossAxisAlignment: CrossAxisAlignment.start,
+        //                           children: [
+        //                             Text(
+        //                               "${state.cartItems.length.toString()} item",
+        //                               style: WHITE_TEXT_STYLE.copyWith(
+        //                                   fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+        //                             ),
+        //                             const SizedBox(height: 6),
+        //                             Text(productAdded,
+        //                                 style: WHITE_TEXT_STYLE.copyWith(
+        //                                     fontWeight: FontUI.WEIGHT_LIGHT),
+        //                                 maxLines: 1),
+        //                           ],
+        //                         ),
+        //                       ),
+        //                       const SizedBox(width: 8),
+        //                       Row(
+        //                         children: [
+        //                           Text("Rp ${totalPrice.toRupiah()}",
+        //                               style: WHITE_TEXT_STYLE.copyWith(
+        //                                   fontSize: 18,
+        //                                   fontWeight: FontUI.WEIGHT_BOLD)),
+        //                           const SizedBox(width: 6),
+        //                           const Icon(Icons.shopping_bag_outlined,
+        //                               color: ColorUI.WHITE, size: 20)
+        //                         ],
+        //                       ),
+        //                     ],
+        //                   ),
+        //                 ),
+        //               ),
+        //             );
+        //     }
+        //     return const SizedBox();
+        //   },
+        // ),
+        BlocBuilder<AllCartCubit, AllCartState>(builder: (context, state) {
+          if (state is AllCartLoading) {
+            return const Center(child: LoaderIndicator());
+          } else if (state is AllCartEmpty) {
+            return const SizedBox();
+          } else if (state is AllCartLoaded) {
+            final itemName = state.allCartLoaded.items
+                .map((prod) => prod.products.map((e) => e.name))
+                .toString();
+            final removeBrackName = itemName.substring(1, itemName.length - 1);
+            return Positioned(
+              top: MediaQuery.of(context).size.height * .750,
+              left: 0,
+              right: 0,
+              child: InkWell(
+                onTap: () {
+                  debugPrint("go to cart");
+                  Navigator.pushNamed(context, '/all-cart');
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      color: ColorUI.MEDIUM_BROWN,
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${state.allCartLoaded.totalData.toString()} item",
+                              style: WHITE_TEXT_STYLE.copyWith(
+                                  fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(removeBrackName,
+                                style: WHITE_TEXT_STYLE.copyWith(
+                                    fontWeight: FontUI.WEIGHT_LIGHT),
+                                maxLines: 1),
+                          ],
                         ),
                       ),
-                    );
-            }
-            return const SizedBox();
-          },
-        ),
+                      const SizedBox(width: 8),
+                      Row(
+                        children: [
+                          Text("Rp 10.000",
+                              style: WHITE_TEXT_STYLE.copyWith(
+                                  fontSize: 18,
+                                  fontWeight: FontUI.WEIGHT_BOLD)),
+                          const SizedBox(width: 6),
+                          const Icon(Icons.shopping_bag_outlined,
+                              color: ColorUI.WHITE, size: 20)
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+          return const SizedBox();
+        })
       ],
     )));
   }
