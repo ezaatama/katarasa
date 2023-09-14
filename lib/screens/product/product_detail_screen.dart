@@ -451,16 +451,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           IconButton(
                               iconSize: 35,
                               onPressed: () {},
-                              icon: Icon(Icons.favorite_border_outlined),
+                              icon: const Icon(Icons.favorite_border_outlined),
                               color: Colors.red),
                           BlocConsumer<ItemCartCubit, ItemCartState>(
                             listener: (context, state) {
                               if (state is ItemCartUpdated) {
-                                showToast(
-                                    text: state.itemCartUpdated,
-                                    state: ToastStates.SUCCESS);
-
                                 Navigator.pop(context);
+                                showToast(
+                                    text: state.cartUpdated,
+                                    state: ToastStates.SUCCESS);
+                                Navigator.pushNamed(context, '/all-cart');
                               } else if (state is ItemCartError) {
                                 showToast(
                                     text: state.errItemCart,
@@ -468,59 +468,54 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               }
                             },
                             builder: (context, state) {
-                              if (state is ItemCartUpdated) {
-                                return Flexible(
-                                  child: InkWell(
-                                    onTap: () {
-                                      CartItemRequest payload = CartItemRequest(
-                                          productId: data.id, variantId: "");
-                                      context
-                                          .read<ItemCartCubit>()
-                                          .addToCart(payload, context);
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 5),
-                                      height:
-                                          MediaQuery.of(context).size.height,
-                                      width: MediaQuery.of(context).size.width,
-                                      decoration: BoxDecoration(
-                                          color: Colors.red.shade700,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text("Keranjang",
-                                                style:
-                                                    WHITE_TEXT_STYLE.copyWith(
-                                                        fontSize: 16,
-                                                        fontWeight: FontUI
-                                                            .WEIGHT_MEDIUM)),
-                                            const SizedBox(width: 5),
-                                            data.isDiscount == false
-                                                ? Flexible(
-                                                    child: Text(data.price,
-                                                        style: WHITE_TEXT_STYLE
-                                                            .copyWith(
-                                                                fontSize: 16,
-                                                                fontWeight: FontUI
-                                                                    .WEIGHT_MEDIUM)))
-                                                : Flexible(
-                                                    child: Text(
-                                                        data.priceDiscount,
-                                                        style: WHITE_TEXT_STYLE
-                                                            .copyWith(
-                                                                fontSize: 16,
-                                                                fontWeight: FontUI
-                                                                    .WEIGHT_MEDIUM)))
-                                          ]),
-                                    ),
+                              return Flexible(
+                                child: InkWell(
+                                  onTap: () {
+                                    CartItemRequest payload = CartItemRequest(
+                                        productId: data.id, variantId: "");
+                                    context
+                                        .read<ItemCartCubit>()
+                                        .addToCart(payload, context);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 5),
+                                    height: MediaQuery.of(context).size.height,
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                        color: Colors.red.shade700,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text("Keranjang",
+                                              style: WHITE_TEXT_STYLE.copyWith(
+                                                  fontSize: 16,
+                                                  fontWeight:
+                                                      FontUI.WEIGHT_MEDIUM)),
+                                          const SizedBox(width: 5),
+                                          data.isDiscount == false
+                                              ? Flexible(
+                                                  child: Text(data.price,
+                                                      style: WHITE_TEXT_STYLE
+                                                          .copyWith(
+                                                              fontSize: 16,
+                                                              fontWeight: FontUI
+                                                                  .WEIGHT_MEDIUM)))
+                                              : Flexible(
+                                                  child: Text(
+                                                      data.priceDiscount,
+                                                      style: WHITE_TEXT_STYLE
+                                                          .copyWith(
+                                                              fontSize: 16,
+                                                              fontWeight: FontUI
+                                                                  .WEIGHT_MEDIUM)))
+                                        ]),
                                   ),
-                                );
-                              }
-                              return const SizedBox();
+                                ),
+                              );
                             },
                           ),
                         ],
