@@ -101,27 +101,77 @@ class _AllCartScreenState extends State<AllCartScreen> {
                       } else if (state is AllCartLoaded) {
                         final allCartProduct = state.allCartLoaded.items;
                         return ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: state.allCartLoaded.items.length,
-                            itemBuilder: (context, index) {
-                              // return _singleCart(
-                              //     allCartProduct[index].products[index]);
-                              return SingleCart(
-                                products: allCartProduct[index].products[index],
-                                incrementItem: () {
-                                  // context
-                                  //     .read<ItemCartCubit>()
-                                  //     .incrementCartItem(cartItem, context);
-                                },
-                                decrementItem: () {
-                                  // context
-                                  //     .read<ItemCartCubit>()
-                                  //     .decrementCartItem(cartItem, context);
-                                },
-                                quantityItem: "1",
-                              );
-                            });
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: allCartProduct.length,
+                          itemBuilder: (context, index) {
+                            return SingleCart(
+                              products: allCartProduct[index].products[index],
+                              // incrementItem: () {
+                              //   CartItemRequest payloadInc = CartItemRequest(
+                              //       productId: allCartProduct[index]
+                              //           .products[index]
+                              //           .productId,
+                              //       variantId: allCartProduct[index]
+                              //           .products[index]
+                              //           .variantId,
+                              //       quantity: int.parse(allCartProduct[index]
+                              //               .products[index]
+                              //               .qty) +
+                              //           1);
+                              //   context
+                              //       .read<AllCartCubit>()
+                              //       .incrementCartItem(payloadInc, context);
+                              // },
+                              // decrementItem: () {
+                              //   // context
+                              //   //     .read<ItemCartCubit>()
+                              //   //     .decrementCartItem(cartItem, context);
+                              // },
+                              // quantityItem:
+                              //     allCartProduct[index].products[index].qty,
+                            );
+                          },
+                        );
+                        // return BlocBuilder<ItemCartCubit, ItemCartState>(
+                        //     builder: (context, state) {
+                        //   if (state is ItemCartUpdated) {
+                        //     return ListView.builder(
+                        //         shrinkWrap: true,
+                        //         physics: const NeverScrollableScrollPhysics(),
+                        //         itemCount: allCartProduct.length,
+                        //         itemBuilder: (context, index) {
+                        //           final product =
+                        //               allCartProduct[index].products[index];
+                        //           CartItemRequest cartItem =
+                        //               state.itemCartUpdated.firstWhere(
+                        //                   (item) =>
+                        //                       item.productId ==
+                        //                       product.productId,
+                        //                   orElse: () => CartItemRequest(
+                        //                       productId: product.productId,
+                        //                       variantId: product.variantId,
+                        //                       quantity:
+                        //                           int.parse(product.qty) + 1));
+                        //           return SingleCart(
+                        //             products:
+                        //                 allCartProduct[index].products[index],
+                        //             incrementItem: () {
+                        //               context
+                        //                   .read<ItemCartCubit>()
+                        //                   .incrementCartItem(cartItem, context);
+                        //             },
+                        //             decrementItem: () {
+                        //               // context
+                        //               //     .read<ItemCartCubit>()
+                        //               //     .decrementCartItem(cartItem, context);
+                        //             },
+                        //             quantityItem: cartItem.quantity.toString(),
+                        //           );
+                        //         });
+                        //   }
+                        //   return const SizedBox();
+                        // });
                       }
 
                       return const SizedBox();
@@ -310,30 +360,5 @@ class _AllCartScreenState extends State<AllCartScreen> {
         ],
       )),
     );
-  }
-
-  Widget _singleCart(ProductCart product) {
-    return BlocBuilder<ItemCartCubit, ItemCartState>(builder: (context, state) {
-      if (state is ItemCartUpdated) {
-        CartItemRequest cartItem = state.itemCartUpdated.firstWhere(
-            (item) => item.productId == product.productId,
-            orElse: () => CartItemRequest(
-                productId: product.productId,
-                variantId: product.variantId,
-                quantity: 1));
-
-        return SingleCart(
-          products: product,
-          incrementItem: () {
-            context.read<ItemCartCubit>().incrementCartItem(cartItem, context);
-          },
-          decrementItem: () {
-            context.read<ItemCartCubit>().decrementCartItem(cartItem, context);
-          },
-          quantityItem: cartItem.quantity.toString(),
-        );
-      }
-      return const SizedBox();
-    });
   }
 }
