@@ -42,15 +42,16 @@ class AllCart {
   });
 
   factory AllCart.fromJson(Map<String, dynamic> json) => AllCart(
-        page: json["page"],
-        limit: json["limit"],
-        totalProductSelected: json["totalProductSelected"],
+        page: json["page"] ?? 0,
+        limit: json["limit"] ?? 0,
+        totalProductSelected: json["totalProductSelected"] ?? 0,
         totalData: json["totalData"],
-        totalPage: json["totalPage"],
-        totalCart: json["totalCart"],
-        totalCartCurrencyFormat: json["totalCartCurrencyFormat"],
-        isHasAddress: json["isHasAddress"],
-        items: List<Item>.from(json["items"].map((x) => Item.fromJson(x))),
+        totalPage: json["totalPage"] ?? 0,
+        totalCart: json["totalCart"] ?? 0,
+        totalCartCurrencyFormat: json["totalCartCurrencyFormat"] ?? "",
+        isHasAddress: json["isHasAddress"] ?? false,
+        items:
+            List<Item>.from((json["items"] ?? []).map((x) => Item.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -211,28 +212,20 @@ class ProductCart {
       );
 
   Map<String, dynamic> toJson() => {
-        "productId": productId,
-        "cartId": cartId,
-        "variantId": variantId,
-        "isGift": isGift,
-        "isSelected": isSelected,
-        "name": name,
-        "greetingCardGift": greetingCardGift,
-        "slug": slug,
-        "image": image,
-        "badges": List<dynamic>.from(badges.map((x) => x)),
-        "stockRemaining": stockRemaining,
-        "variant": variant,
+        "product_id": productId,
+        "variant_id": variantId,
         "qty": qty,
-        "isDiscount": isDiscount,
-        "discount": discount,
-        "price": price,
-        "priceCurrencyFormat": priceCurrencyFormat,
-        "priceDiscount": priceDiscount,
-        "priceDiscountCurrencyFormat": priceDiscountCurrencyFormat,
-        "subTotal": subTotal,
-        "subTotalCurrencyFormat": subTotalCurrencyFormat,
       };
+
+  void incrementQuantity() {
+    int.parse(qty) + 1;
+  }
+
+  void decrementQuantity() {
+    if (int.parse(qty) > 1) {
+      int.parse(qty) - 1;
+    }
+  }
 }
 
 class Store {
