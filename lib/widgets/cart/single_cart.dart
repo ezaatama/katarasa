@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:katarasa/data/cart/all_cart/all_cart_cubit.dart';
 import 'package:katarasa/data/cart/item_cart/item_cart_cubit.dart';
 import 'package:katarasa/models/cart/all_cart_request.dart';
 import 'package:katarasa/utils/constant.dart';
@@ -7,17 +8,18 @@ import 'package:katarasa/widgets/general/image.dart';
 import 'package:katarasa/widgets/general/toast_comp.dart';
 
 class SingleCart extends StatelessWidget {
-  SingleCart(
-      {super.key,
-      required this.products,
-      required this.decrementItem,
-      required this.incrementItem,
-      required this.quantityItem});
+  SingleCart({
+    super.key,
+    required this.products,
+    // required this.decrementItem,
+    // required this.incrementItem,
+    // required this.quantityItem
+  });
 
   final ProductCart products;
-  final Function() decrementItem;
-  final Function() incrementItem;
-  final String quantityItem;
+  // final Function() decrementItem;
+  // final Function() incrementItem;
+  // final String quantityItem;
 
   Widget _priceTag() {
     Widget price = Text(
@@ -211,7 +213,7 @@ class SingleCart extends StatelessWidget {
                     }),
                     Row(
                       children: [
-                        quantityItem == '1'
+                        products.qty == '1'
                             ? CircleAvatar(
                                 radius: 13,
                                 backgroundColor: ColorUI.BACKGROUND_COLOR,
@@ -220,30 +222,62 @@ class SingleCart extends StatelessWidget {
                                     icon: const Icon(Icons.remove,
                                         color: ColorUI.WHITE, size: 10)),
                               )
-                            : CircleAvatar(
-                                radius: 13,
-                                backgroundColor: ColorUI.MEDIUM_BROWN,
-                                child: IconButton(
-                                    onPressed: decrementItem,
-                                    icon: const Icon(Icons.remove,
-                                        color: ColorUI.WHITE, size: 10)),
-                              ),
+                            : BlocBuilder<ItemCartCubit, ItemCartState>(
+                                builder: (context, state) {
+                                return CircleAvatar(
+                                  radius: 13,
+                                  backgroundColor: ColorUI.MEDIUM_BROWN,
+                                  child: IconButton(
+                                      onPressed: () {
+                                        setStater(() {
+                                          context
+                                              .read<ItemCartCubit>()
+                                              .decrementCartItem(
+                                                  products.productId,
+                                                  products.variantId,
+                                                  int.parse(products.qty) - 1,
+                                                  context);
+                                          context
+                                              .read<AllCartCubit>()
+                                              .getAllCart(context);
+                                        });
+                                      },
+                                      icon: const Icon(Icons.remove,
+                                          color: ColorUI.WHITE, size: 10)),
+                                );
+                              }),
                         const SizedBox(width: 5),
                         Text(
-                          quantityItem,
+                          products.qty,
                           style: BLACK_TEXT_STYLE.copyWith(
                               fontSize: 20,
                               fontWeight: FontUI.WEIGHT_SEMI_BOLD),
                         ),
                         const SizedBox(width: 5),
-                        CircleAvatar(
-                          radius: 13,
-                          backgroundColor: ColorUI.MEDIUM_BROWN,
-                          child: IconButton(
-                              onPressed: incrementItem,
-                              icon: const Icon(Icons.add,
-                                  color: ColorUI.WHITE, size: 10)),
-                        ),
+                        BlocBuilder<ItemCartCubit, ItemCartState>(
+                            builder: (context, state) {
+                          return CircleAvatar(
+                            radius: 13,
+                            backgroundColor: ColorUI.MEDIUM_BROWN,
+                            child: IconButton(
+                                onPressed: () {
+                                  setStater(() {
+                                    context
+                                        .read<ItemCartCubit>()
+                                        .incrementCartItem(
+                                            products.productId,
+                                            products.variantId,
+                                            int.parse(products.qty) + 1,
+                                            context);
+                                    context
+                                        .read<AllCartCubit>()
+                                        .getAllCart(context);
+                                  });
+                                },
+                                icon: const Icon(Icons.add,
+                                    color: ColorUI.WHITE, size: 10)),
+                          );
+                        }),
                       ],
                     ),
                   ],
