@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:katarasa/models/cart/all_cart_request.dart';
 import 'package:katarasa/models/cart/cart_item_request.dart';
 import 'package:katarasa/utils/base_response.dart';
+import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/endpoints.dart';
 import 'package:katarasa/utils/exception.dart';
 import 'package:katarasa/utils/extension.dart';
@@ -13,8 +14,6 @@ part 'all_cart_state.dart';
 
 class AllCartCubit extends Cubit<AllCartState> {
   AllCartCubit() : super(AllCartInitial());
-
-  List<CartItemRequest> cartItems = [];
 
   Future<void> getAllCart(BuildContext context) async {
     emit(AllCartLoading());
