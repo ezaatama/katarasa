@@ -45,3 +45,27 @@ final class DeleteItemError extends ItemCartState {
 
   const DeleteItemError(this.deleteError);
 }
+
+final class IncrementItemSuccess extends ItemCartState {
+  final String incrementSuccess;
+
+  const IncrementItemSuccess(this.incrementSuccess);
+}
+
+final class IncrementItemError extends ItemCartState {
+  final String incrementError;
+
+  const IncrementItemError(this.incrementError);
+}
+
+final class DecrementItemSuccess extends ItemCartState {
+  final String decrementSuccess;
+
+  const DecrementItemSuccess(this.decrementSuccess);
+}
+
+final class DecrementItemError extends ItemCartState {
+  final String decrementError;
+
+  const DecrementItemError(this.decrementError);
+}
