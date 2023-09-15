@@ -471,11 +471,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               return Flexible(
                                 child: InkWell(
                                   onTap: () {
-                                    CartItemRequest payload = CartItemRequest(
-                                        productId: data.id, variantId: "");
                                     context
                                         .read<ItemCartCubit>()
-                                        .addToCart(payload, context);
+                                        .addToCart(data, "", context);
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
