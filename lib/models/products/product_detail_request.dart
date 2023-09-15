@@ -113,6 +113,13 @@ class ProductDetailRequest {
         otherProduct: List<OtherProduct>.from(
             json["otherProduct"].map((x) => OtherProduct.fromJson(x))),
       );
+
+  Map<String, dynamic> toMap() => {
+        "product_id": id,
+        "variant_id": "",
+        "qty": 1,
+        "isNonPhysical": isNonPhysical
+      };
 }
 
 class Category {
