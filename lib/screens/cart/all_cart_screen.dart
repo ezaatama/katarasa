@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:katarasa/data/cart/all_cart/all_cart_cubit.dart';
-import 'package:katarasa/data/cart/item_cart/item_cart_cubit.dart';
-import 'package:katarasa/models/cart/all_cart_request.dart';
-import 'package:katarasa/models/cart/cart_item_request.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/cart/single_cart.dart';
@@ -133,45 +130,6 @@ class _AllCartScreenState extends State<AllCartScreen> {
                             );
                           },
                         );
-                        // return BlocBuilder<ItemCartCubit, ItemCartState>(
-                        //     builder: (context, state) {
-                        //   if (state is ItemCartUpdated) {
-                        //     return ListView.builder(
-                        //         shrinkWrap: true,
-                        //         physics: const NeverScrollableScrollPhysics(),
-                        //         itemCount: allCartProduct.length,
-                        //         itemBuilder: (context, index) {
-                        //           final product =
-                        //               allCartProduct[index].products[index];
-                        //           CartItemRequest cartItem =
-                        //               state.itemCartUpdated.firstWhere(
-                        //                   (item) =>
-                        //                       item.productId ==
-                        //                       product.productId,
-                        //                   orElse: () => CartItemRequest(
-                        //                       productId: product.productId,
-                        //                       variantId: product.variantId,
-                        //                       quantity:
-                        //                           int.parse(product.qty) + 1));
-                        //           return SingleCart(
-                        //             products:
-                        //                 allCartProduct[index].products[index],
-                        //             incrementItem: () {
-                        //               context
-                        //                   .read<ItemCartCubit>()
-                        //                   .incrementCartItem(cartItem, context);
-                        //             },
-                        //             decrementItem: () {
-                        //               // context
-                        //               //     .read<ItemCartCubit>()
-                        //               //     .decrementCartItem(cartItem, context);
-                        //             },
-                        //             quantityItem: cartItem.quantity.toString(),
-                        //           );
-                        //         });
-                        //   }
-                        //   return const SizedBox();
-                        // });
                       }
 
                       return const SizedBox();

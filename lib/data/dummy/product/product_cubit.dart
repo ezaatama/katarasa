@@ -1,6 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:katarasa/models/dummy/cart_models.dart';
-import 'package:katarasa/models/dummy/product_models.dart';
 import 'package:katarasa/models/dummy/product_models.dart';
 import 'package:meta/meta.dart';
 

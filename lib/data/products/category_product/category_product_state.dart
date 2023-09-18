@@ -12,7 +12,6 @@ final class CategoryProductSelected extends CategoryProductState {
 
   CategoryProductSelected(this.categories);
 
-  @override
   List<Object> get props => [
         categories,
       ];

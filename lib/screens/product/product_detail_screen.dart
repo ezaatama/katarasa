@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:katarasa/data/cart/item_cart/item_cart_cubit.dart';
 import 'package:katarasa/data/products/detail_product/products_detail_cubit.dart';
-import 'package:katarasa/models/cart/cart_item_request.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/general/image.dart';
 import 'package:katarasa/widgets/general/loader_indicator.dart';

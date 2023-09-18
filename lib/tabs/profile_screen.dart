@@ -6,7 +6,6 @@ import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/network.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/card/card_promo_profile.dart';
-import 'package:katarasa/widgets/general/loader.dart';
 import 'package:katarasa/widgets/general/toast_comp.dart';
 import 'package:shimmer/shimmer.dart';
 

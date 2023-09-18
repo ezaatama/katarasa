@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:katarasa/data/dummy/product/product_cubit.dart';
 import 'package:katarasa/models/products/products_request.dart';
 import 'package:katarasa/utils/base_response.dart';
 import 'package:katarasa/utils/endpoints.dart';
