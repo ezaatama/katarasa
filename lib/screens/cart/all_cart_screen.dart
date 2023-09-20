@@ -6,6 +6,7 @@ import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/cart/single_cart.dart';
 import 'package:katarasa/widgets/general/loader_indicator.dart';
+import 'package:katarasa/widgets/general/sheet_info.dart';
 
 class AllCartScreen extends StatefulWidget {
   const AllCartScreen({super.key});
@@ -14,7 +15,11 @@ class AllCartScreen extends StatefulWidget {
   State<AllCartScreen> createState() => _AllCartScreenState();
 }
 
-class _AllCartScreenState extends State<AllCartScreen> {
+class _AllCartScreenState extends State<AllCartScreen>
+    with AutomaticKeepAliveClientMixin<AllCartScreen> {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
@@ -104,29 +109,6 @@ class _AllCartScreenState extends State<AllCartScreen> {
                           itemBuilder: (context, index) {
                             return SingleCart(
                               products: allCartProduct[index].products[index],
-                              // incrementItem: () {
-                              //   CartItemRequest payloadInc = CartItemRequest(
-                              //       productId: allCartProduct[index]
-                              //           .products[index]
-                              //           .productId,
-                              //       variantId: allCartProduct[index]
-                              //           .products[index]
-                              //           .variantId,
-                              //       quantity: int.parse(allCartProduct[index]
-                              //               .products[index]
-                              //               .qty) +
-                              //           1);
-                              //   context
-                              //       .read<AllCartCubit>()
-                              //       .incrementCartItem(payloadInc, context);
-                              // },
-                              // decrementItem: () {
-                              //   // context
-                              //   //     .read<ItemCartCubit>()
-                              //   //     .decrementCartItem(cartItem, context);
-                              // },
-                              // quantityItem:
-                              //     allCartProduct[index].products[index].qty,
                             );
                           },
                         );
@@ -137,142 +119,155 @@ class _AllCartScreenState extends State<AllCartScreen> {
                   )),
             ),
           ),
-          Positioned(
-              bottom: 80,
-              left: 0,
-              right: 0,
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: ColorUI.GREY.withOpacity(.40),
-                      offset: const Offset(
-                        3.0,
-                        3.0,
-                      ),
-                      blurRadius: 12.0,
-                      spreadRadius: 1.0,
-                    ), //BoxShadow
-                    const BoxShadow(
-                      color: Colors.white,
-                      offset: Offset(0.0, 0.0),
-                      blurRadius: 0.0,
-                      spreadRadius: 0.0,
-                    ), //BoxShadow
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Ringkasan Pembayaran",
-                      style: BLACK_TEXT_STYLE.copyWith(
-                          fontSize: 18, fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-                    ),
-                    const SizedBox(height: 10),
-                    BlocBuilder<AllCartCubit, AllCartState>(
-                        builder: (context, state) {
-                      if (state is AllCartLoading) {
-                        return const Center(child: LoaderIndicator());
-                      } else if (state is AllCartLoaded) {
-                        return Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Harga",
-                                  style: BLACK_TEXT_STYLE.copyWith(
-                                      fontWeight: FontUI.WEIGHT_LIGHT),
+          BlocBuilder<AllCartCubit, AllCartState>(
+            builder: (context, state) {
+              if (state is AllCartLoading) {
+                return const Center(child: LoaderIndicator());
+              } else if (state is AllCartLoaded) {
+                final isSelected = state.allCartLoaded.totalProductSelected;
+                final namaProduk = state.allCartLoaded.items
+                    .map((e) => e.products.map((e) => e.name))
+                    .toString();
+                final hargaPerItem = state.allCartLoaded.items
+                    .map((e) => e.products.map((e) => e.priceCurrencyFormat))
+                    .toString();
+                final qty = state.allCartLoaded.items
+                    .map((e) => e.products.map((e) => e.qty))
+                    .toString();
+
+                return isSelected == 0
+                    ? const SizedBox()
+                    : Positioned(
+                        bottom: 80,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: ColorUI.GREY.withOpacity(.40),
+                                offset: const Offset(
+                                  3.0,
+                                  3.0,
                                 ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Harga Asli",
-                                      style: BLACK_TEXT_STYLE.copyWith(
-                                          decoration:
-                                              TextDecoration.lineThrough,
-                                          fontWeight: FontUI.WEIGHT_LIGHT),
-                                    ),
-                                    const SizedBox(width: 20),
-                                    Text(
-                                      "Harga",
-                                      style: BLACK_TEXT_STYLE.copyWith(
-                                          fontWeight: FontUI.WEIGHT_LIGHT),
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Produk dibeli",
-                                  style: BLACK_TEXT_STYLE.copyWith(
-                                      fontWeight: FontUI.WEIGHT_LIGHT),
-                                ),
-                                Flexible(
-                                  child: Text(
-                                    "Nama Produk",
-                                    style: BLACK_TEXT_STYLE.copyWith(
-                                        decoration: TextDecoration.lineThrough,
-                                        fontWeight: FontUI.WEIGHT_LIGHT),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Total Pembayaran",
-                                  style: BLACK_TEXT_STYLE.copyWith(
-                                      fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-                                ),
-                                Flexible(
-                                  child: Text(
-                                    "Total Harga Keseluruhan",
-                                    style: BLACK_TEXT_STYLE.copyWith(
-                                        decoration: TextDecoration.lineThrough,
-                                        fontWeight: FontUI.WEIGHT_LIGHT),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Divider(thickness: 2),
-                            InkWell(
-                              onTap: () {
-                                debugPrint("pop up modal detail pembayaran");
-                              },
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Lihat Detail",
-                                    style: BROWN_TEXT_STYLE.copyWith(
-                                        fontWeight: FontUI.WEIGHT_BOLD),
-                                  ),
-                                  const Icon(Icons.arrow_forward_ios_rounded,
-                                      size: 22, color: ColorUI.BROWN)
-                                ],
+                                blurRadius: 12.0,
+                                spreadRadius: 1.0,
+                              ), //BoxShadow
+                              const BoxShadow(
+                                color: Colors.white,
+                                offset: Offset(0.0, 0.0),
+                                blurRadius: 0.0,
+                                spreadRadius: 0.0,
+                              ), //BoxShadow
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Ringkasan Pemesanan",
+                                style: BLACK_TEXT_STYLE.copyWith(
+                                    fontSize: 18,
+                                    fontWeight: FontUI.WEIGHT_SEMI_BOLD),
                               ),
-                            ),
-                            const Divider(thickness: 2),
-                          ],
-                        );
-                      }
-                      return const SizedBox();
-                    })
-                  ],
-                ),
-              )),
+                              const SizedBox(height: 20),
+                              Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "Total Quantity",
+                                        style: BLACK_TEXT_STYLE.copyWith(
+                                            fontWeight: FontUI.WEIGHT_LIGHT),
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          "${state.allCartLoaded.totalCart.toString()} item",
+                                          style: BLACK_TEXT_STYLE.copyWith(
+                                              fontWeight: FontUI.WEIGHT_LIGHT),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "Produk di keranjang",
+                                        style: BLACK_TEXT_STYLE.copyWith(
+                                            fontWeight: FontUI.WEIGHT_LIGHT),
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          "${state.allCartLoaded.totalData.toString()} item",
+                                          style: BLACK_TEXT_STYLE.copyWith(
+                                              fontWeight: FontUI.WEIGHT_LIGHT),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "Total Pembayaran",
+                                        style: BLACK_TEXT_STYLE.copyWith(
+                                            fontWeight:
+                                                FontUI.WEIGHT_SEMI_BOLD),
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          state.allCartLoaded
+                                              .totalCartCurrencyFormat,
+                                          style: BLACK_TEXT_STYLE.copyWith(
+                                              fontWeight: FontUI.WEIGHT_LIGHT),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const Divider(thickness: 2),
+                                  InkWell(
+                                    onTap: () {
+                                      debugPrint(
+                                          "pop up modal detail pembayaran");
+                                      SheetInfo.sheetRingkasanPembayaran(
+                                          context);
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Lihat Detail",
+                                          style: BROWN_TEXT_STYLE.copyWith(
+                                              fontWeight: FontUI.WEIGHT_BOLD),
+                                        ),
+                                        const Icon(
+                                            Icons.arrow_forward_ios_rounded,
+                                            size: 22,
+                                            color: ColorUI.BROWN)
+                                      ],
+                                    ),
+                                  ),
+                                  const Divider(thickness: 2),
+                                ],
+                              )
+                            ],
+                          ),
+                        ));
+              }
+              return const SizedBox();
+            },
+          ),
           Positioned(
             bottom: 0,
             left: 0,
