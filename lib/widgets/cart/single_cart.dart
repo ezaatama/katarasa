@@ -11,15 +11,9 @@ class SingleCart extends StatelessWidget {
   SingleCart({
     super.key,
     required this.products,
-    // required this.decrementItem,
-    // required this.incrementItem,
-    // required this.quantityItem
   });
 
   final ProductCart products;
-  // final Function() decrementItem;
-  // final Function() incrementItem;
-  // final String quantityItem;
 
   Widget _priceTag() {
     Widget price = Text(
@@ -101,19 +95,10 @@ class SingleCart extends StatelessWidget {
                         onTap: () {
                           setStater(() {
                             products.isSelected = !products.isSelected;
-                            // if (products.isSelected == true) {
-                            //   context
-                            //       .read<ItemCartCubit>()
-                            //       .setSelectItem(context, products.cartId);
-                            //   debugPrint(
-                            //       "ini products selected harusnya true : ${products.isSelected}");
-                            // } else if (products.isSelected == false) {
-                            //   context
-                            //       .read<ItemCartCubit>()
-                            //       .setSelectItem(context, products.cartId);
-                            //   debugPrint(
-                            //       "ini products selected harusnya false : ${products.isSelected}");
-                            // }
+                            context
+                                .read<ItemCartCubit>()
+                                .setSelectItem(context, products.cartId);
+                            context.read<AllCartCubit>().getAllCart(context);
                           });
                         },
                         child: products.isSelected
@@ -291,11 +276,7 @@ class SingleCart extends StatelessWidget {
     });
 
     return InkWell(
-      onTap: () {
-        // Navigator.pushNamed(context, '/product-detail',
-        //     arguments: products.slug);
-        // debugPrint("ini product slug nya => ${products.slug}");
-      },
+      onTap: () {},
       child: content,
     );
   }
