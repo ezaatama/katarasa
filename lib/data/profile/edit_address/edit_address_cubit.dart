@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:katarasa/models/profile/detail_alamat/added_alamat_request.dart';
-import 'package:katarasa/models/profile/detail_alamat/detail_alamat_request.dart';
 import 'package:katarasa/utils/base_response.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/endpoints.dart';
