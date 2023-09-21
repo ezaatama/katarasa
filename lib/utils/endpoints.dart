@@ -8,6 +8,7 @@ const DATA_PROFILE = 'profile/data-profile';
 const EDIT_DATA_PROFILE = 'profile/edit-profile';
 const ALL_CART = 'cart/data-cart';
 const ADD_TO_CART = 'cart/tambah-ke-cart';
+const DATA_CHECKOUT = 'checkout/data-checkout';
 const CATEGORIES = 'product/get-kategori';
 const ALL_PRODUCTS = 'product/get-product';
 const PRODUCT_DETAIL = 'product/get-product-detail';
