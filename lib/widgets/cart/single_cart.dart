@@ -95,9 +95,16 @@ class SingleCart extends StatelessWidget {
                         onTap: () {
                           setStater(() {
                             products.isSelected = !products.isSelected;
-                            context
-                                .read<ItemCartCubit>()
-                                .setSelectItem(context, products.cartId);
+
+                            if (products.isSelected == true) {
+                              context
+                                  .read<ItemCartCubit>()
+                                  .setSelectItem(context, products.cartId);
+                            } else if (products.isSelected == false) {
+                              context
+                                  .read<ItemCartCubit>()
+                                  .setSelectItem(context, products.cartId);
+                            }
                             context.read<AllCartCubit>().getAllCart(context);
                           });
                         },
