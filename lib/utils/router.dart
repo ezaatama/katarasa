@@ -6,6 +6,7 @@ import 'package:katarasa/screens/bottom_navigation/bottom_nav_screen.dart';
 import 'package:katarasa/screens/cart/all_cart_screen.dart';
 import 'package:katarasa/screens/cart/cart_screen.dart';
 import 'package:katarasa/screens/cart/payment_method_screen.dart';
+import 'package:katarasa/screens/checkout/data_checkout_screen.dart';
 import 'package:katarasa/screens/product/detail_product_screen.dart';
 import 'package:katarasa/screens/product/product_detail_screen.dart';
 import 'package:katarasa/screens/profile/about_us_screen.dart';
@@ -66,6 +67,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const CartScreen());
       case '/all-cart':
         return MaterialPageRoute(builder: (_) => const AllCartScreen());
+      case '/data-checkout':
+        return MaterialPageRoute(builder: (_) => const CheckoutScreen());
       case '/payment-method':
         return MaterialPageRoute(builder: (_) => const PaymentMethodScreen());
       default:
