@@ -108,7 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 16),
                 _tabsCategory(),
-
                 const SizedBox(height: 16),
                 _listProduct(size),
                 const SizedBox(height: 16),
@@ -151,23 +150,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontSize: 18, fontWeight: FontUI.WEIGHT_SEMI_BOLD),
                 ),
                 const SizedBox(height: 10),
-                // BlocBuilder<ProductCubit, ProductState>(
-                //   builder: (context, state) {
-                //     if (state is ProductLoading) {
-                //       return const Center(child: CircularProgressIndicator());
-                //     } else if (state is ProductSuccess) {
-                //       return ListView.builder(
-                //           shrinkWrap: true,
-                //           physics: const NeverScrollableScrollPhysics(),
-                //           itemCount: state.product.length,
-                //           itemBuilder: (context, index) {
-                //             return Product(products: state.product[index]);
-                //           });
-                //     }
-
-                //     return const SizedBox();
-                //   },
-                // ),
                 BlocBuilder<ProductsCubit, ProductsState>(
                   builder: (context, state) {
                     if (state is ProductsLoading) {
