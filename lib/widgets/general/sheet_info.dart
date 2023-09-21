@@ -76,6 +76,45 @@ class SheetInfo {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      "Lokasi Toko",
+                                                      style: BLACK_TEXT_STYLE
+                                                          .copyWith(
+                                                              fontSize: 16,
+                                                              fontWeight: FontUI
+                                                                  .WEIGHT_SEMI_BOLD),
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                    Text(
+                                                      state
+                                                          .allCartLoaded
+                                                          .items[index]
+                                                          .store
+                                                          .name,
+                                                      style: BLACK_TEXT_STYLE
+                                                          .copyWith(
+                                                              fontWeight: FontUI
+                                                                  .WEIGHT_LIGHT),
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    Text(
+                                                      state
+                                                          .allCartLoaded
+                                                          .items[index]
+                                                          .store
+                                                          .location,
+                                                      style: BLACK_TEXT_STYLE
+                                                          .copyWith(
+                                                              fontWeight: FontUI
+                                                                  .WEIGHT_LIGHT),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 10),
                                                 Text(
                                                   "Produk di beli",
                                                   style:
