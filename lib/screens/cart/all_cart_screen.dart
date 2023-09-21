@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:katarasa/data/cart/all_cart/all_cart_cubit.dart';
 import 'package:katarasa/utils/constant.dart';
+import 'package:katarasa/widgets/button/disable_button.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/cart/single_cart.dart';
 import 'package:katarasa/widgets/general/loader_indicator.dart';
@@ -28,6 +29,7 @@ class _AllCartScreenState extends State<AllCartScreen>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: OfflineBuilder(
@@ -125,15 +127,6 @@ class _AllCartScreenState extends State<AllCartScreen>
                 return const Center(child: LoaderIndicator());
               } else if (state is AllCartLoaded) {
                 final isSelected = state.allCartLoaded.totalProductSelected;
-                final namaProduk = state.allCartLoaded.items
-                    .map((e) => e.products.map((e) => e.name))
-                    .toString();
-                final hargaPerItem = state.allCartLoaded.items
-                    .map((e) => e.products.map((e) => e.priceCurrencyFormat))
-                    .toString();
-                final qty = state.allCartLoaded.items
-                    .map((e) => e.products.map((e) => e.qty))
-                    .toString();
 
                 return isSelected == 0
                     ? const SizedBox()
@@ -300,11 +293,28 @@ class _AllCartScreenState extends State<AllCartScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    PrimaryButton(
-                        text: "Checkout",
-                        onPressed: () {
-                          debugPrint("go to pembayaran");
-                        })
+                    BlocBuilder<AllCartCubit, AllCartState>(
+                      builder: (context, state) {
+                        if (state is AllCartLoading) {
+                          return const Center(child: LoaderIndicator());
+                        } else if (state is AllCartLoaded) {
+                          final isSelected =
+                              state.allCartLoaded.totalProductSelected;
+
+                          return isSelected == 0
+                              ? DisableButton(
+                                  text: "Checkout", onPressed: () {})
+                              : PrimaryButton(
+                                  text: "Checkout",
+                                  onPressed: () {
+                                    Navigator.pushNamed(
+                                        context, '/data-checkout');
+                                    debugPrint("go to pembayaran");
+                                  });
+                        }
+                        return const SizedBox();
+                      },
+                    )
                   ],
                 ),
               ),
