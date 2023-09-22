@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:katarasa/data/checkout/data_checkout/data_checkout_cubit.dart';
+import 'package:katarasa/data/checkout/data_shipping/data_shipping_cubit.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/general/image.dart';
 import 'package:katarasa/widgets/general/loader_indicator.dart';
+import 'package:katarasa/widgets/general/make_dismiss.dart';
+import 'package:katarasa/widgets/shipping/data_shipping.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -19,6 +22,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void initState() {
     super.initState();
     context.read<DataCheckoutCubit>().getAllCheckout(context);
+    context.read<DataShippingCubit>().getDataShipping(context);
   }
 
   @override
@@ -245,11 +249,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       ],
                                     ),
                                     const SizedBox(height: 10),
-                                    Text(
-                                      "*Anda belum memilih pengiriman",
-                                      style: BLACK_TEXT_STYLE.copyWith(
-                                          fontWeight: FontUI.WEIGHT_LIGHT),
-                                    ),
+                                    cart[index].shippingSelected.code.isEmpty
+                                        ? Text(
+                                            "*Anda belum memilih pengiriman",
+                                            style: BLACK_TEXT_STYLE.copyWith(
+                                                fontWeight:
+                                                    FontUI.WEIGHT_LIGHT),
+                                          )
+                                        : Text("sudah pilih shipping"),
                                   ],
                                 )
                               ],
@@ -297,6 +304,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         decoration: const BoxDecoration(color: ColorUI.WHITE),
                         child: InkWell(
                           onTap: () {
+                            _sheetShipping();
                             debugPrint("go to bottom sheet pilih pengiriman");
                           },
                           child: Column(
@@ -378,5 +386,74 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ],
       )),
     );
+  }
+
+  void _sheetShipping() {
+    showModalBottomSheet(
+        barrierColor: ColorUI.BLACK.withOpacity(0.2),
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        useRootNavigator: false,
+        context: context,
+        builder: (context) {
+          return makeDismiss(context,
+              child: DraggableScrollableSheet(
+                  initialChildSize: 0.5,
+                  minChildSize: 0.3,
+                  maxChildSize: 0.6,
+                  builder: (context, controller) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
+                      decoration: const BoxDecoration(
+                          color: ColorUI.WHITE,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(32),
+                            topRight: Radius.circular(32),
+                          )),
+                      child: Stack(
+                        children: [
+                          ScrollConfiguration(
+                            behavior: const MaterialScrollBehavior()
+                                .copyWith(overscroll: false),
+                            child: ListView(
+                              shrinkWrap: true,
+                              controller: controller,
+                              primary: false,
+                              children: [
+                                ...notchBottomSheet("Pilih Pengiriman"),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(
+                                top: 70, left: 16, right: 16, bottom: 16),
+                            child: ListView(
+                              shrinkWrap: true,
+                              physics: const BouncingScrollPhysics(),
+                              children: [
+                                BlocBuilder<DataShippingCubit,
+                                        DataShippingState>(
+                                    builder: (context, state) {
+                                  if (state is DataShippingLoading) {
+                                    return const Center(
+                                        child: LoaderIndicator());
+                                  } else if (state is DataShippingLoaded) {
+                                    return Column(
+                                      children: state.shippingLoaded.items
+                                          .map((e) => Text(e.code))
+                                          .toList(),
+                                    );
+                                  }
+                                  return const SizedBox();
+                                })
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  }));
+        });
   }
 }
