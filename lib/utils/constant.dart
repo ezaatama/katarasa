@@ -88,7 +88,7 @@ const int RESPONSE_NOT_FOUND = 404;
 const int RESPONSE_VALIDATION = 422;
 const int RESPONSE_SERVER_ERROR = 500;
 
-List<Widget> notchBottomSheet() {
+List<Widget> notchBottomSheet(String title) {
   return [
     const SizedBox(height: 12.0),
     Row(
@@ -97,7 +97,7 @@ List<Widget> notchBottomSheet() {
         Container(
           margin: const EdgeInsets.only(top: 10),
           child: Text(
-            "Detail Pesanan",
+            title,
             style: BLACK_TEXT_STYLE.copyWith(
                 fontSize: 20, fontWeight: FontUI.WEIGHT_SEMI_BOLD),
           ),
