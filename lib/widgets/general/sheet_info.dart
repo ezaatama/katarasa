@@ -40,7 +40,7 @@ class SheetInfo {
                             controller: controller,
                             primary: false,
                             children: [
-                              ...notchBottomSheet(),
+                              ...notchBottomSheet("Detail Pesanan"),
                             ],
                           ),
                         ),
