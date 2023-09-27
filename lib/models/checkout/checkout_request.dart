@@ -554,3 +554,18 @@ class Status {
         "message": message,
       };
 }
+
+class AddToCheckoutRequest {
+  final String note1;
+  final String note2;
+  bool koin;
+
+  AddToCheckoutRequest({
+    required this.note1,
+    required this.note2,
+    required this.koin,
+  });
+
+  Map<String, dynamic> toJson() =>
+      {"note1": note1, "note2": note2, "koin": koin};
+}
