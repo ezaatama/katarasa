@@ -24,3 +24,19 @@ final class DataShippingError extends DataShippingState {
 }
 
 final class DataShippingEmpty extends DataShippingState {}
+
+final class SelectShippingInitial extends DataShippingState {}
+
+final class SelectShippingLoading extends DataShippingState {}
+
+final class SelectShippingSuccess extends DataShippingState {
+  final String selectSuccess;
+
+  const SelectShippingSuccess(this.selectSuccess);
+}
+
+final class SelectShippingError extends DataShippingState {
+  final String errSelect;
+
+  const SelectShippingError(this.errSelect);
+}
