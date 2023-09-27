@@ -14,6 +14,7 @@ import 'package:katarasa/widgets/choice_chip.dart';
 import 'package:katarasa/widgets/general/loader_indicator.dart';
 import 'package:katarasa/widgets/product.dart';
 import 'package:katarasa/widgets/product_discount.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -124,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       final discountProduct =
                           context.read<ProductCubit>().hasiDiscountProduct();
                       if (state is ProductLoading) {
-                        return const Center(child: CircularProgressIndicator());
+                        return _shimmerContent();
                       } else if (state is ProductSuccess) {
                         if (discountProduct.isNotEmpty) {
                           return ListView.builder(
@@ -153,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 BlocBuilder<ProductsCubit, ProductsState>(
                   builder: (context, state) {
                     if (state is ProductsLoading) {
-                      return const LoaderIndicator();
+                      return _shimmerContent();
                     } else if (state is ProductsSuccess) {
                       return ListView.builder(
                           shrinkWrap: true,
@@ -245,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // ),
         BlocBuilder<AllCartCubit, AllCartState>(builder: (context, state) {
           if (state is AllCartLoading) {
-            return const Center(child: LoaderIndicator());
+            return _shimmerCartItem();
           } else if (state is AllCartEmpty) {
             return const SizedBox();
           } else if (state is AllCartLoaded) {
@@ -348,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocBuilder<ProductsCubit, ProductsState>(
       builder: (context, state) {
         if (state is ProductsLoading) {
-          return const LoaderIndicator();
+          return _shimmerContent();
         } else if (state is ProductsSuccess) {
           Map<String, List<ProductRequest>> mappedProduk = groupBy(
               state.allProduct, (ProductRequest produk) => produk.category);
@@ -389,6 +390,87 @@ class _HomeScreenState extends State<HomeScreen> {
               ? ColorUI.BROWN
               : ColorUI.WHITE.withOpacity(0.60),
           borderRadius: BorderRadius.circular(10)),
+    );
+  }
+
+  Widget _shimmerContent() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: Shimmer.fromColors(
+        baseColor: ColorUI.SHIMMER_BASE,
+        highlightColor: ColorUI.SHIMMER_HIGHLIGHT,
+        child: ListView.builder(
+          itemBuilder: (_, __) => Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 48.0,
+                  height: 48.0,
+                  color: Colors.white,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: double.infinity,
+                        height: 8.0,
+                        color: Colors.white,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 2.0),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: 8.0,
+                        color: Colors.white,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 2.0),
+                      ),
+                      Container(
+                        width: 40.0,
+                        height: 8.0,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          itemCount: 6,
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerCartItem() {
+    return Positioned(
+      top: MediaQuery.of(context).size.height * .750,
+      left: 0,
+      right: 0,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.060,
+        child: Shimmer.fromColors(
+            baseColor: ColorUI.SHIMMER_BASE,
+            highlightColor: ColorUI.SHIMMER_HIGHLIGHT,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: ColorUI.SHIMMER_BASE,
+              ),
+            )),
+      ),
     );
   }
 }
