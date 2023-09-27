@@ -3,12 +3,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:katarasa/data/checkout/data_checkout/data_checkout_cubit.dart';
 import 'package:katarasa/data/checkout/data_shipping/data_shipping_cubit.dart';
+import 'package:katarasa/models/checkout/checkout_request.dart';
+import 'package:katarasa/models/checkout/select_shipping_request.dart';
 import 'package:katarasa/utils/constant.dart';
+import 'package:katarasa/widgets/button/loading_button.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/general/image.dart';
 import 'package:katarasa/widgets/general/loader_indicator.dart';
 import 'package:katarasa/widgets/general/make_dismiss.dart';
-import 'package:katarasa/widgets/shipping/data_shipping.dart';
+import 'package:katarasa/widgets/general/toast_comp.dart';
+import 'package:katarasa/widgets/shipping/custom_expand_items.dart';
+import 'package:katarasa/widgets/shipping/custom_shipping_time.dart';
+import 'package:shimmer/shimmer.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -96,7 +102,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 child: BlocBuilder<DataCheckoutCubit, DataCheckoutState>(
               builder: (context, state) {
                 if (state is DataCheckoutLoading) {
-                  return const Center(child: LoaderIndicator());
+                  return _shimmerContent();
                 } else if (state is DataCheckoutLoaded) {
                   final address = state.checkoutLoaded.address;
                   final cart = state.checkoutLoaded.cart;
@@ -256,7 +262,218 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                 fontWeight:
                                                     FontUI.WEIGHT_LIGHT),
                                           )
-                                        : Text("sudah pilih shipping"),
+                                        : cart[index]
+                                                    .shippingSelected
+                                                    .code
+                                                    .isNotEmpty &&
+                                                SelectShipping
+                                                    .shipDesc.isEmpty &&
+                                                SelectShipping
+                                                    .shipEdText.isEmpty
+                                            ? Container(
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: ColorUI.GREY
+                                                          .withOpacity(.20),
+                                                      offset: const Offset(
+                                                        0.0,
+                                                        2.0,
+                                                      ),
+                                                      blurRadius: 12.0,
+                                                      spreadRadius: 1.0,
+                                                    ), //BoxShadow
+                                                    const BoxShadow(
+                                                      color: Colors.white,
+                                                      offset: Offset(0.0, 0.0),
+                                                      blurRadius: 0.0,
+                                                      spreadRadius: 0.0,
+                                                    ), //BoxShadow
+                                                  ],
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                            cart[index]
+                                                                .shippingSelected
+                                                                .description,
+                                                            style: BLACK_TEXT_STYLE
+                                                                .copyWith(
+                                                                    fontWeight:
+                                                                        FontUI
+                                                                            .WEIGHT_SEMI_BOLD)),
+                                                        Flexible(
+                                                          child: Text(
+                                                              state
+                                                                  .checkoutLoaded
+                                                                  .shippingCostCurrencyFormat,
+                                                              style: BLACK_TEXT_STYLE
+                                                                  .copyWith(
+                                                                      fontWeight:
+                                                                          FontUI
+                                                                              .WEIGHT_SEMI_BOLD)),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    Text(
+                                                        "Estimasi pengiriman ${cart[index].shippingSelected.etdText}",
+                                                        style: BLACK_TEXT_STYLE
+                                                            .copyWith(
+                                                                fontSize: 12,
+                                                                fontWeight: FontUI
+                                                                    .WEIGHT_LIGHT)),
+                                                    const SizedBox(height: 3),
+                                                    Text(
+                                                        "Berat ${cart[index].totalWeight}",
+                                                        style: BLACK_TEXT_STYLE
+                                                            .copyWith(
+                                                                fontSize: 12,
+                                                                fontWeight: FontUI
+                                                                    .WEIGHT_LIGHT)),
+                                                    const SizedBox(height: 7),
+                                                    const Divider(
+                                                        thickness: 2,
+                                                        height: 4),
+                                                    const SizedBox(height: 7),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text("Total Pembayaran",
+                                                            style: BLACK_TEXT_STYLE
+                                                                .copyWith(
+                                                                    fontWeight:
+                                                                        FontUI
+                                                                            .WEIGHT_LIGHT)),
+                                                        Text(
+                                                            state.checkoutLoaded
+                                                                .totalCurrencyFormat,
+                                                            style: BLACK_TEXT_STYLE
+                                                                .copyWith(
+                                                                    fontWeight:
+                                                                        FontUI
+                                                                            .WEIGHT_SEMI_BOLD)),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            : Container(
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: ColorUI.GREY
+                                                          .withOpacity(.20),
+                                                      offset: const Offset(
+                                                        0.0,
+                                                        2.0,
+                                                      ),
+                                                      blurRadius: 12.0,
+                                                      spreadRadius: 1.0,
+                                                    ), //BoxShadow
+                                                    const BoxShadow(
+                                                      color: Colors.white,
+                                                      offset: Offset(0.0, 0.0),
+                                                      blurRadius: 0.0,
+                                                      spreadRadius: 0.0,
+                                                    ), //BoxShadow
+                                                  ],
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                            SelectShipping
+                                                                .shipDesc,
+                                                            style: BLACK_TEXT_STYLE
+                                                                .copyWith(
+                                                                    fontWeight:
+                                                                        FontUI
+                                                                            .WEIGHT_SEMI_BOLD)),
+                                                        Text(
+                                                            SelectShipping
+                                                                .shipCurrency,
+                                                            style: BLACK_TEXT_STYLE
+                                                                .copyWith(
+                                                                    fontWeight:
+                                                                        FontUI
+                                                                            .WEIGHT_SEMI_BOLD)),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 3),
+                                                    Text(
+                                                        "Estimasi pengiriman ${SelectShipping.shipEdText}",
+                                                        style: BLACK_TEXT_STYLE
+                                                            .copyWith(
+                                                                fontSize: 12,
+                                                                fontWeight: FontUI
+                                                                    .WEIGHT_LIGHT)),
+                                                    const SizedBox(height: 3),
+                                                    Text(
+                                                        "Berat ${cart[index].totalWeight}",
+                                                        style: BLACK_TEXT_STYLE
+                                                            .copyWith(
+                                                                fontSize: 12,
+                                                                fontWeight: FontUI
+                                                                    .WEIGHT_LIGHT)),
+                                                    const SizedBox(height: 7),
+                                                    const Divider(
+                                                        thickness: 2,
+                                                        height: 4),
+                                                    const SizedBox(height: 7),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text("Total Pembayaran",
+                                                            style: BLACK_TEXT_STYLE
+                                                                .copyWith(
+                                                                    fontWeight:
+                                                                        FontUI
+                                                                            .WEIGHT_LIGHT)),
+                                                        Text(
+                                                            state.checkoutLoaded
+                                                                .totalCurrencyFormat,
+                                                            style: BLACK_TEXT_STYLE
+                                                                .copyWith(
+                                                                    fontWeight:
+                                                                        FontUI
+                                                                            .WEIGHT_SEMI_BOLD)),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
                                   ],
                                 )
                               ],
@@ -373,11 +590,39 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    PrimaryButton(
-                        text: "Pesan",
-                        onPressed: () {
-                          debugPrint("go to pembayaran");
-                        })
+                    BlocConsumer<DataCheckoutCubit, DataCheckoutState>(
+                      listener: (context, state) {
+                        if (state is PostCheckoutSuccess) {
+                          showToast(
+                              text: state.coSuccess,
+                              state: ToastStates.SUCCESS);
+
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, '/home', (route) => false);
+                        } else if (state is PostCheckoutError) {
+                          showToast(
+                              text: state.coError, state: ToastStates.ERROR);
+                        }
+                      },
+                      builder: (context, state) {
+                        final resCo = context.read<DataCheckoutCubit>();
+                        return resCo.isCheckout
+                            ? LoadingButton(onPressed: () {
+                                debugPrint('response loading');
+                              })
+                            : PrimaryButton(
+                                text: "Pesan",
+                                onPressed: () {
+                                  AddToCheckoutRequest payload =
+                                      AddToCheckoutRequest(
+                                          note1: '', note2: '', koin: false);
+                                  context
+                                      .read<DataCheckoutCubit>()
+                                      .postCheckout(context, payload);
+                                  debugPrint("go to pembayaran");
+                                });
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -396,64 +641,399 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         useRootNavigator: false,
         context: context,
         builder: (context) {
-          return makeDismiss(context,
-              child: DraggableScrollableSheet(
-                  initialChildSize: 0.5,
-                  minChildSize: 0.3,
-                  maxChildSize: 0.6,
-                  builder: (context, controller) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                      decoration: const BoxDecoration(
-                          color: ColorUI.WHITE,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(32),
-                            topRight: Radius.circular(32),
-                          )),
-                      child: Stack(
-                        children: [
-                          ScrollConfiguration(
-                            behavior: const MaterialScrollBehavior()
-                                .copyWith(overscroll: false),
-                            child: ListView(
-                              shrinkWrap: true,
-                              controller: controller,
-                              primary: false,
-                              children: [
-                                ...notchBottomSheet("Pilih Pengiriman"),
-                              ],
+          return StatefulBuilder(builder: (context, setStater) {
+            return makeDismiss(context,
+                child: DraggableScrollableSheet(
+                    initialChildSize: 0.5,
+                    minChildSize: 0.3,
+                    maxChildSize: 0.6,
+                    builder: (context, controller) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 10),
+                        decoration: const BoxDecoration(
+                            color: ColorUI.WHITE,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(32),
+                              topRight: Radius.circular(32),
+                            )),
+                        child: Stack(
+                          children: [
+                            ScrollConfiguration(
+                              behavior: const MaterialScrollBehavior()
+                                  .copyWith(overscroll: false),
+                              child: ListView(
+                                shrinkWrap: true,
+                                controller: controller,
+                                primary: false,
+                                children: [
+                                  ...notchBottomSheet("Waktu Pengiriman"),
+                                ],
+                              ),
                             ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                top: 70, left: 16, right: 16, bottom: 16),
-                            child: ListView(
-                              shrinkWrap: true,
-                              physics: const BouncingScrollPhysics(),
-                              children: [
-                                BlocBuilder<DataShippingCubit,
-                                        DataShippingState>(
-                                    builder: (context, state) {
-                                  if (state is DataShippingLoading) {
-                                    return const Center(
-                                        child: LoaderIndicator());
-                                  } else if (state is DataShippingLoaded) {
-                                    return Column(
-                                      children: state.shippingLoaded.items
-                                          .map((e) => Text(e.code))
-                                          .toList(),
-                                    );
-                                  }
-                                  return const SizedBox();
-                                })
-                              ],
-                            ),
-                          )
-                        ],
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  top: 70, left: 16, right: 16, bottom: 16),
+                              child: ListView(
+                                shrinkWrap: true,
+                                physics: const BouncingScrollPhysics(),
+                                children: [
+                                  BlocBuilder<DataShippingCubit,
+                                          DataShippingState>(
+                                      builder: (context, state) {
+                                    if (state is DataShippingLoading) {
+                                      return const Center(
+                                          child: LoaderIndicator());
+                                    } else if (state is DataShippingLoaded) {
+                                      final store = state.shippingLoaded.store;
+                                      return Column(
+                                        children: [
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            child: Wrap(
+                                              alignment: WrapAlignment.center,
+                                              spacing: 8.0,
+                                              runSpacing: 4.0,
+                                              direction: Axis.horizontal,
+                                              children: state
+                                                  .shippingLoaded.sendTime
+                                                  .map((e) {
+                                                return CustomTimeShipping(
+                                                    value: e.value,
+                                                    groupValue: SelectShipping
+                                                        .selectTime,
+                                                    time: e,
+                                                    onChanged: (val) {
+                                                      setStater(() {
+                                                        SelectShipping
+                                                            .selectTime = val;
+                                                        debugPrint(
+                                                            "ini select Time => ${SelectShipping.selectTime}");
+                                                      });
+                                                    });
+                                              }).toList(),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Center(
+                                            child: Text(
+                                              "Pilih Pengiriman",
+                                              style: BLACK_TEXT_STYLE.copyWith(
+                                                  fontSize: 20,
+                                                  fontWeight:
+                                                      FontUI.WEIGHT_SEMI_BOLD),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Column(
+                                              children: state
+                                                  .shippingLoaded.items
+                                                  .map((e) {
+                                            final index = state
+                                                .shippingLoaded.items
+                                                .indexOf(e);
+                                            return StatefulBuilder(
+                                                builder: (context, setStaters) {
+                                              return Container(
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          color: Colors
+                                                              .transparent),
+                                                  child: CustomExpandableItem(
+                                                      header: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal: 15,
+                                                                vertical: 8),
+                                                        width: MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width,
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Flexible(
+                                                                child: Text(
+                                                              e.name,
+                                                              style: BLACK_TEXT_STYLE
+                                                                  .copyWith(
+                                                                      fontSize:
+                                                                          16,
+                                                                      fontWeight:
+                                                                          FontUI
+                                                                              .WEIGHT_SEMI_BOLD),
+                                                            )),
+                                                            StdImage(
+                                                                imageUrl:
+                                                                    e.icon,
+                                                                fit: BoxFit
+                                                                    .contain,
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    .150,
+                                                                height: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .height *
+                                                                    .040)
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      expandedChild: Column(
+                                                        children:
+                                                            e.type.map((type) {
+                                                          final indexed = e.type
+                                                              .indexOf(type);
+                                                          return InkWell(
+                                                            onTap: () {
+                                                              setStater(() {
+                                                                if (SelectShipping
+                                                                        .selectType ==
+                                                                    type.code) {
+                                                                  SelectShipping
+                                                                          .selectType =
+                                                                      "no select";
+                                                                } else {
+                                                                  SelectShipping
+                                                                          .selectType =
+                                                                      type.code;
+                                                                  SelectShipping
+                                                                          .shipEdText =
+                                                                      type.etdText;
+                                                                  SelectShipping
+                                                                          .shipCurrency =
+                                                                      type.priceCurrencyFormat;
+
+                                                                  SelectShipping
+                                                                      payload =
+                                                                      SelectShipping(
+                                                                          storeId: store
+                                                                              .id,
+                                                                          //address id set default hardcode because in API is null and don't know address id is select from where
+                                                                          addressId:
+                                                                              "1583",
+                                                                          shippingCode: SelectShipping
+                                                                              .selectItem,
+                                                                          shippingTipe: SelectShipping
+                                                                              .selectType,
+                                                                          sendTime:
+                                                                              SelectShipping.selectTime);
+                                                                  context
+                                                                      .read<
+                                                                          DataShippingCubit>()
+                                                                      .selectShipping(
+                                                                          context,
+                                                                          payload);
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                }
+                                                                debugPrint(
+                                                                    "ini selected type => ${SelectShipping.selectedType}, ini index type $indexed dan ini penampung option ${SelectShipping.selectType}");
+                                                              });
+                                                            },
+                                                            child: Container(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      bottom:
+                                                                          10),
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left: 25,
+                                                                      right:
+                                                                          15),
+                                                              child: Container(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(10),
+                                                                margin:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        bottom:
+                                                                            8),
+                                                                decoration: SelectShipping
+                                                                            .selectType ==
+                                                                        type
+                                                                            .code
+                                                                    ? BoxDecoration(
+                                                                        color: ColorUI
+                                                                            .BROWN
+                                                                            .withOpacity(
+                                                                                .20),
+                                                                        border: Border.all(
+                                                                            color: ColorUI
+                                                                                .BROWN,
+                                                                            width:
+                                                                                1),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(10))
+                                                                    : null,
+                                                                child: Row(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Text(
+                                                                          type.name,
+                                                                          style:
+                                                                              BLACK_TEXT_STYLE.copyWith(fontWeight: FontUI.WEIGHT_MEDIUM),
+                                                                        ),
+                                                                        const SizedBox(
+                                                                            height:
+                                                                                3),
+                                                                        Text(
+                                                                          type.etdText,
+                                                                          style:
+                                                                              BLACK_TEXT_STYLE.copyWith(fontWeight: FontUI.WEIGHT_LIGHT),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                    Text(
+                                                                      type.priceCurrencyFormat,
+                                                                      style: BLACK_TEXT_STYLE.copyWith(
+                                                                          fontWeight:
+                                                                              FontUI.WEIGHT_SEMI_BOLD),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }).toList(),
+                                                      ),
+                                                      isExpanded: SelectShipping
+                                                              .selectItem ==
+                                                          e.code,
+                                                      onTap: () {
+                                                        setStater(() {
+                                                          // if (selectedIndex ==
+                                                          //     index) {
+                                                          //   // Clicking an already open section should close it
+                                                          //   selectedIndex = -1;
+                                                          // } else {
+                                                          //   selectedIndex =
+                                                          //       index;
+                                                          // }
+                                                          if (SelectShipping
+                                                                  .selectItem ==
+                                                              e.code) {
+                                                            SelectShipping
+                                                                    .selectItem =
+                                                                "no select";
+                                                          } else {
+                                                            SelectShipping
+                                                                    .selectItem =
+                                                                e.code;
+                                                            SelectShipping
+                                                                    .shipDesc =
+                                                                e.name;
+                                                          }
+                                                          debugPrint(
+                                                              "ini selected type => ${SelectShipping.selectedType}, ini index type $index dan ini penampung option ${SelectShipping.selectItem}");
+                                                        });
+                                                      }));
+                                            });
+                                          }).toList()),
+                                        ],
+                                      );
+                                    }
+                                    return const SizedBox();
+                                  })
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    }));
+          });
+        }).then((value) {
+      setState(() {
+        SelectShipping.shipDesc;
+        SelectShipping.shipEdText;
+        SelectShipping.selectItem;
+        SelectShipping.selectType;
+        SelectShipping.selectTime;
+        SelectShipping.shipCurrency;
+      });
+    });
+  }
+
+  Widget _shimmerContent() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: Shimmer.fromColors(
+        baseColor: ColorUI.SHIMMER_BASE,
+        highlightColor: ColorUI.SHIMMER_HIGHLIGHT,
+        child: ListView.builder(
+          itemBuilder: (_, __) => Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 48.0,
+                  height: 48.0,
+                  color: Colors.white,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: double.infinity,
+                        height: 8.0,
+                        color: Colors.white,
                       ),
-                    );
-                  }));
-        });
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 2.0),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: 8.0,
+                        color: Colors.white,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 2.0),
+                      ),
+                      Container(
+                        width: 40.0,
+                        height: 8.0,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          itemCount: 6,
+        ),
+      ),
+    );
   }
 }
