@@ -8,6 +8,7 @@ import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/cart/single_cart.dart';
 import 'package:katarasa/widgets/general/loader_indicator.dart';
 import 'package:katarasa/widgets/general/sheet_info.dart';
+import 'package:shimmer/shimmer.dart';
 
 class AllCartScreen extends StatefulWidget {
   const AllCartScreen({super.key});
@@ -101,7 +102,7 @@ class _AllCartScreenState extends State<AllCartScreen>
                   child: BlocBuilder<AllCartCubit, AllCartState>(
                     builder: (context, state) {
                       if (state is AllCartLoading) {
-                        return const LoaderIndicator();
+                        return _shimmerContent();
                       } else if (state is AllCartLoaded) {
                         final allCartProduct = state.allCartLoaded.items;
                         return ListView.builder(
@@ -124,7 +125,7 @@ class _AllCartScreenState extends State<AllCartScreen>
           BlocBuilder<AllCartCubit, AllCartState>(
             builder: (context, state) {
               if (state is AllCartLoading) {
-                return const Center(child: LoaderIndicator());
+                return _shimmerRingkasan();
               } else if (state is AllCartLoaded) {
                 final isSelected = state.allCartLoaded.totalProductSelected;
 
@@ -296,7 +297,19 @@ class _AllCartScreenState extends State<AllCartScreen>
                     BlocBuilder<AllCartCubit, AllCartState>(
                       builder: (context, state) {
                         if (state is AllCartLoading) {
-                          return const Center(child: LoaderIndicator());
+                          return SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height * 0.060,
+                            child: Shimmer.fromColors(
+                                baseColor: ColorUI.SHIMMER_BASE,
+                                highlightColor: ColorUI.SHIMMER_HIGHLIGHT,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: ColorUI.SHIMMER_BASE,
+                                  ),
+                                )),
+                          );
                         } else if (state is AllCartLoaded) {
                           final isSelected =
                               state.allCartLoaded.totalProductSelected;
@@ -322,6 +335,87 @@ class _AllCartScreenState extends State<AllCartScreen>
           )
         ],
       )),
+    );
+  }
+
+  Widget _shimmerContent() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: Shimmer.fromColors(
+        baseColor: ColorUI.SHIMMER_BASE,
+        highlightColor: ColorUI.SHIMMER_HIGHLIGHT,
+        child: ListView.builder(
+          itemBuilder: (_, __) => Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 48.0,
+                  height: 48.0,
+                  color: Colors.white,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: double.infinity,
+                        height: 8.0,
+                        color: Colors.white,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 2.0),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: 8.0,
+                        color: Colors.white,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 2.0),
+                      ),
+                      Container(
+                        width: 40.0,
+                        height: 8.0,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          itemCount: 6,
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerRingkasan() {
+    return Positioned(
+      bottom: 80,
+      left: 0,
+      right: 0,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.160,
+        child: Shimmer.fromColors(
+            baseColor: ColorUI.SHIMMER_BASE,
+            highlightColor: ColorUI.SHIMMER_HIGHLIGHT,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: ColorUI.SHIMMER_BASE,
+              ),
+            )),
+      ),
     );
   }
 }
