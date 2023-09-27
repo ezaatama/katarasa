@@ -24,3 +24,17 @@ final class DataCheckoutError extends DataCheckoutState {
 }
 
 final class DataCheckoutEmpty extends DataCheckoutState {}
+
+final class PostCheckoutLoading extends DataCheckoutState {}
+
+final class PostCheckoutSuccess extends DataCheckoutState {
+  final String coSuccess;
+
+  const PostCheckoutSuccess(this.coSuccess);
+}
+
+final class PostCheckoutError extends DataCheckoutState {
+  final String coError;
+
+  const PostCheckoutError(this.coError);
+}
