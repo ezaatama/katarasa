@@ -172,78 +172,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        // BlocBuilder<CartItemCubit, CartItemState>(
-        //   builder: (context, state) {
-        //     if (state is CartItemUpdated) {
-        //       int totalPrice = state.cartItems.fold(
-        //           0,
-        //           (total, item) =>
-        //               total +
-        //               (item.product.discount == null
-        //                   ? item.product.price * item.quantity
-        //                   : item.product.discount! * item.quantity));
-        //       String productAdded =
-        //           state.cartItems.map((e) => e.product.title).toString();
-        //       return state.cartItems.isEmpty
-        //           ? const SizedBox()
-        //           : Positioned(
-        //               top: MediaQuery.of(context).size.height * .750,
-        //               left: 0,
-        //               right: 0,
-        //               child: InkWell(
-        //                 onTap: () {
-        //                   debugPrint("go to cart");
-        //                   Navigator.pushNamed(context, '/cart');
-        //                 },
-        //                 child: Container(
-        //                   margin: const EdgeInsets.symmetric(horizontal: 16),
-        //                   padding: const EdgeInsets.symmetric(
-        //                       horizontal: 18, vertical: 8),
-        //                   width: MediaQuery.of(context).size.width,
-        //                   decoration: BoxDecoration(
-        //                       color: ColorUI.MEDIUM_BROWN,
-        //                       borderRadius: BorderRadius.circular(16)),
-        //                   child: Row(
-        //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //                     children: [
-        //                       Flexible(
-        //                         child: Column(
-        //                           crossAxisAlignment: CrossAxisAlignment.start,
-        //                           children: [
-        //                             Text(
-        //                               "${state.cartItems.length.toString()} item",
-        //                               style: WHITE_TEXT_STYLE.copyWith(
-        //                                   fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-        //                             ),
-        //                             const SizedBox(height: 6),
-        //                             Text(productAdded,
-        //                                 style: WHITE_TEXT_STYLE.copyWith(
-        //                                     fontWeight: FontUI.WEIGHT_LIGHT),
-        //                                 maxLines: 1),
-        //                           ],
-        //                         ),
-        //                       ),
-        //                       const SizedBox(width: 8),
-        //                       Row(
-        //                         children: [
-        //                           Text("Rp ${totalPrice.toRupiah()}",
-        //                               style: WHITE_TEXT_STYLE.copyWith(
-        //                                   fontSize: 18,
-        //                                   fontWeight: FontUI.WEIGHT_BOLD)),
-        //                           const SizedBox(width: 6),
-        //                           const Icon(Icons.shopping_bag_outlined,
-        //                               color: ColorUI.WHITE, size: 20)
-        //                         ],
-        //                       ),
-        //                     ],
-        //                   ),
-        //                 ),
-        //               ),
-        //             );
-        //     }
-        //     return const SizedBox();
-        //   },
-        // ),
         BlocBuilder<AllCartCubit, AllCartState>(builder: (context, state) {
           if (state is AllCartLoading) {
             return _shimmerCartItem();
@@ -294,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 8),
                       Row(
                         children: [
-                          Text("Rp 10.000",
+                          Text(state.allCartLoaded.totalCartCurrencyFormat,
                               style: WHITE_TEXT_STYLE.copyWith(
                                   fontSize: 18,
                                   fontWeight: FontUI.WEIGHT_BOLD)),
