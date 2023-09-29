@@ -489,6 +489,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         decoration: const BoxDecoration(color: ColorUI.WHITE),
                         child: InkWell(
                           onTap: () {
+                            _sheetVoucher();
                             debugPrint("go to bottom sheet voucher discount");
                           },
                           child: Column(
@@ -631,6 +632,135 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ],
       )),
     );
+  }
+
+  void _sheetVoucher() {
+    showModalBottomSheet(
+        barrierColor: ColorUI.BLACK.withOpacity(0.2),
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        useRootNavigator: false,
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setStater) {
+            return makeDismiss(context,
+                child: DraggableScrollableSheet(
+                    initialChildSize: 0.5,
+                    minChildSize: 0.3,
+                    maxChildSize: 0.6,
+                    builder: (context, controller) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 10),
+                        decoration: const BoxDecoration(
+                            color: ColorUI.WHITE,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(32),
+                              topRight: Radius.circular(32),
+                            )),
+                        child: Stack(
+                          children: [
+                            ScrollConfiguration(
+                              behavior: const MaterialScrollBehavior()
+                                  .copyWith(overscroll: false),
+                              child: ListView(
+                                shrinkWrap: true,
+                                controller: controller,
+                                primary: false,
+                                children: [
+                                  ...notchBottomSheet("Voucher Discount"),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  top: 70, left: 16, right: 16, bottom: 16),
+                              child: ListView(
+                                shrinkWrap: true,
+                                physics: const BouncingScrollPhysics(),
+                                children: [
+                                  BlocBuilder<DataCheckoutCubit,
+                                          DataCheckoutState>(
+                                      builder: (context, state) {
+                                    if (state is DataCheckoutLoading) {
+                                      return const Center(
+                                          child: LoaderIndicator());
+                                    } else if (state is DataCheckoutLoaded) {
+                                      final voucher =
+                                          state.checkoutLoaded.voucherJaja;
+                                      return Column(
+                                        children: voucher.map((e) {
+                                          return Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              padding: const EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: ColorUI.GREY
+                                                        .withOpacity(.20),
+                                                    offset: const Offset(
+                                                      0.0,
+                                                      2.0,
+                                                    ),
+                                                    blurRadius: 12.0,
+                                                    spreadRadius: 1.0,
+                                                  ), //BoxShadow
+                                                  const BoxShadow(
+                                                    color: Colors.white,
+                                                    offset: Offset(0.0, 0.0),
+                                                    blurRadius: 0.0,
+                                                    spreadRadius: 0.0,
+                                                  ), //BoxShadow
+                                                ],
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(e.code,
+                                                          style: BLACK_TEXT_STYLE
+                                                              .copyWith(
+                                                                  fontSize: 16,
+                                                                  fontWeight: FontUI
+                                                                      .WEIGHT_SEMI_BOLD)),
+                                                      StdImage(
+                                                          imageUrl: e.image,
+                                                          fit: BoxFit.contain,
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              .150,
+                                                          height: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .height *
+                                                              .040)
+                                                    ],
+                                                  )
+                                                ],
+                                              ));
+                                        }).toList(),
+                                      );
+                                    }
+                                    return const SizedBox();
+                                  })
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    }));
+          });
+        });
   }
 
   void _sheetShipping() {
