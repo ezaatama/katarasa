@@ -6,6 +6,7 @@ import 'package:katarasa/data/checkout/data_shipping/data_shipping_cubit.dart';
 import 'package:katarasa/models/checkout/checkout_request.dart';
 import 'package:katarasa/models/checkout/select_shipping_request.dart';
 import 'package:katarasa/utils/constant.dart';
+import 'package:katarasa/widgets/button/disable_button.dart';
 import 'package:katarasa/widgets/button/loading_button.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/general/image.dart';
@@ -255,7 +256,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       ],
                                     ),
                                     const SizedBox(height: 10),
-                                    cart[index].shippingSelected.code.isEmpty
+                                    cart[index].shippingSelected.code.isEmpty &&
+                                            SelectShipping.shipDesc.isEmpty &&
+                                            SelectShipping.shipEdText.isEmpty
                                         ? Text(
                                             "*Anda belum memilih pengiriman",
                                             style: BLACK_TEXT_STYLE.copyWith(
@@ -606,22 +609,33 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         }
                       },
                       builder: (context, state) {
-                        final resCo = context.read<DataCheckoutCubit>();
-                        return resCo.isCheckout
-                            ? LoadingButton(onPressed: () {
-                                debugPrint('response loading');
-                              })
-                            : PrimaryButton(
-                                text: "Pesan",
-                                onPressed: () {
-                                  AddToCheckoutRequest payload =
-                                      AddToCheckoutRequest(
-                                          note1: '', note2: '', koin: false);
-                                  context
-                                      .read<DataCheckoutCubit>()
-                                      .postCheckout(context, payload);
-                                  debugPrint("go to pembayaran");
-                                });
+                        if (state is DataCheckoutLoaded) {
+                          final resCo = context.read<DataCheckoutCubit>();
+                          final shipping = state.checkoutLoaded.cart
+                              .map((e) => e.shippingSelected);
+                          final cekShipping = shipping.map((e) => e.code);
+                          return resCo.isCheckout
+                              ? LoadingButton(onPressed: () {
+                                  debugPrint('response loading');
+                                })
+                              : cekShipping.isEmpty
+                                  ? DisableButton(
+                                      text: "Pembayaran", onPressed: () {})
+                                  : PrimaryButton(
+                                      text: "Pembayaran",
+                                      onPressed: () {
+                                        AddToCheckoutRequest payload =
+                                            AddToCheckoutRequest(
+                                                note1: '',
+                                                note2: '',
+                                                koin: false);
+                                        context
+                                            .read<DataCheckoutCubit>()
+                                            .postCheckout(context, payload);
+                                        debugPrint("go to pembayaran");
+                                      });
+                        }
+                        return const SizedBox();
                       },
                     ),
                   ],
@@ -697,7 +711,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                               padding: const EdgeInsets.all(8),
                                               decoration: BoxDecoration(
                                                 borderRadius:
-                                                    BorderRadius.circular(12),
+                                                    BorderRadius.circular(4),
                                                 boxShadow: [
                                                   BoxShadow(
                                                     color: ColorUI.GREY
@@ -724,25 +738,97 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                         MainAxisAlignment
                                                             .spaceBetween,
                                                     children: [
-                                                      Text(e.code,
-                                                          style: BLACK_TEXT_STYLE
-                                                              .copyWith(
-                                                                  fontSize: 16,
-                                                                  fontWeight: FontUI
-                                                                      .WEIGHT_SEMI_BOLD)),
+                                                      Flexible(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            RichText(
+                                                                text: TextSpan(
+                                                                    text:
+                                                                        "Berlaku mulai dari ",
+                                                                    style: BLACK_TEXT_STYLE.copyWith(
+                                                                        fontSize:
+                                                                            12,
+                                                                        fontWeight:
+                                                                            FontUI.WEIGHT_LIGHT),
+                                                                    children: [
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "${e.startDate}\n",
+                                                                    style: BLACK_TEXT_STYLE.copyWith(
+                                                                        fontSize:
+                                                                            12,
+                                                                        fontWeight:
+                                                                            FontUI.WEIGHT_BOLD),
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "hingga ",
+                                                                    style: BLACK_TEXT_STYLE.copyWith(
+                                                                        fontSize:
+                                                                            12,
+                                                                        fontWeight:
+                                                                            FontUI.WEIGHT_LIGHT),
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "${e.endDate}\n",
+                                                                    style: BLACK_TEXT_STYLE.copyWith(
+                                                                        fontSize:
+                                                                            12,
+                                                                        fontWeight:
+                                                                            FontUI.WEIGHT_BOLD),
+                                                                  )
+                                                                ])),
+                                                            const SizedBox(
+                                                                height: 3),
+                                                            Text(e.name,
+                                                                style: BLACK_TEXT_STYLE.copyWith(
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontWeight:
+                                                                        FontUI
+                                                                            .WEIGHT_SEMI_BOLD)),
+                                                            const SizedBox(
+                                                                height: 3),
+                                                            Text(e.discountText,
+                                                                style: BLACK_TEXT_STYLE.copyWith(
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontWeight:
+                                                                        FontUI
+                                                                            .WEIGHT_SEMI_BOLD)),
+                                                            const SizedBox(
+                                                                height: 5),
+                                                            Text(
+                                                                "Kuota ${e.quota}",
+                                                                style: BLACK_TEXT_STYLE.copyWith(
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontUI
+                                                                            .WEIGHT_LIGHT)),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      //Tinggal di uncomment aja imageUrl nya, ini pake hardoce karna image dari API 404
                                                       StdImage(
-                                                          imageUrl: e.image,
+                                                          // imageUrl: e.image,
+                                                          imageUrl:
+                                                              'https://cdn.urbandigital.id/wp-content/uploads/2018/11/b_artikel_lazada_priceor17_7nov17.jpg',
                                                           fit: BoxFit.contain,
                                                           width: MediaQuery.of(
                                                                       context)
                                                                   .size
                                                                   .width *
-                                                              .150,
+                                                              .250,
                                                           height: MediaQuery.of(
                                                                       context)
                                                                   .size
                                                                   .height *
-                                                              .040)
+                                                              .080)
                                                     ],
                                                   )
                                                 ],
