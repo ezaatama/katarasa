@@ -13,6 +13,7 @@ import 'package:katarasa/data/checkout/data_checkout/data_checkout_cubit.dart';
 import 'package:katarasa/data/checkout/data_shipping/data_shipping_cubit.dart';
 import 'package:katarasa/data/dummy/cart_item/cart_item_cubit.dart';
 import 'package:katarasa/data/dummy/product/product_cubit.dart';
+import 'package:katarasa/data/order/data_order_cubit.dart';
 import 'package:katarasa/data/products/all_product/products_cubit.dart';
 import 'package:katarasa/data/products/category_product/category_product_cubit.dart';
 import 'package:katarasa/data/products/detail_product/products_detail_cubit.dart';
@@ -78,6 +79,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(create: (context) => CartItemCubit()),
           BlocProvider(create: (context) => DataCheckoutCubit()),
           BlocProvider(create: (context) => DataShippingCubit()),
+          BlocProvider(create: (context) => DataOrderCubit()),
         ],
         child: Builder(builder: (_) {
           if (Platform.isIOS) {
