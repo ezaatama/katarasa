@@ -23,3 +23,4 @@ const ADD_ADDRESS = 'profile/tambah-alamat';
 const DELETE_ADDRESS = 'profile/delete-alamat?';
 const EDIT_ADDRESS = 'profile/edit-alamat?';
 const LIST_ADDRESS = 'profile/select-data-wilayah?';
+const DATA_ORDER = 'order/data-order?';
