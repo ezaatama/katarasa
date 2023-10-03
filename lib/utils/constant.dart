@@ -107,3 +107,67 @@ List<Widget> notchBottomSheet(String title) {
     const SizedBox(height: 30.0),
   ];
 }
+
+//status caption and color
+String parseStatusCaption(String s) {
+  switch (s) {
+    case 'notPaid':
+      return 'Belum Dibayar';
+    case 'waitConfirm':
+      return 'Menunggu Konfirmasi';
+    case 'prepared':
+      return 'Disiapkan';
+    case 'sent':
+      return 'Dikirim';
+    case 'done':
+      return 'Selesai';
+    case 'canceled':
+      return 'Dibatalkan';
+    case 'refund':
+      return 'Pengembalian';
+    default:
+      return s;
+  }
+}
+
+Color parseStatusBg(String s) {
+  switch (s) {
+    case 'notPaid':
+      return const Color(0xFFFFF3D2);
+    case 'waitConfirm':
+      return const Color(0xFFFFCCCC);
+    case 'prepared':
+      return Color.fromARGB(255, 96, 248, 240);
+    case 'sent':
+      return const Color.fromARGB(255, 249, 93, 93);
+    case 'done':
+      return const Color(0xFFB1FFC7);
+    case 'canceled':
+      return Color.fromARGB(255, 255, 36, 36);
+    case 'refund':
+      return Color.fromARGB(255, 148, 165, 211);
+    default:
+      return Colors.blueAccent;
+  }
+}
+
+Color parseStatusTx(String s) {
+  switch (s) {
+    case 'notPaid':
+      return Color.fromARGB(255, 180, 165, 122);
+    case 'waitConfirm':
+      return Color.fromARGB(255, 209, 130, 130);
+    case 'prepared':
+      return Color.fromARGB(255, 36, 158, 152);
+    case 'sent':
+      return const Color.fromARGB(255, 249, 93, 93);
+    case 'done':
+      return Color.fromARGB(255, 57, 240, 109);
+    case 'canceled':
+      return Color.fromARGB(255, 122, 2, 2);
+    case 'refund':
+      return Color.fromARGB(255, 81, 104, 168);
+    default:
+      return Colors.white;
+  }
+}
