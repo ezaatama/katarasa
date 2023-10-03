@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
-import 'package:katarasa/data/order/data_order_cubit.dart';
+import 'package:katarasa/data/order/all_order/data_order_cubit.dart';
 import 'package:katarasa/utils/constant.dart';
-import 'package:katarasa/widgets/order/card_all_order.dart';
 import 'package:shimmer/shimmer.dart';
 
 class AllOrderScreen extends StatefulWidget {
@@ -91,26 +90,127 @@ class _AllOrderScreenState extends State<AllOrderScreen> {
           child: BlocBuilder<DataOrderCubit, DataOrderState>(
             builder: (context, state) {
               if (state is DataOrderLoading) {
-                _shimmerContent();
+                return _shimmerContent();
               } else if (state is DataOrderEmpty) {
                 return const Center(child: Text("Data Order Kosong"));
               } else if (state is DataOrderLoaded) {
-                return ListView.builder(
-                    shrinkWrap: true,
-                    primary: false,
-                    itemCount: state.dataOrderLoaded.items.length,
-                    itemBuilder: (context, index) {
-                      final item = state.dataOrderLoaded.items[index];
-                      final invoice = item.items[index];
-                      final store = item.items[index];
-                      final product = item.items[index].products[index];
-                      return CardAllOrder(
-                          item: item,
-                          invoice: invoice,
-                          store: store,
-                          productName: product,
-                          productSubTotal: item);
-                    });
+                return Column(
+                    children: state.dataOrderLoaded.items.map((items) {
+                  return InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/order-detail',
+                          arguments: items.orderId);
+                    },
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: ColorUI.GREY.withOpacity(.20),
+                            offset: const Offset(
+                              0.0,
+                              2.0,
+                            ),
+                            blurRadius: 12.0,
+                            spreadRadius: 1.0,
+                          ), //BoxShadow
+                          const BoxShadow(
+                            color: Colors.white,
+                            offset: Offset(0.0, 0.0),
+                            blurRadius: 0.0,
+                            spreadRadius: 0.0,
+                          ), //BoxShadow
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Order Id",
+                                style: BLACK_TEXT_STYLE.copyWith(
+                                    fontWeight: FontUI.WEIGHT_MEDIUM),
+                              ),
+                              Text(
+                                items.orderId,
+                                style: BLACK_TEXT_STYLE.copyWith(
+                                    fontWeight: FontUI.WEIGHT_MEDIUM),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 3),
+                          Column(
+                            children: items.items.map((inv) {
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "No. Invoice",
+                                    style: BLACK_TEXT_STYLE.copyWith(
+                                        fontWeight: FontUI.WEIGHT_MEDIUM),
+                                  ),
+                                  Text(
+                                    inv.invoice,
+                                    style: BLACK_TEXT_STYLE.copyWith(
+                                        fontWeight: FontUI.WEIGHT_MEDIUM),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 5),
+                          const Divider(thickness: 2, height: 3),
+                          const SizedBox(height: 5),
+                          Column(
+                              children: items.items.map((store) {
+                            return Text(
+                              "${store.store.name} - ${store.store.location}",
+                              style: BLACK_TEXT_STYLE.copyWith(
+                                  fontWeight: FontUI.WEIGHT_MEDIUM),
+                            );
+                          }).toList()),
+                          const SizedBox(height: 3),
+                          Column(
+                            children: items.items.map((prod) {
+                              return Column(
+                                  children: prod.products.map((singleProd) {
+                                return Text(
+                                  singleProd.name,
+                                  style: BLACK_TEXT_STYLE.copyWith(
+                                      fontWeight: FontUI.WEIGHT_MEDIUM),
+                                );
+                              }).toList());
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 5),
+                          const Divider(thickness: 2, height: 3),
+                          const SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Total",
+                                style: BLACK_TEXT_STYLE.copyWith(
+                                    fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+                              ),
+                              Text(
+                                items.totalPriceCurrencyFormat,
+                                style: RED_TEXT_STYLE.copyWith(
+                                    fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList());
               }
               return const SizedBox();
             },
