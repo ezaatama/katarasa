@@ -24,3 +24,5 @@ const DELETE_ADDRESS = 'profile/delete-alamat?';
 const EDIT_ADDRESS = 'profile/edit-alamat?';
 const LIST_ADDRESS = 'profile/select-data-wilayah?';
 const DATA_ORDER = 'order/data-order?';
+const DETAIL_ORDER = 'order/data-order-detail?';
+const METHOD_PAYMENT = 'order/data-method-payment';
