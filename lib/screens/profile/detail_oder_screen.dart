@@ -1,237 +1,172 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_offline/flutter_offline.dart';
+import 'package:katarasa/data/order/detail_order/detail_order_cubit.dart';
 import 'package:katarasa/utils/constant.dart';
-import 'package:katarasa/widgets/button/primary_button.dart';
+import 'package:katarasa/widgets/general/loader_indicator.dart';
+import 'package:katarasa/widgets/order/card_detail_order.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:timelines/timelines.dart';
 
-class DetailOrderScreen extends StatelessWidget {
-  const DetailOrderScreen({super.key});
+class DetailOrderScreen extends StatefulWidget {
+  const DetailOrderScreen({super.key, required this.idOrder});
+
+  final String idOrder;
+
+  @override
+  State<DetailOrderScreen> createState() => _DetailOrderScreenState();
+}
+
+class _DetailOrderScreenState extends State<DetailOrderScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<DetailOrderCubit>().getDetailOrder(context, widget.idOrder);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: ColorUI.LIGHT_BROWN.withOpacity(.20),
-          elevation: 0,
-          leading: IconButton(
-              icon: const Icon(Icons.arrow_back_rounded,
-                  size: 24, color: ColorUI.BLACK),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
-          title: Text(
-            "Detail Pesanan",
-            style: BLACK_TEXT_STYLE.copyWith(
-                fontSize: 22, fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-          ),
-          centerTitle: true,
+      resizeToAvoidBottomInset: true,
+      body: OfflineBuilder(
+          connectivityBuilder: (
+            BuildContext context,
+            ConnectivityResult connectivity,
+            Widget child,
+          ) {
+            final bool connected = connectivity != ConnectivityResult.none;
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                _bodyContent(),
+                Positioned(
+                  height: 24.0,
+                  bottom: 0.0,
+                  left: 0.0,
+                  right: 0.0,
+                  child: connected
+                      ? const SizedBox()
+                      : Container(
+                          color: const Color(0xFFEE4400),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("Periksa Kembali Jaringan Anda",
+                                    style: WHITE_TEXT_STYLE.copyWith(
+                                        fontSize: 14,
+                                        fontWeight: FontUI.WEIGHT_SEMI_BOLD)),
+                              ],
+                            ),
+                          ),
+                        ),
+                ),
+              ],
+            );
+          },
+          child: _bodyContent()),
+    );
+  }
+
+  Widget _bodyContent() {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back_rounded,
+                size: 24, color: ColorUI.BLACK),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+        title: Text(
+          "Detail Pesanan",
+          style: BLACK_TEXT_STYLE.copyWith(
+              fontSize: 22, fontWeight: FontUI.WEIGHT_SEMI_BOLD),
         ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: SizedBox(
-              child: Stack(
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height / 2.8,
-                        decoration: BoxDecoration(
-                            color: ColorUI.LIGHT_BROWN.withOpacity(.20)),
-                        child: Center(
-                          child: SvgPicture.asset(
-                            "assets/icons/order_confirmed.svg",
-                            height: MediaQuery.of(context).size.height * .250,
-                          ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+          child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        child: SingleChildScrollView(child:
+            BlocBuilder<DetailOrderCubit, DetailOrderState>(
+                builder: (context, state) {
+          if (state is DetailOrderLoading) {
+            return _shimmerContent();
+          } else if (state is DetailOrderLoaded) {
+            return ListView.builder(
+                shrinkWrap: true,
+                primary: false,
+                itemCount: state.detailOrderLoaded.items.length,
+                itemBuilder: (context, index) {
+                  final detail = state.detailOrderLoaded;
+                  final item = detail.items[index];
+                  final product = item.products[index];
+                  return CardDetailOrder(
+                    detail: detail,
+                    detailItem: item,
+                    detailProduct: product,
+                    detailHistory: Timeline.tileBuilder(
+                      // scrollDirection: Axis.horizontal,
+                      theme: TimelineThemeData(
+                          direction: Axis.horizontal,
+                          connectorTheme: ConnectorThemeData(
+                              color: ColorUI.BROWN.withOpacity(.40)),
+                          indicatorTheme:
+                              const IndicatorThemeData(color: ColorUI.BROWN)),
+                      builder: TimelineTileBuilder.connectedFromStyle(
+                        lastConnectorStyle: ConnectorStyle.transparent,
+                        connectionDirection: ConnectionDirection.before,
+                        connectorStyleBuilder: (context, index) {
+                          return (detail.orderHistory[index].isActive == false)
+                              ? ConnectorStyle.dashedLine
+                              : ConnectorStyle.solidLine;
+                        },
+                        indicatorStyleBuilder: (context, index) =>
+                            IndicatorStyle.dot,
+                        contentsAlign: ContentsAlign.alternating,
+                        contentsBuilder: (context, index) => Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Text(detail.orderHistory[index].name),
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 50),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: ColorUI.LIGHT_BROWN),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: ColorUI.GREY.withOpacity(.30),
-                                offset: const Offset(
-                                  4.0,
-                                  4.0,
-                                ),
-                                blurRadius: 10.0,
-                                spreadRadius: 2.0,
-                              ), //BoxShadow
-                              const BoxShadow(
-                                color: Colors.white,
-                                offset: Offset(0.0, 0.0),
-                                blurRadius: 0.0,
-                                spreadRadius: 0.0,
-                              ),
-                            ]),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(Icons.my_library_books_outlined,
-                                        color: ColorUI.BROWN, size: 20),
-                                    const SizedBox(width: 10),
-                                    Text(
-                                      "Detail Pesanan",
-                                      style: BLACK_TEXT_STYLE.copyWith(
-                                          fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-                                    )
-                                  ],
-                                ),
-                                Text(
-                                  "09 Sept 2023, 11:00",
-                                  style: BLACK_TEXT_STYLE.copyWith(
-                                      fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-                                )
-                              ],
-                            ),
-                            const Divider(thickness: 1),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(Icons.person_pin_outlined,
-                                        color: ColorUI.BROWN, size: 20),
-                                    const SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Nama Pelanggan",
-                                          style: BLACK_TEXT_STYLE.copyWith(
-                                              fontSize: 12,
-                                              fontWeight: FontUI.WEIGHT_LIGHT),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          "Reza Putra Pratama",
-                                          style: BLACK_TEXT_STYLE.copyWith(
-                                              fontWeight:
-                                                  FontUI.WEIGHT_SEMI_BOLD),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const Divider(thickness: 1),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 15,
-                                      height: 15,
-                                      decoration: BoxDecoration(
-                                          color: ColorUI.WHITE,
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                          border: Border.all(
-                                              color: ColorUI.BROWN,
-                                              width: 2.0)),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Pickup di",
-                                          style: BLACK_TEXT_STYLE.copyWith(
-                                              fontSize: 12,
-                                              fontWeight: FontUI.WEIGHT_LIGHT),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          "Outlet Kata Rasa - Kota Jakarta Timur",
-                                          style: BLACK_TEXT_STYLE.copyWith(
-                                              fontWeight:
-                                                  FontUI.WEIGHT_SEMI_BOLD),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            PrimaryButton(
-                                text: "Kembali Ke Beranda",
-                                onPressed: () {
-                                  Navigator.pushReplacementNamed(
-                                      context, '/home');
-                                }),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                  Positioned(
-                    top: MediaQuery.of(context).size.height / 3.1,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      margin: const EdgeInsets.symmetric(horizontal: 50),
-                      decoration: BoxDecoration(
-                          color: ColorUI.WHITE,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: ColorUI.GREY.withOpacity(.30),
-                              offset: const Offset(
-                                4.0,
-                                4.0,
-                              ),
-                              blurRadius: 10.0,
-                              spreadRadius: 2.0,
-                            ), //BoxShadow
-                            const BoxShadow(
-                              color: Colors.white,
-                              offset: Offset(0.0, 0.0),
-                              blurRadius: 0.0,
-                              spreadRadius: 0.0,
-                            ),
-                          ]),
-                      child: Column(
-                        children: [
-                          Text(
-                            "Pesanan Selesai",
-                            style: BLACK_TEXT_STYLE.copyWith(
-                                fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            "ID Transaksi #2328049586",
-                            style: BLACK_TEXT_STYLE.copyWith(
-                                fontWeight: FontUI.WEIGHT_MEDIUM),
-                          ),
-                        ],
+                        itemCount: detail.orderHistory.length,
                       ),
                     ),
-                  ),
-                ],
+                  );
+                });
+          }
+          return const SizedBox();
+        })),
+      )),
+    );
+  }
+
+  Widget _shimmerContent() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: Shimmer.fromColors(
+          baseColor: ColorUI.SHIMMER_BASE,
+          highlightColor: ColorUI.SHIMMER_HIGHLIGHT,
+          child: Column(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * .060,
+                color: Colors.white,
               ),
-            ),
-          ),
-        ));
+              const SizedBox(height: 10),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * .500,
+                color: Colors.white,
+              ),
+            ],
+          )),
+    );
   }
 }
