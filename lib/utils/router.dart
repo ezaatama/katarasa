@@ -43,7 +43,9 @@ class AppRouter {
       case '/all-order':
         return MaterialPageRoute(builder: (_) => const AllOrderScreen());
       case '/order-detail':
-        return MaterialPageRoute(builder: (_) => const DetailOrderScreen());
+        return MaterialPageRoute(
+            builder: (_) =>
+                DetailOrderScreen(idOrder: settings.arguments as String));
       case '/forgot-password':
         return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
       case '/edit-password':
