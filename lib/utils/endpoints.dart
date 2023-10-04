@@ -26,3 +26,4 @@ const LIST_ADDRESS = 'profile/select-data-wilayah?';
 const DATA_ORDER = 'order/data-order?';
 const DETAIL_ORDER = 'order/data-order-detail?';
 const METHOD_PAYMENT = 'order/data-method-payment';
+const PAYMENT_SNAP_TOKEN = 'order/payment-snaptoken?';
