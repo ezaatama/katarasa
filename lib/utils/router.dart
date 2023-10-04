@@ -5,15 +5,15 @@ import 'package:katarasa/screens/auth/register/register_screen.dart';
 import 'package:katarasa/screens/bottom_navigation/bottom_nav_screen.dart';
 import 'package:katarasa/screens/cart/all_cart_screen.dart';
 import 'package:katarasa/screens/cart/cart_screen.dart';
-import 'package:katarasa/screens/cart/payment_method_screen.dart';
 import 'package:katarasa/screens/checkout/data_checkout_screen.dart';
+import 'package:katarasa/screens/checkout/payment_screen.dart';
 import 'package:katarasa/screens/product/detail_product_screen.dart';
 import 'package:katarasa/screens/product/product_detail_screen.dart';
 import 'package:katarasa/screens/profile/about_us_screen.dart';
 import 'package:katarasa/screens/profile/add_new_address_screen.dart';
 import 'package:katarasa/screens/profile/all_order_screen.dart';
 import 'package:katarasa/screens/profile/detail_address_screen.dart';
-import 'package:katarasa/screens/profile/detail_oder_screen.dart';
+import 'package:katarasa/screens/profile/detail_order_screen.dart';
 import 'package:katarasa/screens/profile/detail_profile_screen.dart';
 import 'package:katarasa/screens/profile/edit_address_screen.dart';
 import 'package:katarasa/screens/profile/edit_profile_screen.dart';
@@ -72,7 +72,9 @@ class AppRouter {
       case '/data-checkout':
         return MaterialPageRoute(builder: (_) => const CheckoutScreen());
       case '/payment-method':
-        return MaterialPageRoute(builder: (_) => const PaymentMethodScreen());
+        return MaterialPageRoute(
+            builder: (_) =>
+                PaymentScreen(orderId: settings.arguments as String));
       default:
         return _routeError();
     }
