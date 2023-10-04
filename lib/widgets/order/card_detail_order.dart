@@ -344,7 +344,7 @@ class CardDetailOrder extends StatelessWidget {
             ? PrimaryButton(
                 text: "Bayar Pesanan",
                 onPressed: () {
-                  Navigator.pushNamed(context, '/payment',
+                  Navigator.pushNamed(context, '/payment-method',
                       arguments: detail.orderId);
                 })
             : const SizedBox()
