@@ -1,6 +1,6 @@
 class MethodPaymentResponse {
   Status status;
-  List<MethodPament> data;
+  List<MethodPayment> data;
 
   MethodPaymentResponse({
     required this.status,
@@ -10,8 +10,8 @@ class MethodPaymentResponse {
   factory MethodPaymentResponse.fromJson(Map<String, dynamic> json) =>
       MethodPaymentResponse(
         status: Status.fromJson(json["status"]),
-        data: List<MethodPament>.from(
-            json["data"].map((x) => MethodPament.fromJson(x))),
+        data: List<MethodPayment>.from(
+            json["data"].map((x) => MethodPayment.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -20,14 +20,20 @@ class MethodPaymentResponse {
       };
 }
 
-class MethodPament {
+class SelectMethod {
+  static String selectItem = '';
+  static String selectSubPay = '';
+  static String isFirstMethod = '1';
+}
+
+class MethodPayment {
   String idPaymentMethodCategory;
   String paymentTypeLabel;
   String paymentType;
   bool option;
   List<SubPayment> subPayment;
 
-  MethodPament({
+  MethodPayment({
     required this.idPaymentMethodCategory,
     required this.paymentTypeLabel,
     required this.paymentType,
@@ -35,7 +41,7 @@ class MethodPament {
     required this.subPayment,
   });
 
-  factory MethodPament.fromJson(Map<String, dynamic> json) => MethodPament(
+  factory MethodPayment.fromJson(Map<String, dynamic> json) => MethodPayment(
         idPaymentMethodCategory: json["id_payment_method_category"],
         paymentTypeLabel: json["payment_type_label"],
         paymentType: json["payment_type"],
