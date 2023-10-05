@@ -28,17 +28,17 @@ class ProductDiscount extends StatelessWidget {
         textAlign: TextAlign.left,
         maxLines: 1,
         style: const TextStyle(
-          color: ColorUI.BLACK,
-          decoration: TextDecoration.lineThrough,
-        ),
+            fontSize: 16, color: ColorUI.BLACK, fontWeight: FontUI.WEIGHT_BOLD),
       );
       discount = Text(
         "Rp ${products.discount!.toRupiah()}",
         textAlign: TextAlign.center,
         maxLines: 1,
         style: const TextStyle(
+          fontSize: 12,
           fontWeight: FontUI.WEIGHT_BOLD,
           color: Colors.red,
+          decoration: TextDecoration.lineThrough,
         ),
       );
     }
@@ -107,20 +107,7 @@ class ProductDiscount extends StatelessWidget {
           children: [
             Container(
               margin: const EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-              // decoration: BoxDecoration(
-              //   color: ColorUI.WHITE,
-              //   boxShadow: containerShadow(
-              //     spreadRadius: 0.1,
-              //     blurRadius: 5,
-              //     offset: const Offset(0, 1),
-              //   ),
-              //   borderRadius: const BorderRadius.all(
-              //     Radius.circular(
-              //       BorderUI.RADIUS_CIRCULAR,
-              //     ),
-              //   ),
-              // ),
+              padding: const EdgeInsets.fromLTRB(0, 4, 20, 4),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -129,14 +116,32 @@ class ProductDiscount extends StatelessWidget {
                         BorderRadius.circular(BorderUI.RADIUS_CIRCULAR),
                     child: Stack(
                       children: [
-                        // StdImage(
-                        //   imageUrl: products.image,
-                        // ),
                         Image.asset(
                           products.image,
                           fit: BoxFit.cover,
-                          width: MediaQuery.of(context).size.width * .200,
+                          width: MediaQuery.of(context).size.width * .300,
                         ),
+                        Positioned(
+                          bottom: 5,
+                          right: 5,
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: ColorUI.WHITE,
+                                borderRadius: BorderRadius.circular(8)),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.star, color: Colors.amber),
+                                Text(
+                                  "${products.star}/5",
+                                  style: BLACK_TEXT_STYLE.copyWith(
+                                      fontSize: 16,
+                                      fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -149,10 +154,17 @@ class ProductDiscount extends StatelessWidget {
                           products.title,
                           textAlign: TextAlign.left,
                           style: BLACK_TEXT_STYLE.copyWith(
-                              fontWeight: FontUI.WEIGHT_BOLD),
+                              fontSize: 18, fontWeight: FontUI.WEIGHT_BOLD),
                           maxLines: 2,
                         ),
-                        const SizedBox(height: 5),
+                        Text(
+                          products.subtitle,
+                          textAlign: TextAlign.left,
+                          style: BLACK_TEXT_STYLE.copyWith(
+                              fontSize: 12, fontWeight: FontUI.WEIGHT_LIGHT),
+                          maxLines: 2,
+                        ),
+                        const SizedBox(height: 3),
                         _priceTag(),
                       ],
                     ),
@@ -160,7 +172,7 @@ class ProductDiscount extends StatelessWidget {
                 ],
               ),
             ),
-            _promo(),
+            // _promo(),
           ],
         ),
       ],
