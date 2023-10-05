@@ -8,6 +8,7 @@ class EnvValue {
 }
 
 class ColorUI {
+  static const Color PRIMARY_GREEN = Color(0xFF3B8F51);
   static const Color BACKGROUND_COLOR = Color(0xFFDAE5EC);
   static const Color WHITE = Color(0xFFFFFFFF);
   static const Color BLACK = Color(0xFF000000);
@@ -21,6 +22,7 @@ class ColorUI {
   static const Color NAVY = Color(0xFF32415a);
   static const Color SHIMMER_BASE = Color(0xFFE0E0E0);
   static const Color SHIMMER_HIGHLIGHT = Color(0xFFF5F5F5);
+  static const Color GREEN_DARK = Color(0xFF41644A);
 }
 
 class FontUI {
@@ -33,6 +35,7 @@ class FontUI {
 TextStyle WHITE_TEXT_STYLE = const TextStyle(color: Color(0xFFFFFFFF));
 TextStyle BLACK_TEXT_STYLE = const TextStyle(color: ColorUI.BLACK);
 TextStyle NAVY_TEXT_STYLE = const TextStyle(color: ColorUI.NAVY);
+TextStyle GREY_TEXT_STYLE = const TextStyle(color: ColorUI.GREY);
 TextStyle BROWN_TEXT_STYLE = const TextStyle(color: ColorUI.BROWN);
 TextStyle LIGHT_BROWN_TEXT_STYLE = const TextStyle(color: ColorUI.LIGHT_BROWN);
 TextStyle RED_TEXT_STYLE = const TextStyle(color: Colors.red);
