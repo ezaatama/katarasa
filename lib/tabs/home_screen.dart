@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:katarasa/data/cart/all_cart/all_cart_cubit.dart';
 import 'package:katarasa/data/dummy/product/product_cubit.dart';
 import 'package:katarasa/data/products/all_product/products_cubit.dart';
@@ -24,10 +25,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final PageController _pageController = PageController(initialPage: 0);
-  int _currentPage = 0;
   int _topItem = 0;
-  Timer? _timer;
 
   @override
   void initState() {
@@ -35,212 +33,254 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<ProductCubit>().fetchProduct();
     context.read<ProductsCubit>().getAllProduct(context);
     context.read<CategoryProductCubit>().selectedCategory(context);
-    context.read<AllCartCubit>().getAllCart(context);
-    _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
-      _currentPage++;
-      if (_currentPage >= 3) {
-        _currentPage = 0;
-      }
-
-      _pageController.animateToPage(
-        _currentPage,
-        duration: const Duration(milliseconds: 1000),
-        curve: Curves.easeIn,
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _timer?.cancel();
+    // context.read<AllCartCubit>().getAllCart(context);
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-
     return Scaffold(
-        body: SafeArea(
-            child: Stack(
-      children: [
-        SingleChildScrollView(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      resizeToAvoidBottomInset: true,
+      body: OfflineBuilder(
+          connectivityBuilder: (
+            BuildContext context,
+            ConnectivityResult connectivity,
+            Widget child,
+          ) {
+            final bool connected = connectivity != ConnectivityResult.none;
+            return Stack(
+              fit: StackFit.expand,
               children: [
-                SizedBox(
-                  height: size.height * 0.20,
-                  child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: (val) {
-                      setState(() {
-                        _currentPage = val;
-                      });
-                    },
-                    itemCount: promoData.length,
-                    itemBuilder: (context, index) {
-                      PromoModels data = promoData[index];
-                      return Stack(
-                        children: [
-                          Image.asset(
-                            data.image,
-                            fit: BoxFit.cover,
-                            width: size.width,
-                            height: size.height * 0.20,
-                          ),
-                          Positioned(
-                            bottom: 10,
-                            left: 0,
-                            right: 0,
+                _bodyContent(),
+                Positioned(
+                  height: 24.0,
+                  bottom: 0.0,
+                  left: 0.0,
+                  right: 0.0,
+                  child: connected
+                      ? const SizedBox()
+                      : Container(
+                          color: const Color(0xFFEE4400),
+                          child: Center(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: List.generate(
-                                promoData.length,
-                                (index) => _buildDot(index: index),
-                              ),
+                              children: [
+                                Text("Periksa Kembali Jaringan Anda",
+                                    style: WHITE_TEXT_STYLE.copyWith(
+                                        fontSize: 14,
+                                        fontWeight: FontUI.WEIGHT_SEMI_BOLD)),
+                              ],
                             ),
-                          )
-                        ],
-                      );
-                    },
+                          ),
+                        ),
+                ),
+              ],
+            );
+          },
+          child: _bodyContent()),
+    );
+  }
+
+  Widget _bodyContent() {
+    var size = MediaQuery.of(context).size;
+
+    return Scaffold(
+        backgroundColor: ColorUI.PRIMARY_GREEN,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Stack(
+              children: [
+                Positioned(
+                  right: 0,
+                  child: Image.asset(
+                    "assets/icons/icon-bg.png",
+                    fit: BoxFit.cover,
+                    width: MediaQuery.of(context).size.width * .450,
+                    height: MediaQuery.of(context).size.height * .250,
                   ),
                 ),
-                const SizedBox(height: 16),
-                _tabsCategory(),
-                const SizedBox(height: 16),
-                _listProduct(size),
-                const SizedBox(height: 16),
-                Text(
-                  "Promo Spesial",
-                  style: BLACK_TEXT_STYLE.copyWith(
-                      fontSize: 18, fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height / 1.25,
+                    decoration: const BoxDecoration(
+                        color: ColorUI.WHITE,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30))),
+                  ),
                 ),
-                const SizedBox(height: 10),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * .250,
-                  child: BlocBuilder<ProductCubit, ProductState>(
-                    builder: (context, state) {
-                      final discountProduct =
-                          context.read<ProductCubit>().hasiDiscountProduct();
-                      if (state is ProductLoading) {
-                        return _shimmerContent();
-                      } else if (state is ProductSuccess) {
-                        if (discountProduct.isNotEmpty) {
-                          return ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              itemCount: discountProduct.length,
-                              itemBuilder: (context, index) {
-                                return ProductDiscount(
-                                    products: discountProduct[index]);
-                              });
-                        }
-                      }
-
-                      return const Center(
-                          child: Text("Tidak ada promo hari ini"));
-                    },
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  "Rekomendasi Untuk Kamu",
-                  style: BLACK_TEXT_STYLE.copyWith(
-                      fontSize: 18, fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-                ),
-                const SizedBox(height: 10),
-                BlocBuilder<ProductsCubit, ProductsState>(
-                  builder: (context, state) {
-                    if (state is ProductsLoading) {
-                      return _shimmerContent();
-                    } else if (state is ProductsSuccess) {
-                      return ListView.builder(
+                  child: Column(
+                    children: [
+                      //nama, search, point
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin:
+                            const EdgeInsets.only(left: 21, right: 21, top: 28),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Reza Putra Pratama",
+                                      style: WHITE_TEXT_STYLE.copyWith(
+                                          fontSize: 20,
+                                          fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                          color: ColorUI.WHITE,
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: Row(
+                                        children: [
+                                          Image.asset(
+                                            "assets/icons/icon-point.png",
+                                            fit: BoxFit.cover,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .060,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                .030,
+                                          ),
+                                          const SizedBox(width: 5),
+                                          const Text(
+                                            "250 Points",
+                                            style: TextStyle(
+                                                color: ColorUI.GREEN_DARK,
+                                                fontSize: 18,
+                                                fontWeight:
+                                                    FontUI.WEIGHT_MEDIUM),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: ColorUI.WHITE,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.search,
+                                        color: ColorUI.BLACK, size: 35),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                      //banner promo
+                      Container(
+                        height: size.height * 0.20,
+                        margin: const EdgeInsets.only(left: 16),
+                        child: ListView.builder(
                           shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: state.allProduct.length,
+                          primary: false,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: promoData.length,
                           itemBuilder: (context, index) {
-                            return Product(products: state.allProduct[index]);
-                          });
-                    }
+                            PromoModels data = promoData[index];
+                            return Container(
+                              margin: const EdgeInsets.all(4),
+                              child: Image.asset(
+                                data.image,
+                                fit: BoxFit.cover,
+                                width: size.width * 0.70,
+                                height: size.height * 0.20,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      //product promo
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Product Promo",
+                              style: BLACK_TEXT_STYLE.copyWith(
+                                  fontSize: 24,
+                                  fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+                            ),
+                            InkWell(
+                              onTap: () {},
+                              child: const Text(
+                                "Lihat semua",
+                                style: TextStyle(
+                                    fontSize: 18, color: ColorUI.PRIMARY_GREEN),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        height: MediaQuery.of(context).size.height * .300,
+                        margin: const EdgeInsets.only(left: 16),
+                        child: BlocBuilder<ProductCubit, ProductState>(
+                          builder: (context, state) {
+                            final discountProduct = context
+                                .read<ProductCubit>()
+                                .hasiDiscountProduct();
+                            if (state is ProductLoading) {
+                              return _shimmerContent();
+                            } else if (state is ProductSuccess) {
+                              if (discountProduct.isNotEmpty) {
+                                return ListView.builder(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: discountProduct.length,
+                                    itemBuilder: (context, index) {
+                                      return ProductDiscount(
+                                          products: discountProduct[index]);
+                                    });
+                              }
+                            }
 
-                    return const SizedBox();
-                  },
+                            return const Center(
+                                child: Text("Tidak ada promo hari ini"));
+                          },
+                        ),
+                      ),
+
+                      const SizedBox(height: 30),
+                      //product utama
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _tabsCategory(),
+                          const SizedBox(height: 16),
+                          _listProduct(size),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ),
-        BlocBuilder<AllCartCubit, AllCartState>(builder: (context, state) {
-          if (state is AllCartLoading) {
-            return _shimmerCartItem();
-          } else if (state is AllCartEmpty) {
-            return const SizedBox();
-          } else if (state is AllCartLoaded) {
-            final itemName = state.allCartLoaded.items
-                .map((prod) => prod.products.map((e) => e.name))
-                .toString();
-            final removeBrackName = itemName.substring(1, itemName.length - 1);
-            return Positioned(
-              top: MediaQuery.of(context).size.height * .750,
-              left: 0,
-              right: 0,
-              child: InkWell(
-                onTap: () {
-                  debugPrint("go to cart");
-                  Navigator.pushNamed(context, '/all-cart');
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      color: ColorUI.MEDIUM_BROWN,
-                      borderRadius: BorderRadius.circular(16)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${state.allCartLoaded.totalData.toString()} item",
-                              style: WHITE_TEXT_STYLE.copyWith(
-                                  fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(removeBrackName,
-                                style: WHITE_TEXT_STYLE.copyWith(
-                                    fontWeight: FontUI.WEIGHT_LIGHT),
-                                maxLines: 1),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Row(
-                        children: [
-                          Text(state.allCartLoaded.totalCartCurrencyFormat,
-                              style: WHITE_TEXT_STYLE.copyWith(
-                                  fontSize: 18,
-                                  fontWeight: FontUI.WEIGHT_BOLD)),
-                          const SizedBox(width: 6),
-                          const Icon(Icons.shopping_bag_outlined,
-                              color: ColorUI.WHITE, size: 20)
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }
-          return const SizedBox();
-        })
-      ],
-    )));
+        ));
   }
 
   Widget _tabsCategory() {
@@ -307,20 +347,6 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  AnimatedContainer _buildDot({int? index}) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 150),
-      margin: const EdgeInsets.only(right: 8),
-      height: 8,
-      width: _currentPage == index ? 8 : 8,
-      decoration: BoxDecoration(
-          color: _currentPage == index
-              ? ColorUI.BROWN
-              : ColorUI.WHITE.withOpacity(0.60),
-          borderRadius: BorderRadius.circular(10)),
-    );
-  }
-
   Widget _shimmerContent() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -376,28 +402,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           itemCount: 6,
         ),
-      ),
-    );
-  }
-
-  Widget _shimmerCartItem() {
-    return Positioned(
-      top: MediaQuery.of(context).size.height * .750,
-      left: 0,
-      right: 0,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.060,
-        child: Shimmer.fromColors(
-            baseColor: ColorUI.SHIMMER_BASE,
-            highlightColor: ColorUI.SHIMMER_HIGHLIGHT,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: ColorUI.SHIMMER_BASE,
-              ),
-            )),
       ),
     );
   }
