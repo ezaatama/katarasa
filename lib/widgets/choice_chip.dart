@@ -21,14 +21,14 @@ class CategoryType extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: selected ? ColorUI.BACKGROUND_COLOR : ColorUI.WHITE,
+            color: selected ? ColorUI.CATEGORY_BG : ColorUI.WHITE,
             border: selected ? null : Border.all(color: ColorUI.BLACK),
             borderRadius: const BorderRadius.all(
               Radius.circular(
                 BorderUI.RADIUS_ROUNDED,
               ),
             ),
-            gradient: selected ? gradientColor() : null,
+            // gradient: selected ? gradientColor() : null,
           ),
           child: Text(
             title,
