@@ -23,6 +23,7 @@ class ColorUI {
   static const Color SHIMMER_BASE = Color(0xFFE0E0E0);
   static const Color SHIMMER_HIGHLIGHT = Color(0xFFF5F5F5);
   static const Color GREEN_DARK = Color(0xFF41644A);
+  static const Color CATEGORY_BG = Color(0xFF1F1E1E);
 }
 
 class FontUI {
