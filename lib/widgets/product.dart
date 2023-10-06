@@ -66,41 +66,6 @@ class Product extends StatelessWidget {
     );
   }
 
-  // Widget _promo() {
-  //   if (products.discount == null) return Container();
-
-  //   return Column(
-  //     children: [
-  //       Container(
-  //         // margin: EdgeInsets.all(8),
-  //         padding: const EdgeInsets.all(8),
-  //         decoration: BoxDecoration(
-  //           color: ColorUI.WHITE,
-  //           borderRadius: const BorderRadius.only(
-  //             topLeft: Radius.circular(
-  //               10,
-  //             ),
-  //             topRight: Radius.circular(
-  //               BorderUI.RADIUS_ROUNDED,
-  //             ),
-  //             bottomRight: Radius.circular(
-  //               BorderUI.RADIUS_ROUNDED,
-  //             ),
-  //           ),
-  //           gradient: gradientColor(),
-  //         ),
-  //         child: const Text(
-  //           "Promo",
-  //           maxLines: 2,
-  //           style: TextStyle(
-  //             color: ColorUI.WHITE,
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     Widget content = Stack(
@@ -128,34 +93,32 @@ class Product extends StatelessWidget {
                 borderRadius: BorderRadius.circular(BorderUI.RADIUS_CIRCULAR),
                 child: Stack(
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        StdImage(
-                            imageUrl: products.image,
-                            fit: BoxFit.cover,
-                            width: MediaQuery.of(context).size.width * .200,
-                            height: MediaQuery.of(context).size.height * .100),
-                        const SizedBox(height: 5),
-                        Row(
+                    StdImage(
+                        imageUrl: products.image,
+                        fit: BoxFit.cover,
+                        width: MediaQuery.of(context).size.width * .250,
+                        height: MediaQuery.of(context).size.height * .130),
+                    Positioned(
+                      bottom: 5,
+                      right: 5,
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                            color: ColorUI.WHITE,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Row(
                           children: [
-                            const Icon(Icons.star,
-                                size: 24, color: Colors.yellow),
+                            const Icon(Icons.star, color: Colors.amber),
                             Text(
-                              products.rating,
+                              "${products.rating}/5",
                               style: BLACK_TEXT_STYLE.copyWith(
-                                  fontSize: 18,
+                                  fontSize: 16,
                                   fontWeight: FontUI.WEIGHT_SEMI_BOLD),
                             )
                           ],
-                        )
-                      ],
-                    ),
-                    // Image.asset(
-                    //   products.image,
-                    //   fit: BoxFit.cover,
-                    //   width: MediaQuery.of(context).size.width * .200,
-                    // ),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -174,7 +137,7 @@ class Product extends StatelessWidget {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        products.location,
+                        products.category,
                         textAlign: TextAlign.left,
                         style: BLACK_TEXT_STYLE.copyWith(
                             color: ColorUI.BLACK.withOpacity(.60),
@@ -183,48 +146,21 @@ class Product extends StatelessWidget {
                       ),
                       const SizedBox(height: 5),
                       products.freeOngkir == 'Y'
-                          ? Row(
-                              children: [
-                                Image.asset("assets/icons/free-delivery.png",
-                                    fit: BoxFit.cover,
-                                    width: MediaQuery.of(context).size.width *
-                                        .050,
-                                    height: MediaQuery.of(context).size.height *
-                                        .025),
-                                const SizedBox(width: 7),
-                                Text(
-                                  "Free Ongkir",
-                                  textAlign: TextAlign.left,
-                                  style: BLACK_TEXT_STYLE.copyWith(
-                                      color: ColorUI.BLACK.withOpacity(.60),
-                                      fontWeight: FontUI.WEIGHT_LIGHT),
-                                  maxLines: 2,
-                                )
-                              ],
+                          ? Text(
+                              "Free Ongkir",
+                              textAlign: TextAlign.left,
+                              style: BLACK_TEXT_STYLE.copyWith(
+                                  color: ColorUI.PRIMARY_GREEN.withOpacity(.60),
+                                  fontWeight: FontUI.WEIGHT_LIGHT),
+                              maxLines: 2,
                             )
-                          : const SizedBox()
-
-                      // Text(
-                      //   products.title,
-                      //   textAlign: TextAlign.left,
-                      //   style: BLACK_TEXT_STYLE.copyWith(
-                      //       fontWeight: FontUI.WEIGHT_BOLD),
-                      //   maxLines: 2,
-                      // ),
-                      // const SizedBox(height: 5),
-                      // Text(
-                      //   products.ingredient,
-                      //   textAlign: TextAlign.left,
-                      //   style: BLACK_TEXT_STYLE.copyWith(
-                      //       color: ColorUI.BLACK.withOpacity(.60),
-                      //       fontWeight: FontUI.WEIGHT_LIGHT),
-                      //   maxLines: 2,
-                      // ),
+                          : const SizedBox(),
+                      const SizedBox(height: 10),
+                      _priceTag()
                     ],
                   ),
                 ),
               ),
-              _priceTag()
             ],
           ),
         ),
