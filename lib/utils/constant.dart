@@ -33,6 +33,7 @@ class FontUI {
   static const FontWeight WEIGHT_BOLD = FontWeight.w700;
 }
 
+TextStyle PRIMARY_TEXT_STYLE = const TextStyle(color: ColorUI.PRIMARY_GREEN);
 TextStyle WHITE_TEXT_STYLE = const TextStyle(color: Color(0xFFFFFFFF));
 TextStyle BLACK_TEXT_STYLE = const TextStyle(color: ColorUI.BLACK);
 TextStyle NAVY_TEXT_STYLE = const TextStyle(color: ColorUI.NAVY);
