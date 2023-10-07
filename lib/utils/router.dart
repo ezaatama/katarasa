@@ -11,7 +11,7 @@ import 'package:katarasa/screens/product/detail_product_screen.dart';
 import 'package:katarasa/screens/product/product_detail_screen.dart';
 import 'package:katarasa/screens/profile/about_us_screen.dart';
 import 'package:katarasa/screens/profile/add_new_address_screen.dart';
-import 'package:katarasa/screens/profile/all_order_screen.dart';
+import 'package:katarasa/tabs/all_order_screen.dart';
 import 'package:katarasa/screens/profile/detail_address_screen.dart';
 import 'package:katarasa/screens/profile/detail_order_screen.dart';
 import 'package:katarasa/screens/profile/detail_profile_screen.dart';
