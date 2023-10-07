@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:katarasa/models/cart/cart_item_request.dart';
 import 'package:katarasa/models/products/product_detail_request.dart';
+import 'package:katarasa/models/products/products_request.dart';
 import 'package:katarasa/utils/base_response.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/utils/endpoints.dart';
@@ -44,6 +45,57 @@ class ItemCartCubit extends Cubit<ItemCartState> {
         } else {
           cartItems.add(CartItemRequest(
               productId: payload.id, variantId: variantId, quantity: 1));
+        }
+
+        emit(ItemCartUpdated(cartItems, value.response['status']['message']));
+      } else {
+        debugPrint(value.errresponse.errors);
+        emit(ItemCartError(value.errresponse.errors));
+      }
+    }).catchError((e) {
+      if (e is ConnectionProblemException || e is TimeoutException) {
+        callShowSnackbar(context, e.toString());
+      } else if (e is InternalServerException) {
+        callShowSnackbar(context, e.toString());
+      } else {
+        debugPrint('error response is ${e.toString()}');
+        emit(ItemCartError(e.toString()));
+      }
+    });
+  }
+
+  Future<void> addToCartHome(String productId, String variantId, String qty,
+      BuildContext context) async {
+    Future<ObjResponse> res = callNetwork(ADD_TO_CART,
+        body: {
+          'product_id': productId,
+          'variant_id': variantId,
+          'qty': qty,
+          'isNonPhysical': false
+        },
+        mode: POST_METHOD);
+
+    await res.then((value) {
+      if (value.success == true) {
+        debugPrint(
+            'ini value response message + ${value.response['status']['message']}');
+
+        final index = cartItems.indexWhere((e) => e.productId == productId);
+        debugPrint('add to cart index == $index');
+
+        if (index != -1) {
+          cartItems[index] = CartItemRequest(
+              productId: productId,
+              variantId: variantId,
+              quantity: cartItems[index].quantity + 1);
+          Navigator.pop(context);
+          showToast(
+              text: "Item berhasil ditambah ke keranjang",
+              state: ToastStates.SUCCESS);
+          Navigator.pushNamed(context, '/all-cart');
+        } else {
+          cartItems.add(CartItemRequest(
+              productId: productId, variantId: variantId, quantity: 1));
         }
 
         emit(ItemCartUpdated(cartItems, value.response['status']['message']));
