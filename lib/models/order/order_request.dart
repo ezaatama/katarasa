@@ -37,10 +37,10 @@ class DataOrder {
   });
 
   factory DataOrder.fromJson(Map<String, dynamic> json) => DataOrder(
-        page: json["page"],
-        limit: json["limit"],
-        totalData: json["totalData"],
-        totalPage: json["totalPage"],
+        page: json["page"] ?? 1,
+        limit: json["limit"] ?? 10,
+        totalData: json["totalData"] ?? 0,
+        totalPage: json["totalPage"] ?? 1,
         items:
             List<DataItem>.from(json["items"].map((x) => DataItem.fromJson(x))),
         filters:
