@@ -68,12 +68,6 @@ class _AllOrderScreenState extends State<AllOrderScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded,
-                size: 24, color: ColorUI.BLACK),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
         title: Text(
           "Semua Pesanan",
           style: BLACK_TEXT_STYLE.copyWith(
@@ -92,7 +86,20 @@ class _AllOrderScreenState extends State<AllOrderScreen> {
               if (state is DataOrderLoading) {
                 return _shimmerContent();
               } else if (state is DataOrderEmpty) {
-                return const Center(child: Text("Data Order Kosong"));
+                return Center(
+                  child: Column(
+                    children: [
+                      Image.asset("assets/icons/like_product.png",
+                          fit: BoxFit.cover),
+                      Text(
+                        "Pesanan Anda kosong nih, silahkan pesan sekarang",
+                        textAlign: TextAlign.center,
+                        style: BLACK_TEXT_STYLE.copyWith(
+                            fontSize: 18, fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+                      )
+                    ],
+                  ),
+                );
               } else if (state is DataOrderLoaded) {
                 return Column(
                     children: state.dataOrderLoaded.items.map((items) {
