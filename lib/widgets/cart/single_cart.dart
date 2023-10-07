@@ -20,8 +20,8 @@ class SingleCart extends StatelessWidget {
       products.priceCurrencyFormat,
       textAlign: TextAlign.left,
       maxLines: 1,
-      style:
-          const TextStyle(color: ColorUI.BLACK, fontWeight: FontUI.WEIGHT_BOLD),
+      style: const TextStyle(
+          color: ColorUI.PRIMARY_GREEN, fontWeight: FontUI.WEIGHT_BOLD),
     );
 
     Widget discount = Container();
@@ -32,7 +32,7 @@ class SingleCart extends StatelessWidget {
         textAlign: TextAlign.left,
         maxLines: 1,
         style: const TextStyle(
-          color: ColorUI.BLACK,
+          color: ColorUI.PRIMARY_GREEN,
           decoration: TextDecoration.lineThrough,
         ),
       );
@@ -54,13 +54,6 @@ class SingleCart extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 price,
-                const SizedBox(height: 5),
-                Text(
-                  "x${products.qty}",
-                  textAlign: TextAlign.left,
-                  style: BLACK_TEXT_STYLE.copyWith(
-                      fontWeight: FontUI.WEIGHT_LIGHT),
-                ),
               ],
             )
           : Column(
@@ -86,34 +79,58 @@ class SingleCart extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     BlocBuilder<ItemCartCubit, ItemCartState>(
                         builder: (context, state) {
                       return GestureDetector(
-                        onTap: () {
-                          setStater(() {
-                            products.isSelected = !products.isSelected;
+                          onTap: () {
+                            setStater(() {
+                              products.isSelected = !products.isSelected;
 
-                            if (products.isSelected == true) {
-                              context
-                                  .read<ItemCartCubit>()
-                                  .setSelectItem(context, products.cartId);
-                            } else if (products.isSelected == false) {
-                              context
-                                  .read<ItemCartCubit>()
-                                  .setSelectItem(context, products.cartId);
-                            }
-                            context.read<AllCartCubit>().getAllCart(context);
-                          });
-                        },
-                        child: products.isSelected
-                            ? const Icon(Icons.check_circle,
-                                size: 25, color: ColorUI.BROWN)
-                            : Icon(Icons.check_circle_outline,
-                                size: 25, color: ColorUI.GREY.withOpacity(.40)),
-                      );
+                              if (products.isSelected == true) {
+                                context
+                                    .read<ItemCartCubit>()
+                                    .setSelectItem(context, products.cartId);
+                              } else if (products.isSelected == false) {
+                                context
+                                    .read<ItemCartCubit>()
+                                    .setSelectItem(context, products.cartId);
+                              }
+                              context.read<AllCartCubit>().getAllCart(context);
+                            });
+                          },
+                          child: products.isSelected
+                              ? Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * .050,
+                                  height:
+                                      MediaQuery.of(context).size.height * .025,
+                                  padding: const EdgeInsets.all(1),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: ColorUI.PRIMARY_GREEN,
+                                      ),
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        .040,
+                                    height: MediaQuery.of(context).size.height *
+                                        .020,
+                                    decoration: BoxDecoration(
+                                        color: ColorUI.PRIMARY_GREEN,
+                                        borderRadius: BorderRadius.circular(5)),
+                                  ),
+                                )
+                              : Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * .050,
+                                  height:
+                                      MediaQuery.of(context).size.height * .025,
+                                  decoration: BoxDecoration(
+                                      color: ColorUI.GREY.withOpacity(.30),
+                                      borderRadius: BorderRadius.circular(5)),
+                                ));
                     }),
                     const SizedBox(width: 15),
                     Flexible(
@@ -163,7 +180,6 @@ class SingleCart extends StatelessWidget {
                                       fontWeight: FontUI.WEIGHT_LIGHT),
                                 ),
                                 const SizedBox(height: 15),
-
                                 //
                               ],
                             ),
@@ -171,108 +187,141 @@ class SingleCart extends StatelessWidget {
                         ],
                       ),
                     ),
-                    _priceTag(),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    BlocConsumer<ItemCartCubit, ItemCartState>(
-                        listener: (context, state) {
-                      if (state is DeleteItemSuccess) {
-                        showToast(
-                            text: state.deleteSuccess,
-                            state: ToastStates.SUCCESS);
-                        Navigator.pushReplacementNamed(context, '/home');
-                      } else if (state is DeleteItemError) {
-                        showToast(
-                            text: state.deleteError, state: ToastStates.ERROR);
-                      }
-                    }, builder: (context, state) {
-                      return IconButton(
-                          onPressed: () {
-                            setStater(() {
-                              context
-                                  .read<ItemCartCubit>()
-                                  .deleteItemCart(context, products.cartId);
-                            });
-                          },
-                          iconSize: 28,
-                          icon: const Icon(
-                            Icons.delete_forever_rounded,
-                          ),
-                          color: ColorUI.BROWN);
-                    }),
-                    Row(
-                      children: [
-                        products.qty == '1'
-                            ? CircleAvatar(
-                                radius: 13,
-                                backgroundColor: ColorUI.BACKGROUND_COLOR,
-                                child: IconButton(
-                                    onPressed: () {},
-                                    icon: const Icon(Icons.remove,
-                                        color: ColorUI.WHITE, size: 10)),
-                              )
-                            : BlocBuilder<ItemCartCubit, ItemCartState>(
-                                builder: (context, state) {
-                                return CircleAvatar(
-                                  radius: 13,
-                                  backgroundColor: ColorUI.MEDIUM_BROWN,
-                                  child: IconButton(
-                                      onPressed: () {
-                                        setStater(() {
-                                          context
-                                              .read<ItemCartCubit>()
-                                              .decrementCartItem(
-                                                  products.productId,
-                                                  products.variantId,
-                                                  int.parse(products.qty) - 1,
-                                                  context);
-                                          context
-                                              .read<AllCartCubit>()
-                                              .getAllCart(context);
-                                        });
-                                      },
-                                      icon: const Icon(Icons.remove,
-                                          color: ColorUI.WHITE, size: 10)),
-                                );
-                              }),
-                        const SizedBox(width: 5),
-                        Text(
-                          products.qty,
-                          style: BLACK_TEXT_STYLE.copyWith(
-                              fontSize: 20,
-                              fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-                        ),
-                        const SizedBox(width: 5),
-                        BlocBuilder<ItemCartCubit, ItemCartState>(
-                            builder: (context, state) {
-                          return CircleAvatar(
-                            radius: 13,
-                            backgroundColor: ColorUI.MEDIUM_BROWN,
-                            child: IconButton(
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          BlocConsumer<ItemCartCubit, ItemCartState>(
+                              listener: (context, state) {
+                            if (state is DeleteItemSuccess) {
+                              showToast(
+                                  text: state.deleteSuccess,
+                                  state: ToastStates.SUCCESS);
+                              Navigator.pushReplacementNamed(context, '/home');
+                            } else if (state is DeleteItemError) {
+                              showToast(
+                                  text: state.deleteError,
+                                  state: ToastStates.ERROR);
+                            }
+                          }, builder: (context, state) {
+                            return IconButton(
                                 onPressed: () {
                                   setStater(() {
                                     context
                                         .read<ItemCartCubit>()
-                                        .incrementCartItem(
-                                            products.productId,
-                                            products.variantId,
-                                            int.parse(products.qty) + 1,
-                                            context);
-                                    context
-                                        .read<AllCartCubit>()
-                                        .getAllCart(context);
+                                        .deleteItemCart(
+                                            context, products.cartId);
                                   });
                                 },
-                                icon: const Icon(Icons.add,
-                                    color: ColorUI.WHITE, size: 10)),
-                          );
-                        }),
-                      ],
-                    ),
-                  ],
+                                iconSize: 28,
+                                icon: const Icon(
+                                  Icons.delete_forever_rounded,
+                                ),
+                                color: Colors.red);
+                          }),
+                          Row(
+                            children: [
+                              products.qty == '1'
+                                  ? Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          .060,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              .030,
+                                      decoration: BoxDecoration(
+                                          color: ColorUI.BACKGROUND_COLOR,
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      child: const Icon(Icons.remove,
+                                          color: ColorUI.WHITE, size: 14),
+                                    )
+                                  : BlocBuilder<ItemCartCubit, ItemCartState>(
+                                      builder: (context, state) {
+                                      return InkWell(
+                                        onTap: () {
+                                          setStater(() {
+                                            context
+                                                .read<ItemCartCubit>()
+                                                .decrementCartItem(
+                                                    products.productId,
+                                                    products.variantId,
+                                                    int.parse(products.qty) - 1,
+                                                    context);
+                                            context
+                                                .read<AllCartCubit>()
+                                                .getAllCart(context);
+                                          });
+                                        },
+                                        child: Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .060,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              .030,
+                                          decoration: BoxDecoration(
+                                              color: ColorUI.PRIMARY_GREEN,
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          child: const Icon(Icons.remove,
+                                              color: ColorUI.WHITE, size: 14),
+                                        ),
+                                      );
+                                    }),
+                              const SizedBox(width: 5),
+                              Text(
+                                products.qty,
+                                style: BLACK_TEXT_STYLE.copyWith(
+                                    fontSize: 20,
+                                    fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+                              ),
+                              const SizedBox(width: 5),
+                              BlocBuilder<ItemCartCubit, ItemCartState>(
+                                  builder: (context, state) {
+                                return InkWell(
+                                  onTap: () {
+                                    setStater(() {
+                                      context
+                                          .read<ItemCartCubit>()
+                                          .incrementCartItem(
+                                              products.productId,
+                                              products.variantId,
+                                              int.parse(products.qty) + 1,
+                                              context);
+                                      context
+                                          .read<AllCartCubit>()
+                                          .getAllCart(context);
+                                    });
+                                  },
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        .060,
+                                    height: MediaQuery.of(context).size.height *
+                                        .030,
+                                    decoration: BoxDecoration(
+                                        color: ColorUI.PRIMARY_GREEN,
+                                        borderRadius: BorderRadius.circular(5)),
+                                    child: const Icon(Icons.add,
+                                        color: ColorUI.WHITE, size: 14),
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
+                        ],
+                      ),
+                      //harga
+                      _priceTag()
+                    ],
+                  ),
                 )
               ],
             ),

@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:katarasa/data/cart/item_cart/item_cart_cubit.dart';
 import 'package:katarasa/models/products/products_request.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/general/image.dart';
+import 'package:katarasa/widgets/general/toast_comp.dart';
 
 class Product extends StatelessWidget {
   // final ProductModels products;
   final ProductRequest products;
+  final Widget addTocart;
 
-  const Product({
-    Key? key,
-    required this.products,
-  }) : super(key: key);
+  const Product({Key? key, required this.products, required this.addTocart})
+      : super(key: key);
 
   Widget _priceTag() {
     Widget price = Text(
       products.price,
       textAlign: TextAlign.left,
       maxLines: 1,
-      style:
-          const TextStyle(color: ColorUI.BLACK, fontWeight: FontUI.WEIGHT_BOLD),
+      style: const TextStyle(
+          fontSize: 18, color: ColorUI.BLACK, fontWeight: FontUI.WEIGHT_BOLD),
     );
 
     Widget discount = Container();
@@ -29,6 +31,7 @@ class Product extends StatelessWidget {
         textAlign: TextAlign.left,
         maxLines: 1,
         style: const TextStyle(
+          fontSize: 18,
           color: ColorUI.BLACK,
           decoration: TextDecoration.lineThrough,
         ),
@@ -38,6 +41,7 @@ class Product extends StatelessWidget {
         textAlign: TextAlign.center,
         maxLines: 1,
         style: const TextStyle(
+          fontSize: 18,
           fontWeight: FontUI.WEIGHT_BOLD,
           color: Colors.red,
         ),
@@ -73,19 +77,6 @@ class Product extends StatelessWidget {
         Container(
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-          // decoration: BoxDecoration(
-          //   color: ColorUI.WHITE,
-          //   boxShadow: containerShadow(
-          //     spreadRadius: 0.1,
-          //     blurRadius: 5,
-          //     offset: const Offset(0, 1),
-          //   ),
-          //   borderRadius: const BorderRadius.all(
-          //     Radius.circular(
-          //       BorderUI.RADIUS_CIRCULAR,
-          //     ),
-          //   ),
-          // ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -156,7 +147,11 @@ class Product extends StatelessWidget {
                             )
                           : const SizedBox(),
                       const SizedBox(height: 10),
-                      _priceTag()
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [_priceTag(), addTocart],
+                      )
                     ],
                   ),
                 ),
