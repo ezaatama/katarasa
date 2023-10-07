@@ -182,7 +182,7 @@ class _AllCartScreenState extends State<AllCartScreen>
                                       Flexible(
                                         child: Text(
                                           "${state.allCartLoaded.totalCart.toString()} item",
-                                          style: BLACK_TEXT_STYLE.copyWith(
+                                          style: PRIMARY_TEXT_STYLE.copyWith(
                                               fontWeight: FontUI.WEIGHT_LIGHT),
                                         ),
                                       ),
@@ -201,7 +201,7 @@ class _AllCartScreenState extends State<AllCartScreen>
                                       Flexible(
                                         child: Text(
                                           "${state.allCartLoaded.totalData.toString()} item",
-                                          style: BLACK_TEXT_STYLE.copyWith(
+                                          style: PRIMARY_TEXT_STYLE.copyWith(
                                               fontWeight: FontUI.WEIGHT_LIGHT),
                                         ),
                                       ),
@@ -222,7 +222,7 @@ class _AllCartScreenState extends State<AllCartScreen>
                                         child: Text(
                                           state.allCartLoaded
                                               .totalCartCurrencyFormat,
-                                          style: BLACK_TEXT_STYLE.copyWith(
+                                          style: PRIMARY_TEXT_STYLE.copyWith(
                                               fontWeight: FontUI.WEIGHT_LIGHT),
                                         ),
                                       ),
@@ -242,13 +242,13 @@ class _AllCartScreenState extends State<AllCartScreen>
                                       children: [
                                         Text(
                                           "Lihat Detail",
-                                          style: BROWN_TEXT_STYLE.copyWith(
+                                          style: PRIMARY_TEXT_STYLE.copyWith(
                                               fontWeight: FontUI.WEIGHT_BOLD),
                                         ),
                                         const Icon(
                                             Icons.arrow_forward_ios_rounded,
                                             size: 22,
-                                            color: ColorUI.BROWN)
+                                            color: ColorUI.BLACK)
                                       ],
                                     ),
                                   ),
