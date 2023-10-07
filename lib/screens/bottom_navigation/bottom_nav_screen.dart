@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:katarasa/tabs/all_order_screen.dart';
 import 'package:katarasa/tabs/favorite_screen.dart';
 import 'package:katarasa/tabs/home_screen.dart';
 import 'package:katarasa/tabs/profile_screen.dart';
@@ -29,7 +30,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
   }
 
   List<Widget> _screens() {
-    return [HomeScreen(), FavoriteScreen(), ProfileScreen()];
+    return [const HomeScreen(), const AllOrderScreen(), const ProfileScreen()];
   }
 
   void _setPage() {
@@ -67,6 +68,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
         children: _screens(),
       ),
       bottomNavigationBar: BottomAppBar(
+        color: ColorUI.PRIMARY_GREEN,
         elevation: 8.0,
         shape: const CircularNotchedRectangle(),
         child: SizedBox(
@@ -76,19 +78,19 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Container(
-                  child: bottomButton("Home", "Home", () {
+                  child: bottomButton("Home", "ic_home", () {
                     _onPageChanged(page: 0);
-                  }, _currentIndex == 0),
+                  }, _currentIndex == 0, context),
                 ),
                 Container(
-                  child: bottomButton("Favorite", "Favorite", () {
+                  child: bottomButton("Order", "ic_order", () {
                     _onPageChanged(page: 1);
-                  }, _currentIndex == 1),
+                  }, _currentIndex == 1, context),
                 ),
                 Container(
-                  child: bottomButton("Account", "User", () {
+                  child: bottomButton("Account", "ic_profile", () {
                     _onPageChanged(page: 2);
-                  }, _currentIndex == 2),
+                  }, _currentIndex == 2, context),
                 ),
               ],
             )),
