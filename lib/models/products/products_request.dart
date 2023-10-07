@@ -88,6 +88,31 @@ class ProductRequest {
         amountSold: json["amountSold"],
         image: json["image"],
       );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "isGift": isGift,
+        "isPreorder": isPreorder,
+        "freeOngkir": freeOngkir,
+        "name": name,
+        "category": category,
+        "slug": slug,
+        "statusProduk": statusProduk,
+        "totalSeen": totalSeen,
+        "isDiscount": isDiscount,
+        "discount": discount,
+        "grade": grade,
+        "price": price,
+        "priceDiscount": priceDiscount,
+        "location": location,
+        "priceLelang": priceLelang,
+        "priceDeal": priceDeal,
+        "lelangStatus": lelangStatus,
+        "lelangtType": lelangtType,
+        "rating": rating,
+        "amountSold": amountSold,
+        "image": image,
+      };
 }
 
 class Status {
