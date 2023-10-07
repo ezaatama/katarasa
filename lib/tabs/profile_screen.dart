@@ -76,13 +76,6 @@ class ProfileScreen extends StatelessWidget {
               const CardPromoProfile(),
               const SizedBox(height: 20),
               _listProfile(() {
-                debugPrint("Go to all pesanan");
-                Navigator.pushNamed(context, '/all-order');
-              }, Icons.list, "Semua Pesanan"),
-              const SizedBox(height: 10),
-              const Divider(height: 2, thickness: 1),
-              const SizedBox(height: 10),
-              _listProfile(() {
                 debugPrint("Go to alamat pengiriman");
                 Navigator.pushNamed(context, '/detail-address');
               }, Icons.location_history, "Alamat Pengiriman"),
