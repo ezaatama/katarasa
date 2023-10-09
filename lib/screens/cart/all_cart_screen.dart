@@ -6,7 +6,6 @@ import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/button/disable_button.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/cart/single_cart.dart';
-import 'package:katarasa/widgets/general/loader_indicator.dart';
 import 'package:katarasa/widgets/general/sheet_info.dart';
 import 'package:shimmer/shimmer.dart';
 

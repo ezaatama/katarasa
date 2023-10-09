@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:katarasa/tabs/all_order_screen.dart';
-import 'package:katarasa/tabs/favorite_screen.dart';
 import 'package:katarasa/tabs/home_screen.dart';
 import 'package:katarasa/tabs/profile_screen.dart';
 import 'package:katarasa/utils/constant.dart';

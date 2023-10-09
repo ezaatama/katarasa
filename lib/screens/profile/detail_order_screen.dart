@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:katarasa/data/order/detail_order/detail_order_cubit.dart';
 import 'package:katarasa/utils/constant.dart';
-import 'package:katarasa/widgets/general/loader_indicator.dart';
 import 'package:katarasa/widgets/order/card_detail_order.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timelines/timelines.dart';
