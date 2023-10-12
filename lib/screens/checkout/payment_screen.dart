@@ -11,8 +11,10 @@ import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/general/image.dart';
 import 'package:katarasa/widgets/general/loader_indicator.dart';
 import 'package:katarasa/widgets/general/make_dismiss.dart';
+import 'package:katarasa/widgets/general/toast_comp.dart';
 import 'package:katarasa/widgets/shipping/custom_expand_items.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key, required this.orderId});
@@ -30,6 +32,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
     context.read<DetailOrderCubit>().getDetailOrder(context, widget.orderId);
     context.read<MethodPaymentCubit>().getAllMethodPay(context);
     context.read<ProfileCubit>().getDataProfile(context);
+  }
+
+  Future<void> navigateToRedirectUrl(String redirectUrl) async {
+    if (!await launchUrl(
+      Uri.parse(redirectUrl),
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $redirectUrl');
+    }
   }
 
   @override
@@ -466,14 +477,31 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                                                   .subPayment
                                                                   .map(
                                                                       (subPay) {
-                                                                final indexed = data
-                                                                    .subPayment
-                                                                    .indexOf(
-                                                                        subPay);
-                                                                return InkWell(
-                                                                  onTap: () {
-                                                                    setStater(
-                                                                        () {
+                                                                return BlocConsumer<
+                                                                        PaymentCubit,
+                                                                        PaymentState>(
+                                                                    listener:
+                                                                        (context,
+                                                                            state) {
+                                                                  if (state
+                                                                      is PaymentSnapSuccess) {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    navigateToRedirectUrl(state
+                                                                        .paySnapSuccess
+                                                                        .redirectUrl);
+                                                                  } else if (state
+                                                                      is PaymentSnapError) {
+                                                                    showToast(
+                                                                        text: state
+                                                                            .errPaySnap,
+                                                                        state: ToastStates
+                                                                            .ERROR);
+                                                                  }
+                                                                }, builder: (context,
+                                                                        state) {
+                                                                  return InkWell(
+                                                                    onTap: () {
                                                                       if (SelectMethod
                                                                               .selectSubPay ==
                                                                           subPay
@@ -498,67 +526,62 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                                                             context,
                                                                             payload,
                                                                             widget.orderId,
-                                                                            "0");
-                                                                        Navigator.pop(
-                                                                            context);
+                                                                            "1");
                                                                       }
-                                                                    });
-                                                                  },
-                                                                  child:
-                                                                      Container(
-                                                                    margin: const EdgeInsets
-                                                                            .only(
-                                                                        bottom:
-                                                                            10),
-                                                                    padding: const EdgeInsets
-                                                                            .only(
-                                                                        left:
-                                                                            25,
-                                                                        right:
-                                                                            15),
+                                                                      setStater(
+                                                                          () {});
+                                                                    },
                                                                     child:
                                                                         Container(
-                                                                      padding:
-                                                                          const EdgeInsets.all(
-                                                                              10),
                                                                       margin: const EdgeInsets
                                                                               .only(
                                                                           bottom:
-                                                                              8),
-                                                                      decoration: SelectMethod.selectSubPay ==
-                                                                              subPay
-                                                                                  .paymentSub
-                                                                          ? BoxDecoration(
-                                                                              color: ColorUI.BROWN.withOpacity(.20),
-                                                                              border: Border.all(color: ColorUI.BROWN, width: 1),
-                                                                              borderRadius: BorderRadius.circular(10))
-                                                                          : null,
+                                                                              10),
+                                                                      padding: const EdgeInsets
+                                                                              .only(
+                                                                          left:
+                                                                              25,
+                                                                          right:
+                                                                              15),
                                                                       child:
-                                                                          Row(
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment.start,
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.spaceBetween,
-                                                                        children: [
-                                                                          Flexible(
-                                                                            child:
-                                                                                Text(
-                                                                              subPay.paymentSubLabel,
-                                                                              style: BLACK_TEXT_STYLE.copyWith(fontWeight: FontUI.WEIGHT_MEDIUM),
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.all(10),
+                                                                        margin: const EdgeInsets.only(
+                                                                            bottom:
+                                                                                8),
+                                                                        decoration: SelectMethod.selectSubPay == subPay.paymentSub
+                                                                            ? BoxDecoration(
+                                                                                color: ColorUI.BROWN.withOpacity(.20),
+                                                                                border: Border.all(color: ColorUI.BROWN, width: 1),
+                                                                                borderRadius: BorderRadius.circular(10))
+                                                                            : null,
+                                                                        child:
+                                                                            Row(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.spaceBetween,
+                                                                          children: [
+                                                                            Flexible(
+                                                                              child: Text(
+                                                                                subPay.paymentSubLabel,
+                                                                                style: BLACK_TEXT_STYLE.copyWith(fontWeight: FontUI.WEIGHT_MEDIUM),
+                                                                              ),
                                                                             ),
-                                                                          ),
-                                                                          //gambar pakai dummy karna error dari API
-                                                                          StdImage(
-                                                                              imageUrl: "https://img2.pngdownload.id/20180402/vww/kisspng-payment-paysafe-group-plc-credit-card-information-payment-5ac209b87fc258.7604918915226659125233.jpg",
-                                                                              // subPay.icon,
-                                                                              fit: BoxFit.contain,
-                                                                              width: MediaQuery.of(context).size.width * .150,
-                                                                              height: MediaQuery.of(context).size.height * .040),
-                                                                        ],
+                                                                            //gambar pakai dummy karna error dari API
+                                                                            StdImage(
+                                                                                imageUrl: "https://img2.pngdownload.id/20180402/vww/kisspng-payment-paysafe-group-plc-credit-card-information-payment-5ac209b87fc258.7604918915226659125233.jpg",
+                                                                                // subPay.icon,
+                                                                                fit: BoxFit.contain,
+                                                                                width: MediaQuery.of(context).size.width * .150,
+                                                                                height: MediaQuery.of(context).size.height * .040),
+                                                                          ],
+                                                                        ),
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                );
+                                                                  );
+                                                                });
                                                               }).toList(),
                                                             );
                                                           }
