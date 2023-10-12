@@ -611,29 +611,47 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       builder: (context, state) {
                         if (state is DataCheckoutLoaded) {
                           final resCo = context.read<DataCheckoutCubit>();
-                          final shipping = state.checkoutLoaded.cart
-                              .map((e) => e.shippingSelected);
-                          final cekShipping = shipping.map((e) => e.code);
-                          return resCo.isCheckout
-                              ? LoadingButton(onPressed: () {
-                                  debugPrint('response loading');
-                                })
-                              : cekShipping.isEmpty
-                                  ? DisableButton(
-                                      text: "Pembayaran", onPressed: () {})
-                                  : PrimaryButton(
-                                      text: "Pembayaran",
-                                      onPressed: () {
-                                        AddToCheckoutRequest payload =
-                                            AddToCheckoutRequest(
-                                                note1: '',
-                                                note2: '',
-                                                koin: false);
-                                        context
-                                            .read<DataCheckoutCubit>()
-                                            .postCheckout(context, payload);
-                                        debugPrint("go to pembayaran");
-                                      });
+
+                          final cart = state.checkoutLoaded.cart;
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: cart.length,
+                            itemBuilder: (context, index) {
+                              return resCo.isCheckout
+                                  ? LoadingButton(onPressed: () {
+                                      debugPrint('response loading');
+                                    })
+                                  : cart[index].shippingSelected.code.isEmpty &&
+                                          SelectShipping.shipDesc.isEmpty &&
+                                          SelectShipping.shipEdText.isEmpty
+                                      ? DisableButton(
+                                          text: "Pembayaran", onPressed: () {})
+                                      : cart[index]
+                                                  .shippingSelected
+                                                  .code
+                                                  .isEmpty &&
+                                              SelectShipping
+                                                  .shipDesc.isNotEmpty &&
+                                              SelectShipping
+                                                  .shipEdText.isNotEmpty
+                                          ? PrimaryButton(
+                                              text: "Pembayaran",
+                                              onPressed: () {
+                                                AddToCheckoutRequest payload =
+                                                    AddToCheckoutRequest(
+                                                        note1: '',
+                                                        note2: '',
+                                                        koin: false);
+                                                context
+                                                    .read<DataCheckoutCubit>()
+                                                    .postCheckout(
+                                                        context, payload);
+                                                debugPrint("go to pembayaran");
+                                              })
+                                          : const SizedBox();
+                            },
+                          );
                         }
                         return const SizedBox();
                       },
