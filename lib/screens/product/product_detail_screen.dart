@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:katarasa/data/cart/item_cart/item_cart_cubit.dart';
 import 'package:katarasa/data/products/detail_product/products_detail_cubit.dart';
 import 'package:katarasa/utils/constant.dart';
@@ -28,6 +29,49 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      body: OfflineBuilder(
+          connectivityBuilder: (
+            BuildContext context,
+            ConnectivityResult connectivity,
+            Widget child,
+          ) {
+            final bool connected = connectivity != ConnectivityResult.none;
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                _bodyContent(),
+                Positioned(
+                  height: 24.0,
+                  bottom: 0.0,
+                  left: 0.0,
+                  right: 0.0,
+                  child: connected
+                      ? const SizedBox()
+                      : Container(
+                          color: const Color(0xFFEE4400),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("Periksa Kembali Jaringan Anda",
+                                    style: WHITE_TEXT_STYLE.copyWith(
+                                        fontSize: 14,
+                                        fontWeight: FontUI.WEIGHT_SEMI_BOLD)),
+                              ],
+                            ),
+                          ),
+                        ),
+                ),
+              ],
+            );
+          },
+          child: _bodyContent()),
+    );
+  }
+
+  Widget _bodyContent() {
     return Scaffold(
       backgroundColor: ColorUI.BACKGROUND_COLOR,
       appBar: AppBar(
