@@ -13,11 +13,11 @@ part 'data_order_state.dart';
 class DataOrderCubit extends Cubit<DataOrderState> {
   DataOrderCubit() : super(DataOrderInitial());
 
-  Future<void> getAllOrder(BuildContext context) async {
+  Future<void> getAllOrder(BuildContext context, String filters) async {
     emit(DataOrderLoading());
 
     Future<ObjResponse> res =
-        callNetwork("${DATA_ORDER}page=1&limit=10&status=");
+        callNetwork("${DATA_ORDER}page=1&limit=10&status=$filters");
 
     await res.then((value) {
       if (value.success == true) {
