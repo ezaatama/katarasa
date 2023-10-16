@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:katarasa/models/order/detail_order_request.dart';
+import 'package:katarasa/models/payment/methode_pay_request.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/general/image.dart';
@@ -344,6 +345,8 @@ class CardDetailOrder extends StatelessWidget {
             ? PrimaryButton(
                 text: "Bayar Pesanan",
                 onPressed: () {
+                  debugPrint(
+                      "ini select method token payment ${SelectMethod.tokenPayment}");
                   Navigator.pushNamed(context, '/payment-method',
                       arguments: detail.orderId);
                 })
