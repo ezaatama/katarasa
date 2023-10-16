@@ -21,8 +21,16 @@ class MethodPaymentResponse {
 }
 
 class SelectMethod {
+  static String tokenPayment = '';
   static String selectItem = '';
+  static String selectPayType = '';
+  static String selectPayTypeLabel = '';
   static String selectSubPay = '';
+  static String selectSubPayLabel = '';
+  static String selectSubPayFee = '';
+  static String selectSubPayType = '';
+  static String selectSubPayForm = '';
+
   static String isFirstMethod = '1';
 }
 
