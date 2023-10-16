@@ -1,7 +1,8 @@
-// ignore_for_file: non_constant_identifier_names, constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, constant_identifier_names, prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EnvValue {
   static String get SECRET_API => dotenv.get("SECRET_API");
@@ -174,5 +175,13 @@ Color parseStatusTx(String s) {
       return Color.fromARGB(255, 81, 104, 168);
     default:
       return Colors.white;
+  }
+}
+
+Future<void> navigateToRedirectUrl(String redirectUrl) async {
+  if (!await launchUrl(Uri.parse(redirectUrl),
+      // mode: LaunchMode.externalApplication,
+      mode: LaunchMode.inAppWebView)) {
+    throw Exception('Could not launch $redirectUrl');
   }
 }
