@@ -630,11 +630,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       : cart[index]
                                                   .shippingSelected
                                                   .code
-                                                  .isEmpty &&
-                                              SelectShipping
-                                                  .shipDesc.isNotEmpty &&
-                                              SelectShipping
-                                                  .shipEdText.isNotEmpty
+                                                  .isEmpty ||
+                                              cart[index]
+                                                      .shippingSelected
+                                                      .code
+                                                      .isNotEmpty &&
+                                                  SelectShipping
+                                                      .shipDesc.isNotEmpty &&
+                                                  SelectShipping
+                                                      .shipEdText.isNotEmpty
                                           ? PrimaryButton(
                                               text: "Pembayaran",
                                               onPressed: () {
