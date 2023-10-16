@@ -32,6 +32,7 @@ class DataOrderCubit extends Cubit<DataOrderState> {
         }
       } else {
         debugPrint(value.errresponse.errors);
+
         emit(DataOrderError(value.errresponse.errors));
       }
     }).catchError((e) {
