@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:katarasa/data/order/all_order/data_order_cubit.dart';
 import 'package:katarasa/models/filter/filter_status.dart';
+import 'package:katarasa/utils/cache_storage.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/filter/filter_chip.dart';
 import 'package:katarasa/widgets/general/make_dismiss.dart';
+import 'package:katarasa/widgets/general/toast_comp.dart';
 import 'package:shimmer/shimmer.dart';
 
 class AllOrderScreen extends StatefulWidget {
@@ -29,43 +31,61 @@ class _AllOrderScreenState extends State<AllOrderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: OfflineBuilder(
-          connectivityBuilder: (
-            BuildContext context,
-            ConnectivityResult connectivity,
-            Widget child,
-          ) {
-            final bool connected = connectivity != ConnectivityResult.none;
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                _bodyContent(),
-                Positioned(
-                  height: 24.0,
-                  bottom: 0.0,
-                  left: 0.0,
-                  right: 0.0,
-                  child: connected
-                      ? const SizedBox()
-                      : Container(
-                          color: const Color(0xFFEE4400),
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text("Periksa Kembali Jaringan Anda",
-                                    style: WHITE_TEXT_STYLE.copyWith(
-                                        fontSize: 14,
-                                        fontWeight: FontUI.WEIGHT_SEMI_BOLD)),
-                              ],
+      body: BlocConsumer<DataOrderCubit, DataOrderState>(
+          listener: (context, state) {
+        if (state is DataOrderError) {
+          CacheStorage.removeData(key: JWT_TOKEN).then((value) {
+            CacheStorage.setTokenApi('');
+            print('token remove');
+            if (value) {
+              WidgetsBinding.instance.scheduleFrameCallback((_) {
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/login', (route) => false);
+                showToast(
+                    text: "Sesi Anda telah habis!", state: ToastStates.ERROR);
+              });
+            }
+          });
+        }
+      }, builder: (context, state) {
+        return OfflineBuilder(
+            connectivityBuilder: (
+              BuildContext context,
+              ConnectivityResult connectivity,
+              Widget child,
+            ) {
+              final bool connected = connectivity != ConnectivityResult.none;
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  _bodyContent(),
+                  Positioned(
+                    height: 24.0,
+                    bottom: 0.0,
+                    left: 0.0,
+                    right: 0.0,
+                    child: connected
+                        ? const SizedBox()
+                        : Container(
+                            color: const Color(0xFFEE4400),
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text("Periksa Kembali Jaringan Anda",
+                                      style: WHITE_TEXT_STYLE.copyWith(
+                                          fontSize: 14,
+                                          fontWeight: FontUI.WEIGHT_SEMI_BOLD)),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                ),
-              ],
-            );
-          },
-          child: _bodyContent()),
+                  ),
+                ],
+              );
+            },
+            child: _bodyContent());
+      }),
     );
   }
 
