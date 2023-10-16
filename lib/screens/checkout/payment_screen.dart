@@ -12,6 +12,7 @@ import 'package:katarasa/widgets/general/image.dart';
 import 'package:katarasa/widgets/general/loader_indicator.dart';
 import 'package:katarasa/widgets/general/make_dismiss.dart';
 import 'package:katarasa/widgets/general/toast_comp.dart';
+import 'package:katarasa/widgets/order/sheet_payment.dart';
 import 'package:katarasa/widgets/shipping/custom_expand_items.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -293,338 +294,104 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                 decoration: const BoxDecoration(color: ColorUI.WHITE),
-                child: InkWell(
-                  onTap: () {
-                    _sheetPembayaran();
-                    debugPrint("go to bottom sheet pilih pembayaran");
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Image.asset("assets/icons/icon_payment.png",
-                              fit: BoxFit.cover,
-                              width: MediaQuery.of(context).size.width * .060,
-                              height:
-                                  MediaQuery.of(context).size.height * .025),
-                          const SizedBox(width: 8),
-                          Flexible(
-                            flex: 2,
-                            child: Column(
+                child: BlocBuilder<PaymentCubit, PaymentState>(
+                    builder: (context, state) {
+                  if (state is PaymentSnapSuccess) {
+                    return InkWell(
+                        onTap: () {
+                          SelectMethod.tokenPayment.isNotEmpty
+                              ? sheetPembayaranUpdate(context, widget.orderId)
+                              : sheetPembayaran(context, widget.orderId);
+
+                          debugPrint("go to bottom sheet pilih pembayaran");
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Pilih pembayaran",
-                                    style: BLACK_TEXT_STYLE.copyWith(
-                                        fontWeight: FontUI.WEIGHT_MEDIUM,
-                                        fontSize: 16)),
-                                const SizedBox(height: 3),
-                                Text("Anda belum memilih metode pembayaran",
-                                    style: BLACK_TEXT_STYLE.copyWith(
-                                        fontWeight: FontUI.WEIGHT_LIGHT,
-                                        fontSize: 12)),
+                                Image.asset("assets/icons/icon_payment.png",
+                                    fit: BoxFit.cover,
+                                    width: MediaQuery.of(context).size.width *
+                                        .060,
+                                    height: MediaQuery.of(context).size.height *
+                                        .025),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          state.paySnapSuccess.token.isNotEmpty
+                                              ? "Ganti pembayaran"
+                                              : "Pilih pembayaran",
+                                          style: BLACK_TEXT_STYLE.copyWith(
+                                              fontWeight: FontUI.WEIGHT_MEDIUM,
+                                              fontSize: 16)),
+                                    ],
+                                  ),
+                                ),
+                                const Spacer(),
+                                const Icon(Icons.arrow_forward_ios_rounded,
+                                    color: ColorUI.GREY, size: 18),
                               ],
-                            ),
-                          ),
-                          const Spacer(),
-                          const Icon(Icons.arrow_forward_ios_rounded,
-                              color: ColorUI.GREY, size: 18),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
+                            )
+                          ],
+                        ));
+                  }
+                  return const SizedBox();
+                  // return InkWell(
+                  //     onTap: () {
+                  //       sheetPembayaran(context, widget.orderId);
+                  //       debugPrint("go to bottom sheet pilih pembayaran");
+                  //       setState(() {});
+                  //     },
+                  //     child: Column(
+                  //       crossAxisAlignment: CrossAxisAlignment.start,
+                  //       children: [
+                  //         Row(
+                  //           crossAxisAlignment: CrossAxisAlignment.start,
+                  //           children: [
+                  //             Image.asset("assets/icons/icon_payment.png",
+                  //                 fit: BoxFit.cover,
+                  //                 width:
+                  //                     MediaQuery.of(context).size.width * .060,
+                  //                 height: MediaQuery.of(context).size.height *
+                  //                     .025),
+                  //             const SizedBox(width: 8),
+                  //             Flexible(
+                  //               flex: 2,
+                  //               child: Column(
+                  //                 crossAxisAlignment: CrossAxisAlignment.start,
+                  //                 children: [
+                  //                   Text("Pilih pembayaran",
+                  //                       style: BLACK_TEXT_STYLE.copyWith(
+                  //                           fontWeight: FontUI.WEIGHT_MEDIUM,
+                  //                           fontSize: 16)),
+                  //                   const SizedBox(height: 3),
+                  //                   Text("Anda belum memilih metode pembayaran",
+                  //                       style: BLACK_TEXT_STYLE.copyWith(
+                  //                           fontWeight: FontUI.WEIGHT_LIGHT,
+                  //                           fontSize: 12)),
+                  //                 ],
+                  //               ),
+                  //             ),
+                  //             const Spacer(),
+                  //             const Icon(Icons.arrow_forward_ios_rounded,
+                  //                 color: ColorUI.GREY, size: 18),
+                  //           ],
+                  //         )
+                  //       ],
+                  //     ));
+                }),
               )
             ],
           ),
         ),
       )),
     );
-  }
-
-  void _sheetPembayaran() {
-    showModalBottomSheet(
-        barrierColor: ColorUI.BLACK.withOpacity(0.2),
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        useRootNavigator: false,
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(builder: (context, setStater) {
-            return makeDismiss(context,
-                child: DraggableScrollableSheet(
-                    initialChildSize: 0.5,
-                    minChildSize: 0.3,
-                    maxChildSize: 0.6,
-                    builder: (context, controller) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 10),
-                        decoration: const BoxDecoration(
-                            color: ColorUI.WHITE,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(32),
-                              topRight: Radius.circular(32),
-                            )),
-                        child: Stack(
-                          children: [
-                            ScrollConfiguration(
-                              behavior: const MaterialScrollBehavior()
-                                  .copyWith(overscroll: false),
-                              child: ListView(
-                                shrinkWrap: true,
-                                controller: controller,
-                                primary: false,
-                                children: [
-                                  ...notchBottomSheet("Metode Pembayaran"),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  top: 70, left: 16, right: 16, bottom: 16),
-                              child: ListView(
-                                shrinkWrap: true,
-                                physics: const BouncingScrollPhysics(),
-                                children: [
-                                  BlocBuilder<MethodPaymentCubit,
-                                          MethodPaymentState>(
-                                      builder: (context, state) {
-                                    if (state is MethodPaymentLoading) {
-                                      return const Center(
-                                          child: LoaderIndicator());
-                                    } else if (state is MethodPaymentLoaded) {
-                                      return Column(
-                                          children:
-                                              state.methodLoaded.map((data) {
-                                        return StatefulBuilder(
-                                            builder: (context, setStaters) {
-                                          return Container(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
-                                              decoration: const BoxDecoration(
-                                                  color: Colors.transparent),
-                                              child: CustomExpandableItem(
-                                                  header: Container(
-                                                      padding:
-                                                          const EdgeInsets.symmetric(
-                                                              horizontal: 15,
-                                                              vertical: 8),
-                                                      margin: const EdgeInsets.only(
-                                                          bottom: 15),
-                                                      decoration:
-                                                          const BoxDecoration(
-                                                              color: Colors
-                                                                  .transparent),
-                                                      width: MediaQuery.of(context)
-                                                          .size
-                                                          .width,
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Text(
-                                                            data.paymentTypeLabel,
-                                                            style: BLACK_TEXT_STYLE
-                                                                .copyWith(
-                                                                    fontSize:
-                                                                        16,
-                                                                    fontWeight:
-                                                                        FontUI
-                                                                            .WEIGHT_SEMI_BOLD),
-                                                          ),
-                                                          SelectMethod.selectItem ==
-                                                                  data
-                                                                      .idPaymentMethodCategory
-                                                              ? const Icon(Icons
-                                                                  .keyboard_arrow_down_rounded)
-                                                              : const Icon(Icons
-                                                                  .keyboard_arrow_right_rounded)
-                                                        ],
-                                                      )),
-                                                  expandedChild: BlocBuilder<
-                                                          DetailOrderCubit,
-                                                          DetailOrderState>(
-                                                      builder: (context, state) {
-                                                    if (state
-                                                        is DetailOrderLoaded) {
-                                                      final grandTotal = state
-                                                          .detailOrderLoaded
-                                                          .total;
-                                                      final paymentId = state
-                                                          .detailOrderLoaded
-                                                          .orderPaymentRecent
-                                                          .paymentId;
-
-                                                      return BlocBuilder<
-                                                          ProfileCubit,
-                                                          ProfileState>(
-                                                        builder:
-                                                            (context, state) {
-                                                          if (state
-                                                              is ProfileLoaded) {
-                                                            final email = state
-                                                                .dataProfile
-                                                                .email;
-                                                            final name = state
-                                                                .dataProfile
-                                                                .name;
-                                                            return Column(
-                                                              children: data
-                                                                  .subPayment
-                                                                  .map(
-                                                                      (subPay) {
-                                                                return BlocConsumer<
-                                                                        PaymentCubit,
-                                                                        PaymentState>(
-                                                                    listener:
-                                                                        (context,
-                                                                            state) {
-                                                                  if (state
-                                                                      is PaymentSnapSuccess) {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                    navigateToRedirectUrl(state
-                                                                        .paySnapSuccess
-                                                                        .redirectUrl);
-                                                                  } else if (state
-                                                                      is PaymentSnapError) {
-                                                                    showToast(
-                                                                        text: state
-                                                                            .errPaySnap,
-                                                                        state: ToastStates
-                                                                            .ERROR);
-                                                                  }
-                                                                }, builder: (context,
-                                                                        state) {
-                                                                  return InkWell(
-                                                                    onTap: () {
-                                                                      if (SelectMethod
-                                                                              .selectSubPay ==
-                                                                          subPay
-                                                                              .paymentSub) {
-                                                                        SelectMethod.selectSubPay =
-                                                                            "no select";
-                                                                      } else {
-                                                                        SelectMethod.selectSubPay =
-                                                                            subPay.paymentSub;
-                                                                        PaySnapBeforeToken payload = PaySnapBeforeToken(
-                                                                            email:
-                                                                                email,
-                                                                            name:
-                                                                                name,
-                                                                            paymentSub: SelectMethod
-                                                                                .selectSubPay,
-                                                                            grandTotal:
-                                                                                grandTotal,
-                                                                            paymentId:
-                                                                                paymentId);
-                                                                        context.read<PaymentCubit>().postPaySnapToken(
-                                                                            context,
-                                                                            payload,
-                                                                            widget.orderId,
-                                                                            "1");
-                                                                      }
-                                                                      setStater(
-                                                                          () {});
-                                                                    },
-                                                                    child:
-                                                                        Container(
-                                                                      margin: const EdgeInsets
-                                                                              .only(
-                                                                          bottom:
-                                                                              10),
-                                                                      padding: const EdgeInsets
-                                                                              .only(
-                                                                          left:
-                                                                              25,
-                                                                          right:
-                                                                              15),
-                                                                      child:
-                                                                          Container(
-                                                                        padding:
-                                                                            const EdgeInsets.all(10),
-                                                                        margin: const EdgeInsets.only(
-                                                                            bottom:
-                                                                                8),
-                                                                        decoration: SelectMethod.selectSubPay == subPay.paymentSub
-                                                                            ? BoxDecoration(
-                                                                                color: ColorUI.BROWN.withOpacity(.20),
-                                                                                border: Border.all(color: ColorUI.BROWN, width: 1),
-                                                                                borderRadius: BorderRadius.circular(10))
-                                                                            : null,
-                                                                        child:
-                                                                            Row(
-                                                                          crossAxisAlignment:
-                                                                              CrossAxisAlignment.start,
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceBetween,
-                                                                          children: [
-                                                                            Flexible(
-                                                                              child: Text(
-                                                                                subPay.paymentSubLabel,
-                                                                                style: BLACK_TEXT_STYLE.copyWith(fontWeight: FontUI.WEIGHT_MEDIUM),
-                                                                              ),
-                                                                            ),
-                                                                            //gambar pakai dummy karna error dari API
-                                                                            StdImage(
-                                                                                imageUrl: "https://img2.pngdownload.id/20180402/vww/kisspng-payment-paysafe-group-plc-credit-card-information-payment-5ac209b87fc258.7604918915226659125233.jpg",
-                                                                                // subPay.icon,
-                                                                                fit: BoxFit.contain,
-                                                                                width: MediaQuery.of(context).size.width * .150,
-                                                                                height: MediaQuery.of(context).size.height * .040),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  );
-                                                                });
-                                                              }).toList(),
-                                                            );
-                                                          }
-                                                          return const SizedBox();
-                                                        },
-                                                      );
-                                                    }
-                                                    return const SizedBox();
-                                                  }),
-                                                  isExpanded:
-                                                      SelectMethod.selectItem ==
-                                                          data.idPaymentMethodCategory,
-                                                  onTap: () {
-                                                    setStater(() {
-                                                      if (SelectMethod
-                                                              .selectItem ==
-                                                          data.idPaymentMethodCategory) {
-                                                        SelectMethod
-                                                                .selectItem =
-                                                            "no select";
-                                                      } else {
-                                                        SelectMethod
-                                                                .selectItem =
-                                                            data.idPaymentMethodCategory;
-                                                      }
-                                                    });
-                                                  }));
-                                        });
-                                      }).toList());
-                                    }
-                                    return const SizedBox();
-                                  })
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    }));
-          });
-        }).then((value) {
-      setState(() {});
-    });
   }
 
   Widget _shimmerContent() {
