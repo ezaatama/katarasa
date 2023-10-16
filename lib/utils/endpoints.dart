@@ -27,3 +27,4 @@ const DATA_ORDER = 'order/data-order?';
 const DETAIL_ORDER = 'order/data-order-detail?';
 const METHOD_PAYMENT = 'order/data-method-payment';
 const PAYMENT_SNAP_TOKEN = 'order/payment-snaptoken?';
+const PAYMENT_SNAP_TOKEN_UPDATE = 'order/payment-snaptoken-update';
