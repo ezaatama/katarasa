@@ -1,14 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:katarasa/data/order/all_order/data_order_cubit.dart';
 import 'package:katarasa/models/filter/filter_status.dart';
-import 'package:katarasa/utils/cache_storage.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/button/primary_button.dart';
 import 'package:katarasa/widgets/filter/filter_chip.dart';
+import 'package:katarasa/widgets/general/loader_indicator.dart';
 import 'package:katarasa/widgets/general/make_dismiss.dart';
-import 'package:katarasa/widgets/general/toast_comp.dart';
 import 'package:shimmer/shimmer.dart';
 
 class AllOrderScreen extends StatefulWidget {
@@ -19,36 +20,37 @@ class AllOrderScreen extends StatefulWidget {
 }
 
 class _AllOrderScreenState extends State<AllOrderScreen> {
+  final ScrollController _orderController = ScrollController();
+
   String hasFilter = 'notPaid';
 
   @override
   void initState() {
     super.initState();
-    context.read<DataOrderCubit>().getAllOrder(context, hasFilter);
+    // context.read<DataOrderCubit>().getAllOrder(context, hasFilter);
+    var cubit = context.read<DataOrderCubit>();
+    context.read<DataOrderCubit>().fetchOrder(context, hasFilter);
+    _orderController.addListener(() {
+      if (_orderController.position.pixels >=
+              _orderController.position.maxScrollExtent &&
+          !cubit.isEndList) {
+        context.read<DataOrderCubit>().loadMoreOrder(context, hasFilter);
+        print('load more');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _orderController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: BlocConsumer<DataOrderCubit, DataOrderState>(
-          listener: (context, state) {
-        if (state is DataOrderError) {
-          CacheStorage.removeData(key: JWT_TOKEN).then((value) {
-            CacheStorage.setTokenApi('');
-            print('token remove');
-            if (value) {
-              WidgetsBinding.instance.scheduleFrameCallback((_) {
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/login', (route) => false);
-                showToast(
-                    text: "Sesi Anda telah habis!", state: ToastStates.ERROR);
-              });
-            }
-          });
-        }
-      }, builder: (context, state) {
-        return OfflineBuilder(
+        resizeToAvoidBottomInset: true,
+        body: OfflineBuilder(
             connectivityBuilder: (
               BuildContext context,
               ConnectivityResult connectivity,
@@ -84,9 +86,7 @@ class _AllOrderScreenState extends State<AllOrderScreen> {
                 ],
               );
             },
-            child: _bodyContent());
-      }),
-    );
+            child: _bodyContent()));
   }
 
   Widget _bodyContent() {
@@ -118,148 +118,390 @@ class _AllOrderScreenState extends State<AllOrderScreen> {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-      child: SingleChildScrollView(
-        child: BlocBuilder<DataOrderCubit, DataOrderState>(
+      child: BlocBuilder<DataOrderCubit, DataOrderState>(
           builder: (context, state) {
-            if (state is DataOrderLoading) {
-              return _shimmerContent();
-            } else if (state is DataOrderEmpty) {
-              return Center(
-                child: Column(
-                  children: [
-                    Image.asset("assets/icons/like_product.png",
-                        fit: BoxFit.cover),
-                    Text(
-                      "Pesanan Anda kosong nih, silahkan pesan sekarang",
-                      textAlign: TextAlign.center,
-                      style: BLACK_TEXT_STYLE.copyWith(
-                          fontSize: 18, fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-                    )
-                  ],
-                ),
-              );
-            } else if (state is DataOrderLoaded) {
-              return Column(
-                  children: state.dataOrderLoaded.items.map((items) {
-                return InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/order-detail',
-                        arguments: items.orderId);
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: ColorUI.GREY.withOpacity(.20),
-                          offset: const Offset(
-                            0.0,
-                            2.0,
-                          ),
-                          blurRadius: 12.0,
-                          spreadRadius: 1.0,
-                        ), //BoxShadow
-                        const BoxShadow(
-                          color: Colors.white,
-                          offset: Offset(0.0, 0.0),
-                          blurRadius: 0.0,
-                          spreadRadius: 0.0,
-                        ), //BoxShadow
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Order Id",
-                              style: BLACK_TEXT_STYLE.copyWith(
-                                  fontWeight: FontUI.WEIGHT_MEDIUM),
-                            ),
-                            Text(
-                              items.orderId,
-                              style: BLACK_TEXT_STYLE.copyWith(
-                                  fontWeight: FontUI.WEIGHT_MEDIUM),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 3),
-                        Column(
-                          children: items.items.map((inv) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "No. Invoice",
-                                  style: BLACK_TEXT_STYLE.copyWith(
-                                      fontWeight: FontUI.WEIGHT_MEDIUM),
-                                ),
-                                Text(
-                                  inv.invoice,
-                                  style: BLACK_TEXT_STYLE.copyWith(
-                                      fontWeight: FontUI.WEIGHT_MEDIUM),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                        const SizedBox(height: 5),
-                        const Divider(thickness: 2, height: 3),
-                        const SizedBox(height: 5),
-                        Column(
-                            children: items.items.map((store) {
-                          return Text(
-                            "${store.store.name} - ${store.store.location}",
-                            style: BLACK_TEXT_STYLE.copyWith(
-                                fontWeight: FontUI.WEIGHT_MEDIUM),
-                          );
-                        }).toList()),
-                        const SizedBox(height: 3),
-                        Column(
-                          children: items.items.map((prod) {
-                            return Column(
-                                children: prod.products.map((singleProd) {
-                              return Text(
-                                singleProd.name,
+        var cubit = context.read<DataOrderCubit>();
+        if (state is DataOrderEmpty) {
+          return Center(
+            child: Column(
+              children: [
+                Image.asset("assets/icons/like_product.png", fit: BoxFit.cover),
+                Text(
+                  "Pesanan Anda kosong nih, silahkan pesan sekarang",
+                  textAlign: TextAlign.center,
+                  style: BLACK_TEXT_STYLE.copyWith(
+                      fontSize: 18, fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+                )
+              ],
+            ),
+          );
+        } else if (state is AllOrderLoaded) {
+          return SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: cubit.isFirstLoading
+                  ? _shimmerContent()
+                  : cubit.items.isEmpty
+                      ? Center(
+                          child: Column(
+                            children: [
+                              Image.asset("assets/icons/like_product.png",
+                                  fit: BoxFit.cover),
+                              Text(
+                                "Pesanan Anda kosong nih, silahkan pesan sekarang",
+                                textAlign: TextAlign.center,
                                 style: BLACK_TEXT_STYLE.copyWith(
-                                    fontWeight: FontUI.WEIGHT_MEDIUM),
-                              );
-                            }).toList());
-                          }).toList(),
-                        ),
-                        const SizedBox(height: 5),
-                        const Divider(thickness: 2, height: 3),
-                        const SizedBox(height: 5),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    fontSize: 18,
+                                    fontWeight: FontUI.WEIGHT_SEMI_BOLD),
+                              )
+                            ],
+                          ),
+                        )
+                      : Column(
                           children: [
+                            Expanded(
+                              child: ListView.builder(
+                                  shrinkWrap: true,
+                                  primary: false,
+                                  scrollDirection: Axis.vertical,
+                                  controller: _orderController,
+                                  itemCount: cubit.items.length,
+                                  itemBuilder: (context, index) {
+                                    return InkWell(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, '/order-detail',
+                                            arguments:
+                                                cubit.items[index].orderId);
+                                      },
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        margin:
+                                            const EdgeInsets.only(bottom: 10),
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  ColorUI.GREY.withOpacity(.20),
+                                              offset: const Offset(
+                                                0.0,
+                                                2.0,
+                                              ),
+                                              blurRadius: 12.0,
+                                              spreadRadius: 1.0,
+                                            ), //BoxShadow
+                                            const BoxShadow(
+                                              color: Colors.white,
+                                              offset: Offset(0.0, 0.0),
+                                              blurRadius: 0.0,
+                                              spreadRadius: 0.0,
+                                            ), //BoxShadow
+                                          ],
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  "Order Id",
+                                                  style:
+                                                      BLACK_TEXT_STYLE.copyWith(
+                                                          fontWeight: FontUI
+                                                              .WEIGHT_MEDIUM),
+                                                ),
+                                                Text(
+                                                  cubit.items[index].orderId,
+                                                  style:
+                                                      BLACK_TEXT_STYLE.copyWith(
+                                                          fontWeight: FontUI
+                                                              .WEIGHT_MEDIUM),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 3),
+                                            Column(
+                                              children: cubit.items[index].items
+                                                  .map((inv) {
+                                                return Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      "No. Invoice",
+                                                      style: BLACK_TEXT_STYLE
+                                                          .copyWith(
+                                                              fontWeight: FontUI
+                                                                  .WEIGHT_MEDIUM),
+                                                    ),
+                                                    Text(
+                                                      inv.invoice,
+                                                      style: BLACK_TEXT_STYLE
+                                                          .copyWith(
+                                                              fontWeight: FontUI
+                                                                  .WEIGHT_MEDIUM),
+                                                    ),
+                                                  ],
+                                                );
+                                              }).toList(),
+                                            ),
+                                            const SizedBox(height: 5),
+                                            const Divider(
+                                                thickness: 2, height: 3),
+                                            const SizedBox(height: 5),
+                                            Column(
+                                                children: cubit
+                                                    .items[index].items
+                                                    .map((store) {
+                                              return Text(
+                                                "${store.store.name} - ${store.store.location}",
+                                                style:
+                                                    BLACK_TEXT_STYLE.copyWith(
+                                                        fontWeight: FontUI
+                                                            .WEIGHT_MEDIUM),
+                                              );
+                                            }).toList()),
+                                            const SizedBox(height: 3),
+                                            Column(
+                                              children: cubit.items[index].items
+                                                  .map((prod) {
+                                                return Column(
+                                                    children: prod.products
+                                                        .map((singleProd) {
+                                                  return Text(
+                                                    singleProd.name,
+                                                    style: BLACK_TEXT_STYLE
+                                                        .copyWith(
+                                                            fontWeight: FontUI
+                                                                .WEIGHT_MEDIUM),
+                                                  );
+                                                }).toList());
+                                              }).toList(),
+                                            ),
+                                            const SizedBox(height: 5),
+                                            const Divider(
+                                                thickness: 2, height: 3),
+                                            const SizedBox(height: 5),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  "Total",
+                                                  style:
+                                                      BLACK_TEXT_STYLE.copyWith(
+                                                          fontWeight: FontUI
+                                                              .WEIGHT_SEMI_BOLD),
+                                                ),
+                                                Text(
+                                                  cubit.items[index]
+                                                      .totalPriceCurrencyFormat,
+                                                  style: RED_TEXT_STYLE.copyWith(
+                                                      fontWeight: FontUI
+                                                          .WEIGHT_SEMI_BOLD),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                            ),
+                            if (cubit.isLoadMore == true)
+                              const LoaderIndicator(),
+                            if (cubit.hasNextPage == false) const SizedBox()
+                          ],
+                        ));
+        }
+        return SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: cubit.isFirstLoading
+                ? _shimmerContent()
+                : cubit.items.isEmpty
+                    ? Center(
+                        child: Column(
+                          children: [
+                            Image.asset("assets/icons/like_product.png",
+                                fit: BoxFit.cover),
                             Text(
-                              "Total",
+                              "Pesanan Anda kosong nih, silahkan pesan sekarang",
+                              textAlign: TextAlign.center,
                               style: BLACK_TEXT_STYLE.copyWith(
+                                  fontSize: 18,
                                   fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-                            ),
-                            Text(
-                              items.totalPriceCurrencyFormat,
-                              style: RED_TEXT_STYLE.copyWith(
-                                  fontWeight: FontUI.WEIGHT_SEMI_BOLD),
-                            ),
+                            )
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList());
-            }
-            return const SizedBox();
-          },
-        ),
-      ),
+                      )
+                    : Column(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                                shrinkWrap: true,
+                                primary: false,
+                                scrollDirection: Axis.vertical,
+                                controller: _orderController,
+                                itemCount: cubit.items.length,
+                                itemBuilder: (context, index) {
+                                  return InkWell(
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, '/order-detail',
+                                          arguments:
+                                              cubit.items[index].orderId);
+                                    },
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                ColorUI.GREY.withOpacity(.20),
+                                            offset: const Offset(
+                                              0.0,
+                                              2.0,
+                                            ),
+                                            blurRadius: 12.0,
+                                            spreadRadius: 1.0,
+                                          ), //BoxShadow
+                                          const BoxShadow(
+                                            color: Colors.white,
+                                            offset: Offset(0.0, 0.0),
+                                            blurRadius: 0.0,
+                                            spreadRadius: 0.0,
+                                          ), //BoxShadow
+                                        ],
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                "Order Id",
+                                                style:
+                                                    BLACK_TEXT_STYLE.copyWith(
+                                                        fontWeight: FontUI
+                                                            .WEIGHT_MEDIUM),
+                                              ),
+                                              Text(
+                                                cubit.items[index].orderId,
+                                                style:
+                                                    BLACK_TEXT_STYLE.copyWith(
+                                                        fontWeight: FontUI
+                                                            .WEIGHT_MEDIUM),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 3),
+                                          Column(
+                                            children: cubit.items[index].items
+                                                .map((inv) {
+                                              return Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    "No. Invoice",
+                                                    style: BLACK_TEXT_STYLE
+                                                        .copyWith(
+                                                            fontWeight: FontUI
+                                                                .WEIGHT_MEDIUM),
+                                                  ),
+                                                  Text(
+                                                    inv.invoice,
+                                                    style: BLACK_TEXT_STYLE
+                                                        .copyWith(
+                                                            fontWeight: FontUI
+                                                                .WEIGHT_MEDIUM),
+                                                  ),
+                                                ],
+                                              );
+                                            }).toList(),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          const Divider(
+                                              thickness: 2, height: 3),
+                                          const SizedBox(height: 5),
+                                          Column(
+                                              children: cubit.items[index].items
+                                                  .map((store) {
+                                            return Text(
+                                              "${store.store.name} - ${store.store.location}",
+                                              style: BLACK_TEXT_STYLE.copyWith(
+                                                  fontWeight:
+                                                      FontUI.WEIGHT_MEDIUM),
+                                            );
+                                          }).toList()),
+                                          const SizedBox(height: 3),
+                                          Column(
+                                            children: cubit.items[index].items
+                                                .map((prod) {
+                                              return Column(
+                                                  children: prod.products
+                                                      .map((singleProd) {
+                                                return Text(
+                                                  singleProd.name,
+                                                  style:
+                                                      BLACK_TEXT_STYLE.copyWith(
+                                                          fontWeight: FontUI
+                                                              .WEIGHT_MEDIUM),
+                                                );
+                                              }).toList());
+                                            }).toList(),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          const Divider(
+                                              thickness: 2, height: 3),
+                                          const SizedBox(height: 5),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                "Total",
+                                                style:
+                                                    BLACK_TEXT_STYLE.copyWith(
+                                                        fontWeight: FontUI
+                                                            .WEIGHT_SEMI_BOLD),
+                                              ),
+                                              Text(
+                                                cubit.items[index]
+                                                    .totalPriceCurrencyFormat,
+                                                style: RED_TEXT_STYLE.copyWith(
+                                                    fontWeight: FontUI
+                                                        .WEIGHT_SEMI_BOLD),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }),
+                          ),
+                          if (cubit.isLoadMore == true) const LoaderIndicator(),
+                          if (cubit.hasNextPage == false) const SizedBox()
+                        ],
+                      ));
+      }),
     );
   }
 
@@ -378,7 +620,7 @@ class _AllOrderScreenState extends State<AllOrderScreen> {
                                         onPressed: () async {
                                           await context
                                               .read<DataOrderCubit>()
-                                              .getAllOrder(context, hasFilter)
+                                              .fetchFilter(context, hasFilter)
                                               .then((value) =>
                                                   Navigator.pop(context));
                                           setState(() {});
