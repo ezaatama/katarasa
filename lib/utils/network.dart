@@ -21,8 +21,8 @@ Future<void> initNetwork() async {
   dio.BaseOptions options = dio.BaseOptions(
       baseUrl: baseUrl,
       receiveDataWhenStatusError: true,
-      receiveTimeout: const Duration(seconds: 5),
-      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 15),
+      connectTimeout: const Duration(seconds: 15),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
