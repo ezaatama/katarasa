@@ -24,3 +24,22 @@ final class DataOrderError extends DataOrderState {
 }
 
 final class DataOrderEmpty extends DataOrderState {}
+
+final class AllOrderLoaded extends DataOrderState {
+  final List<DataItem> items;
+
+  const AllOrderLoaded(this.items);
+}
+
+final class AllOrderLoading extends DataOrderState {
+  final List<DataItem> items;
+  final bool isFirstFetch;
+
+  const AllOrderLoading(this.items, {this.isFirstFetch = false});
+}
+
+final class AllOrderError extends DataOrderState {
+  final String allOrderErr;
+
+  const AllOrderError(this.allOrderErr);
+}
