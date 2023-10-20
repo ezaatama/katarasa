@@ -158,13 +158,15 @@ void sheetPembayaran(context, String orderId) {
                                                                       state
                                                                           .paySnapSuccess
                                                                           .token;
-                                                                  Navigator.pop(
-                                                                      context,
-                                                                      SelectMethod
-                                                                          .tokenPayment);
+
                                                                   navigateToRedirectUrl(state
-                                                                      .paySnapSuccess
-                                                                      .redirectUrl);
+                                                                          .paySnapSuccess
+                                                                          .redirectUrl)
+                                                                      .then(
+                                                                          (value) {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  });
                                                                 } else if (state
                                                                     is PaymentSnapError) {
                                                                   showToast(
@@ -467,7 +469,7 @@ void sheetPembayaranUpdate(context, String orderId) {
                                                                           .paySnapUpdSuccess
                                                                           .token;
                                                                   Navigator.pop(
-                                                                      context, SelectMethod.tokenPayment);
+                                                                      context);
                                                                 } else if (state
                                                                     is PaymentSnapUpdateError) {
                                                                   showToast(
