@@ -5,17 +5,10 @@ import 'package:katarasa/data/order/detail_order/detail_order_cubit.dart';
 import 'package:katarasa/data/payment/method/method_payment_cubit.dart';
 import 'package:katarasa/data/payment/payment_token/payment_cubit.dart';
 import 'package:katarasa/data/profile/data_profile/profile_cubit.dart';
-import 'package:katarasa/models/payment/methode_pay_request.dart';
-import 'package:katarasa/models/payment/payment_snap_before_token.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/general/image.dart';
-import 'package:katarasa/widgets/general/loader_indicator.dart';
-import 'package:katarasa/widgets/general/make_dismiss.dart';
-import 'package:katarasa/widgets/general/toast_comp.dart';
 import 'package:katarasa/widgets/order/sheet_payment.dart';
-import 'package:katarasa/widgets/shipping/custom_expand_items.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key, required this.orderId});
@@ -33,15 +26,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
     context.read<DetailOrderCubit>().getDetailOrder(context, widget.orderId);
     context.read<MethodPaymentCubit>().getAllMethodPay(context);
     context.read<ProfileCubit>().getDataProfile(context);
-  }
-
-  Future<void> navigateToRedirectUrl(String redirectUrl) async {
-    if (!await launchUrl(
-      Uri.parse(redirectUrl),
-      mode: LaunchMode.externalApplication,
-    )) {
-      throw Exception('Could not launch $redirectUrl');
-    }
   }
 
   @override
@@ -299,9 +283,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   if (state is PaymentSnapSuccess) {
                     return InkWell(
                         onTap: () {
-                          SelectMethod.tokenPayment.isNotEmpty
-                              ? sheetPembayaranUpdate(context, widget.orderId)
-                              : sheetPembayaran(context, widget.orderId);
+                          sheetPembayaranUpdate(context, widget.orderId);
 
                           debugPrint("go to bottom sheet pilih pembayaran");
                         },
@@ -323,10 +305,46 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                          state.paySnapSuccess.token.isNotEmpty
-                                              ? "Ganti pembayaran"
-                                              : "Pilih pembayaran",
+                                      Text("Ganti pembayaran",
+                                          style: BLACK_TEXT_STYLE.copyWith(
+                                              fontWeight: FontUI.WEIGHT_MEDIUM,
+                                              fontSize: 16)),
+                                    ],
+                                  ),
+                                ),
+                                const Spacer(),
+                                const Icon(Icons.arrow_forward_ios_rounded,
+                                    color: ColorUI.GREY, size: 18),
+                              ],
+                            )
+                          ],
+                        ));
+                  } else if (state is PaymentSnapUpdateSuccess) {
+                    return InkWell(
+                        onTap: () {
+                          sheetPembayaranUpdate(context, widget.orderId);
+
+                          debugPrint("go to bottom sheet pilih pembayaran");
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Image.asset("assets/icons/icon_payment.png",
+                                    fit: BoxFit.cover,
+                                    width: MediaQuery.of(context).size.width *
+                                        .060,
+                                    height: MediaQuery.of(context).size.height *
+                                        .025),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text("Ganti pembayaran",
                                           style: BLACK_TEXT_STYLE.copyWith(
                                               fontWeight: FontUI.WEIGHT_MEDIUM,
                                               fontSize: 16)),
@@ -341,50 +359,49 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           ],
                         ));
                   }
-                  return const SizedBox();
-                  // return InkWell(
-                  //     onTap: () {
-                  //       sheetPembayaran(context, widget.orderId);
-                  //       debugPrint("go to bottom sheet pilih pembayaran");
-                  //       setState(() {});
-                  //     },
-                  //     child: Column(
-                  //       crossAxisAlignment: CrossAxisAlignment.start,
-                  //       children: [
-                  //         Row(
-                  //           crossAxisAlignment: CrossAxisAlignment.start,
-                  //           children: [
-                  //             Image.asset("assets/icons/icon_payment.png",
-                  //                 fit: BoxFit.cover,
-                  //                 width:
-                  //                     MediaQuery.of(context).size.width * .060,
-                  //                 height: MediaQuery.of(context).size.height *
-                  //                     .025),
-                  //             const SizedBox(width: 8),
-                  //             Flexible(
-                  //               flex: 2,
-                  //               child: Column(
-                  //                 crossAxisAlignment: CrossAxisAlignment.start,
-                  //                 children: [
-                  //                   Text("Pilih pembayaran",
-                  //                       style: BLACK_TEXT_STYLE.copyWith(
-                  //                           fontWeight: FontUI.WEIGHT_MEDIUM,
-                  //                           fontSize: 16)),
-                  //                   const SizedBox(height: 3),
-                  //                   Text("Anda belum memilih metode pembayaran",
-                  //                       style: BLACK_TEXT_STYLE.copyWith(
-                  //                           fontWeight: FontUI.WEIGHT_LIGHT,
-                  //                           fontSize: 12)),
-                  //                 ],
-                  //               ),
-                  //             ),
-                  //             const Spacer(),
-                  //             const Icon(Icons.arrow_forward_ios_rounded,
-                  //                 color: ColorUI.GREY, size: 18),
-                  //           ],
-                  //         )
-                  //       ],
-                  //     ));
+                  return InkWell(
+                      onTap: () {
+                        sheetPembayaran(context, widget.orderId);
+                        debugPrint("go to bottom sheet pilih pembayaran");
+                        setState(() {});
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.asset("assets/icons/icon_payment.png",
+                                  fit: BoxFit.cover,
+                                  width:
+                                      MediaQuery.of(context).size.width * .060,
+                                  height: MediaQuery.of(context).size.height *
+                                      .025),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                flex: 2,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("Pilih pembayaran",
+                                        style: BLACK_TEXT_STYLE.copyWith(
+                                            fontWeight: FontUI.WEIGHT_MEDIUM,
+                                            fontSize: 16)),
+                                    const SizedBox(height: 3),
+                                    Text("Anda belum memilih metode pembayaran",
+                                        style: BLACK_TEXT_STYLE.copyWith(
+                                            fontWeight: FontUI.WEIGHT_LIGHT,
+                                            fontSize: 12)),
+                                  ],
+                                ),
+                              ),
+                              const Spacer(),
+                              const Icon(Icons.arrow_forward_ios_rounded,
+                                  color: ColorUI.GREY, size: 18),
+                            ],
+                          )
+                        ],
+                      ));
                 }),
               )
             ],
