@@ -85,22 +85,14 @@ class SingleCart extends StatelessWidget {
                         builder: (context, state) {
                       return GestureDetector(
                           onTap: () {
-                            setStater(() {
-                              products.isSelected = !products.isSelected;
-
-                              if (products.isSelected == true) {
-                                context
-                                    .read<ItemCartCubit>()
-                                    .setSelectItem(context, products.cartId);
-                              } else if (products.isSelected == false) {
-                                context
-                                    .read<ItemCartCubit>()
-                                    .setSelectItem(context, products.cartId);
-                              }
-                              context.read<AllCartCubit>().getAllCart(context);
-                            });
+                            // products.isSelected = !products.isSelected;
+                            context
+                                .read<ItemCartCubit>()
+                                .setSelectItem(context, products.cartId);
+                            context.read<AllCartCubit>().getAllCart(context);
+                            setStater(() {});
                           },
-                          child: products.isSelected
+                          child: products.isSelected == true
                               ? Container(
                                   width:
                                       MediaQuery.of(context).size.width * .050,
