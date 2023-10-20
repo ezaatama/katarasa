@@ -179,9 +179,11 @@ Color parseStatusTx(String s) {
 }
 
 Future<void> navigateToRedirectUrl(String redirectUrl) async {
-  if (!await launchUrl(Uri.parse(redirectUrl),
-      // mode: LaunchMode.externalApplication,
-      mode: LaunchMode.inAppWebView)) {
+  if (!await launchUrl(
+    Uri.parse(redirectUrl),
+    mode: LaunchMode.externalApplication,
+    // mode: LaunchMode.inAppWebView
+  )) {
     throw Exception('Could not launch $redirectUrl');
   }
 }
