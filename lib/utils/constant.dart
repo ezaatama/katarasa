@@ -170,7 +170,7 @@ Color parseStatusTx(String s) {
     case 'done':
       return Color.fromARGB(255, 57, 240, 109);
     case 'canceled':
-      return Color.fromARGB(255, 122, 2, 2);
+      return ColorUI.WHITE;
     case 'refund':
       return Color.fromARGB(255, 81, 104, 168);
     default:
