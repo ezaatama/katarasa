@@ -120,8 +120,8 @@ class DataItem {
         totalPrice: json["totalPrice"],
         totalPriceCurrencyFormat: json["totalPriceCurrencyFormat"],
         totalOtherProduct: json["totalOtherProduct"],
-        items:
-            List<ItemItem>.from(json["items"].map((x) => ItemItem.fromJson(x))),
+        items: List<ItemItem>.from(
+            (json["items"] ?? []).map((x) => ItemItem.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
