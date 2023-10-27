@@ -14,7 +14,7 @@ part 'products_state.dart';
 class ProductsCubit extends Cubit<ProductsState> {
   ProductsCubit() : super(ProductsInitial());
 
-  Future<void> getAllProduct(BuildContext context) async {
+  Future<void> getAllProduct(BuildContext context, {String? query}) async {
     emit(ProductsLoading());
 
     Future<ObjResponse> res = callNetwork(
@@ -27,6 +27,12 @@ class ProductsCubit extends Cubit<ProductsState> {
 
         List<ProductRequest> res = List<ProductRequest>.from(
             value.response['data'].map((x) => ProductRequest.fromJson(x)));
+
+        if (query != null) {
+          res = res
+              .where((e) => e.name.toLowerCase().contains(query.toLowerCase()))
+              .toList();
+        }
 
         emit(ProductsSuccess(res));
       }
