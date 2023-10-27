@@ -110,16 +110,19 @@ class DataOrderCubit extends Cubit<DataOrderState> {
         "${DATA_ORDER}page=$currentPage&limit=$itemPerPage&status=$filters");
     await res.then((value) {
       if (value.success == true) {
-        if (value.errresponse.status.code != 200) {
-          items = [];
+        DataOrderResponse dataOrder =
+            DataOrderResponse.fromJson(value.response);
+
+        if (dataOrder.data.items.isEmpty) {
           emit(DataOrderEmpty());
         } else {
-          DataOrderResponse dataOrder =
-              DataOrderResponse.fromJson(value.response);
           items = dataOrder.data.items;
-          isEndList = true;
-          // emit(AllOrderLoaded(items));
+          emit(AllOrderLoaded(items));
         }
+      } else {
+        debugPrint(value.errresponse.errors);
+
+        emit(AllOrderError(value.errresponse.errors));
       }
     }).catchError((e) {
       if (e is ConnectionProblemException || e is TimeoutException) {
@@ -131,5 +134,6 @@ class DataOrderCubit extends Cubit<DataOrderState> {
         emit(AllOrderError(e.toString()));
       }
     });
+    isLoadMore = false;
   }
 }
