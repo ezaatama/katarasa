@@ -9,8 +9,10 @@ import 'package:katarasa/data/cart/item_cart/item_cart_cubit.dart';
 import 'package:katarasa/data/dummy/product/product_cubit.dart';
 import 'package:katarasa/data/products/all_product/products_cubit.dart';
 import 'package:katarasa/data/products/category_product/category_product_cubit.dart';
+import 'package:katarasa/data/profile/data_profile/profile_cubit.dart';
 import 'package:katarasa/models/dummy/promo_models.dart';
 import 'package:katarasa/models/products/products_request.dart';
+import 'package:katarasa/screens/product/search_product_screen.dart';
 import 'package:katarasa/utils/constant.dart';
 import 'package:katarasa/widgets/choice_chip.dart';
 import 'package:katarasa/widgets/general/loader_indicator.dart';
@@ -36,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<ProductsCubit>().getAllProduct(context);
     context.read<CategoryProductCubit>().selectedCategory(context);
     context.read<AllCartCubit>().getAllCart(context);
+    context.read<ProfileCubit>().getDataProfile(context);
   }
 
   @override
@@ -147,16 +150,47 @@ class _HomeScreenState extends State<HomeScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          "Reza Putra Pratama",
-                                          style: WHITE_TEXT_STYLE.copyWith(
-                                              fontSize: 20,
-                                              fontWeight:
-                                                  FontUI.WEIGHT_SEMI_BOLD),
-                                        ),
+                                        BlocBuilder<ProfileCubit, ProfileState>(
+                                            builder: (context, state) {
+                                          if (state is ProfileLoading) {
+                                            return SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  .400,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.030,
+                                              child: Shimmer.fromColors(
+                                                  baseColor:
+                                                      ColorUI.SHIMMER_BASE,
+                                                  highlightColor:
+                                                      ColorUI.SHIMMER_HIGHLIGHT,
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      color:
+                                                          ColorUI.SHIMMER_BASE,
+                                                    ),
+                                                  )),
+                                            );
+                                          } else if (state is ProfileLoaded) {
+                                            return Text(
+                                              state.dataProfile.name,
+                                              style: WHITE_TEXT_STYLE.copyWith(
+                                                  fontSize: 20,
+                                                  fontWeight:
+                                                      FontUI.WEIGHT_SEMI_BOLD),
+                                            );
+                                          }
+                                          return const SizedBox();
+                                        }),
                                         const SizedBox(height: 5),
                                         Container(
-                                          padding: const EdgeInsets.all(10),
+                                          padding: const EdgeInsets.all(6),
                                           decoration: BoxDecoration(
                                               color: ColorUI.WHITE,
                                               borderRadius:
@@ -180,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 "250 Points",
                                                 style: TextStyle(
                                                     color: ColorUI.GREEN_DARK,
-                                                    fontSize: 18,
+                                                    fontSize: 14,
                                                     fontWeight:
                                                         FontUI.WEIGHT_MEDIUM),
                                               ),
@@ -195,7 +229,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                           borderRadius:
                                               BorderRadius.circular(10)),
                                       child: IconButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          showSearch(
+                                              context: context,
+                                              delegate: SearchProduct());
+                                        },
                                         icon: const Icon(Icons.search,
                                             color: ColorUI.BLACK, size: 35),
                                       ),
@@ -239,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Text(
                                   "Product Promo",
                                   style: BLACK_TEXT_STYLE.copyWith(
-                                      fontSize: 24,
+                                      fontSize: 20,
                                       fontWeight: FontUI.WEIGHT_SEMI_BOLD),
                                 ),
                                 InkWell(
@@ -247,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: const Text(
                                     "Lihat semua",
                                     style: TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 14,
                                         color: ColorUI.PRIMARY_GREEN),
                                   ),
                                 )
